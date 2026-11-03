@@ -8,7 +8,7 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 
 | Halaman | Fungsi |
 |---|---|
-| `index.html` | Landing page: profil, kepakaran, kegiatan terbaru, buku, penghargaan, **unduh CV** |
+| `index.html` | Landing page: profil, kepakaran, rak sampul buku, penghargaan, **unduh CV**, layanan, lalu kegiatan & dokumentasi di bagian bawah |
 | `kegiatan.html` | Kabar kegiatan: foto, tanggal, tempat, peran, deskripsi, caption media sosial, link dokumentasi; filter kategori/tahun dan pencarian |
 | `publikasi.html` | Penelitian, buku, abdimas, prosiding; filter, urut sitasi, **cetak/PDF, unduh CSV, salin gaya APA** |
 | `gizi.html` | Kalkulator IMT, persen lemak tubuh, berat badan ideal, kebutuhan energi + **konsultasi online** (WhatsApp/email) |
@@ -20,8 +20,10 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 config.js              ← pengaturan utama (WhatsApp, email, link Sheet, statistik Scholar)
 data/kegiatan.js       ← daftar kegiatan
 data/publikasi.js      ← daftar karya ilmiah
+data/buku.js           ← daftar buku + gambar sampul (tanpa file unduhan)
 assets/cv/             ← file CV yang diunduh pengunjung
 assets/img/            ← foto profil, logo Esa Unggul, foto kegiatan
+assets/img/buku/       ← gambar sampul buku
 assets/css/style.css   ← tampilan
 assets/js/             ← logika halaman
 docs/                  ← analisis branding & template Google Sheet
@@ -31,6 +33,12 @@ docs/                  ← analisis branding & template Google Sheet
 
 ### Mengganti CV
 Unggah PDF baru ke `assets/cv/` dengan nama yang sama (`CV-Dr-Mury-Kuswari-2026.pdf`), atau ubah nilai `cv` di `config.js`.
+
+### Menambah buku
+Unggah gambar sampul (JPG, lebar ±600 px) ke `assets/img/buku/`, lalu tambahkan satu baris di `data/buku.js` berisi tahun, judul, penulis, penerbit, dan path sampul. Buku hanya ditampilkan sebagai sampul; file bukunya tidak ikut diunggah.
+
+### Tampilan
+Warna diambil dari logo Universitas Esa Unggul (biru `#0070B8`, oranye `#F05828`) dan didefinisikan di bagian atas `assets/css/style.css`. Font: Outfit untuk judul dan isi, JetBrains Mono untuk label dan angka.
 
 ### Menambah kegiatan (pilih salah satu)
 

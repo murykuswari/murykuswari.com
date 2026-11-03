@@ -52,8 +52,8 @@ Hindari: daftar ucapan terima kasih yang panjang, foto tanpa cerita, dan klaim b
 
 ## 5. Identitas visual
 
-- **Warna:** biru tua (#0B2545) untuk wibawa akademik, biru Esa Unggul (#0A6DB5) untuk afiliasi, oranye (#F26B21) untuk energi olahraga. Oranye dan biru sengaja selaras dengan logo Universitas Esa Unggul.
-- **Tipografi:** Fraunces (serif editorial) untuk judul agar terasa ilmiah dan berkelas; Plus Jakarta Sans untuk isi, karya desainer Indonesia, modern dan mudah dibaca.
+- **Warna:** diambil langsung dari logo Universitas Esa Unggul: biru #0070B8 sebagai warna utama (wibawa akademik dan afiliasi), oranye #F05828 sebagai aksen (energi olahraga), dan biru tua #003A63 untuk latar gelap.
+- **Tipografi:** Outfit untuk judul dan isi (geometris, modern, mudah dibaca, selaras dengan cocoonwellness.id) dan JetBrains Mono untuk label, tanggal, serta angka statistik agar terasa presisi dan berbasis data.
 - **Foto:** potret formal untuk kredibilitas. Ke depan, tambahkan foto aksi (sedang presentasi, mendampingi atlet di lapangan) karena foto aksi menaikkan kesan "praktisi", bukan hanya "akademisi".
 
 ## 6. Rekomendasi lanjutan
