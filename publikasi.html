@@ -8,11 +8,11 @@
   <link rel="canonical" href="https://murykuswari.com/publikasi.html">
   <meta property="og:title" content="Karya Ilmiah Dr. Mury Kuswari">
   <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
-  <meta name="theme-color" content="#0b2545">
+  <meta name="theme-color" content="#003a63">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -60,6 +60,7 @@
 
   <script src="config.js"></script>
   <script src="data/publikasi.js"></script>
+  <script src="data/buku.js"></script>
   <script src="assets/js/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -68,7 +69,7 @@
       const all = (window.PUBLIKASI || []).map((p, i) => ({ i, y: p[0], t: p[1], title: p[2], au: p[3], v: p[4], c: p[5] || 0, link: p[6] || "" }));
       let type = ({ "#buku": "buku", "#abdimas": "abdimas", "#penelitian": "jurnal", "#prosiding": "prosiding" })[location.hash] || "semua";
 
-      const n = (t) => all.filter((p) => p.t === t).length;
+      const n = (t) => t === "buku" ? (window.BUKU || []).length : all.filter((p) => p.t === t).length;
       document.getElementById("stats").innerHTML = `
         <div class="card"><strong>${S.scholarStats.sitasi.toLocaleString("id-ID")}</strong><span>Sitasi</span></div>
         <div class="card"><strong>${S.scholarStats.hIndex}</strong><span>h-index</span></div>
@@ -100,7 +101,9 @@
 
         const item = (p) => `<li class="pub-item">
             <div>
-              <a class="ttl" href="${MK.esc(link(p))}" target="_blank" rel="noopener">${MK.esc(p.title)}</a>
+              ${p.t === "buku"
+                ? `<span class="ttl">${MK.esc(p.title)}</span>`
+                : `<a class="ttl" href="${MK.esc(link(p))}" target="_blank" rel="noopener">${MK.esc(p.title)}</a>`}
               <div class="au">${MK.esc(p.au)}</div>
               <div class="vn">${MK.esc(p.v)}</div>
             </div>
@@ -112,6 +115,13 @@
 
         const out = document.getElementById("out");
         if (!rows.length) { out.innerHTML = '<p class="empty">Tidak ada karya yang cocok.</p>'; return; }
+        // Tab Buku: tampilkan rak sampul saja (tanpa tautan unduhan).
+        if (type === "buku") {
+          const books = (window.BUKU || []).filter((b) => !term || (b.judul + " " + b.penulis + " " + b.penerbit).toLowerCase().includes(term));
+          out.innerHTML = `<div class="shelf" style="margin-top:8px">${MK.shelfHtml(books)}</div>`;
+          document.getElementById("count").textContent = books.length + " buku";
+          return;
+        }
         if (sort.value === "cite") { out.innerHTML = `<ol class="pub-list">${rows.map(item).join("")}</ol>`; return; }
         const byYear = {};
         rows.forEach((p) => (byYear[p.y] = byYear[p.y] || []).push(p));

@@ -9,8 +9,7 @@ window.SITE = {
   jabatan: "Wakil Rektor Bidang Kemahasiswaan, Universitas Esa Unggul",
   domain: "https://murykuswari.com",
 
-  email: "murykuswari@gmail.com",
-  emailKampus: "mury@esaunggul.ac.id",
+  email: "mury@esaunggul.ac.id",
   instagram: "https://www.instagram.com/murykuswari/",
   linkedin: "https://www.linkedin.com/in/murykuswari",
   scholar: "https://scholar.google.com/citations?user=Z8e0i-0AAAAJ&hl=en",

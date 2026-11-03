@@ -12,11 +12,11 @@
   <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
   <meta property="og:url" content="https://murykuswari.com/">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0b2545">
+  <meta name="theme-color" content="#003a63">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <script type="application/ld+json">
   {
@@ -157,21 +157,6 @@
       </div>
     </section>
 
-    <!-- LATEST ACTIVITIES -->
-    <section id="kabar">
-      <div class="wrap">
-        <div class="section-head reveal" style="display:flex;justify-content:space-between;align-items:end;gap:20px;max-width:none;flex-wrap:wrap">
-          <div style="max-width:640px">
-            <span class="eyebrow">Kabar Terbaru</span>
-            <h2>Kegiatan &amp; dokumentasi</h2>
-            <p>Catatan perjalanan sebagai narasumber, juri, dan pendamping atlet, dari studio TVRI hingga kongres di Yordania dan Korea.</p>
-          </div>
-          <a class="btn btn-dark" href="kegiatan.html">Lihat semua kegiatan</a>
-        </div>
-        <div class="grid grid-3" id="latest"></div>
-      </div>
-    </section>
-
     <!-- BOOKS -->
     <section class="section-alt" id="buku">
       <div class="wrap">
@@ -180,8 +165,8 @@
           <h2>Rujukan gizi olahraga yang lahir dari lapangan</h2>
           <p>Dari pedoman resmi Kemenkes RI untuk pendamping gizi atlet sampai buku bersama pakar Asia.</p>
         </div>
-        <div class="grid grid-4" id="books"></div>
-        <p style="margin-top:22px"><a href="publikasi.html#buku">Lihat daftar lengkap buku, penelitian, dan abdimas →</a></p>
+        <div class="shelf" id="books"></div>
+        <p style="margin-top:28px"><a href="publikasi.html">Lihat daftar penelitian, pengabdian, dan prosiding →</a></p>
       </div>
     </section>
 
@@ -237,9 +222,24 @@
         <div class="grid grid-4">
           <a class="card reveal" href="gizi.html" style="text-decoration:none;color:inherit"><h3>Kalkulator Gizi</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Hitung IMT, persen lemak tubuh, berat badan ideal, dan kebutuhan energi Anda.</p></a>
           <a class="card reveal" href="gizi.html#konsultasi" style="text-decoration:none;color:inherit"><h3>Konsultasi Online</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Konsultasi gizi olahraga untuk atlet, klub, pelatih, dan individu aktif.</p></a>
-          <a class="card reveal" href="mailto:murykuswari@gmail.com?subject=Undangan%20Narasumber" style="text-decoration:none;color:inherit"><h3>Narasumber</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Seminar, kuliah tamu, pelatihan pelatih, webinar, podcast, dan media.</p></a>
-          <a class="card reveal" href="mailto:murykuswari@gmail.com?subject=Program%20Wellness%20Korporat" style="text-decoration:none;color:inherit"><h3>Wellness Korporat</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Weight Loss Challenge, tele-exercise, dan pendampingan gizi karyawan.</p></a>
+          <a class="card reveal" href="mailto:mury@esaunggul.ac.id?subject=Undangan%20Narasumber" style="text-decoration:none;color:inherit"><h3>Narasumber</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Seminar, kuliah tamu, pelatihan pelatih, webinar, podcast, dan media.</p></a>
+          <a class="card reveal" href="mailto:mury@esaunggul.ac.id?subject=Program%20Wellness%20Korporat" style="text-decoration:none;color:inherit"><h3>Wellness Korporat</h3><p style="color:var(--ink-2);font-size:.92rem;margin:0">Weight Loss Challenge, tele-exercise, dan pendampingan gizi karyawan.</p></a>
         </div>
+      </div>
+    </section>
+
+    <!-- LATEST ACTIVITIES -->
+    <section id="kabar">
+      <div class="wrap">
+        <div class="section-head reveal" style="display:flex;justify-content:space-between;align-items:end;gap:20px;max-width:none;flex-wrap:wrap">
+          <div style="max-width:640px">
+            <span class="eyebrow">Kabar Terbaru</span>
+            <h2>Kegiatan &amp; dokumentasi</h2>
+            <p>Catatan perjalanan sebagai narasumber, juri, dan pendamping atlet, dari studio TVRI hingga kongres di Yordania dan Korea.</p>
+          </div>
+          <a class="btn btn-dark" href="kegiatan.html">Lihat semua kegiatan</a>
+        </div>
+        <div class="grid grid-3" id="latest"></div>
       </div>
     </section>
   </main>
@@ -248,7 +248,7 @@
 
   <script src="config.js"></script>
   <script src="data/kegiatan.js"></script>
-  <script src="data/publikasi.js"></script>
+  <script src="data/buku.js"></script>
   <script src="assets/js/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
@@ -260,15 +260,10 @@
         <div><strong>${st.hIndex}</strong><span>h-index</span></div>
         <div><strong>8</strong><span>buku gizi olahraga</span></div>`;
 
-      const list = await MK.loadKegiatan();
-      document.getElementById("latest").innerHTML = list.slice(0, 3).map((k) => MK.cardHtml(k, { short: true })).join("");
+      document.getElementById("books").innerHTML = MK.shelfHtml(window.BUKU || []);
 
-      const books = (window.PUBLIKASI || []).filter((p) => p[1] === "buku").slice(0, 8);
-      document.getElementById("books").innerHTML = books.map((b) => `
-        <article class="card book">
-          <div class="book-cover"><span class="y">${b[0]}</span><span class="t">${MK.esc(b[2])}</span></div>
-          <div class="book-info">${MK.esc(b[4])}</div>
-        </article>`).join("");
+      const list = await MK.loadKegiatan();
+      document.getElementById("latest").innerHTML = list.slice(0, 6).map((k) => MK.cardHtml(k, { short: true })).join("");
     });
   </script>
 </body>

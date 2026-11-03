@@ -312,7 +312,27 @@
     });
   }
 
-  window.MK = { ICON, esc, fmtTanggal, imgSrc, cardHtml, loadKegiatan, bindCopyCaption, fullCaption, hashtagText, copyText, toast, waLink, parseCSV, revealOnScroll, BULAN };
+  /* ---------- Rak buku: sampul saja, tanpa tautan unduhan ---------- */
+  function shelfHtml(books) {
+    return books.map((b) => `
+      <article class="shelf-item">
+        <div class="shelf-cover" aria-hidden="${b.sampul ? "false" : "true"}">
+          ${b.sampul
+            ? `<img src="${esc(b.sampul)}" alt="Sampul buku ${esc(b.judul)}" loading="lazy" draggable="false">`
+            : `<div class="design"><span>${b.tahun}</span><b>${esc(b.judul)}</b><span>${esc(b.penerbit)}</span></div>`}
+        </div>
+        <div class="shelf-meta">
+          <span class="y">${b.tahun}</span>
+          <h3>${esc(b.judul)}</h3>
+          <p>${esc(b.penerbit)}</p>
+        </div>
+      </article>`).join("");
+  }
+  // Sampul hanya untuk dilihat: matikan menu klik kanan dan seret gambar di rak buku.
+  document.addEventListener("contextmenu", (e) => { if (e.target.closest(".shelf-cover")) e.preventDefault(); });
+  document.addEventListener("dragstart", (e) => { if (e.target.closest(".shelf-cover")) e.preventDefault(); });
+
+  window.MK = { ICON, esc, fmtTanggal, imgSrc, cardHtml, shelfHtml, loadKegiatan, bindCopyCaption, fullCaption, hashtagText, copyText, toast, waLink, parseCSV, revealOnScroll, BULAN };
 
   document.addEventListener("DOMContentLoaded", () => {
     renderHeader();

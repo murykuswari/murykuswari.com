@@ -1,48 +1,52 @@
 /* ==========================================================================
    murykuswari.com — gaya utama
-   Palet mengikuti identitas Universitas Esa Unggul (biru & oranye)
-   dengan nuansa editorial untuk citra akademisi.
+   Palet diambil langsung dari logo Universitas Esa Unggul:
+   biru #0070B8, oranye #F05828, dan turunan biru mudanya.
+   Tipografi: Outfit (judul & isi) + JetBrains Mono (angka, label, tanggal).
    ========================================================================== */
 
 :root {
-  --ink: #0e1b2c;
-  --ink-2: #3a4a5e;
-  --muted: #66768a;
-  --line: #e3e7ec;
-  --bg: #f7f6f2;
+  --ink: #0b1e33;
+  --ink-2: #39506a;
+  --muted: #6a7f96;
+  --line: #dde7f1;
+  --bg: #f5f9fd;
   --surface: #ffffff;
-  --surface-2: #eef3f8;
-  --navy: #0b2545;
-  --blue: #0a6db5;
-  --blue-soft: #e3f0fa;
-  --orange: #f26b21;
-  --orange-soft: #fdeee4;
+  --surface-2: #eaf3fb;
+  --navy: #003a63;
+  --blue: #0070b8;
+  --blue-2: #3890c8;
+  --blue-soft: #e1eff9;
+  --orange: #f05828;
+  --orange-2: #f7893f;
+  --orange-soft: #fdebe3;
   --green: #1f8a5b;
-  --amber: #c98a06;
-  --red: #c43d2f;
+  --amber: #d9890b;
+  --red: #c8372a;
   --radius: 14px;
   --radius-lg: 22px;
-  --shadow: 0 1px 2px rgba(14, 27, 44, .06), 0 8px 24px rgba(14, 27, 44, .06);
-  --shadow-lg: 0 20px 50px rgba(11, 37, 69, .14);
-  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --shadow: 0 1px 2px rgba(0, 58, 99, .06), 0 8px 24px rgba(0, 58, 99, .07);
+  --shadow-lg: 0 20px 50px rgba(0, 58, 99, .16);
+  --font: "Outfit", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --serif: "Outfit", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
   --wrap: 1160px;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ink: #eef2f7; --ink-2: #c3ccd8; --muted: #93a1b3; --line: #233247;
-    --bg: #0b1422; --surface: #111d2f; --surface-2: #16253b;
-    --blue: #4ea3e6; --blue-soft: #13304d; --orange: #ff8a4c; --orange-soft: #3a2316;
+    --ink: #eef4fa; --ink-2: #c2d2e2; --muted: #8fa5bc; --line: #1d3550;
+    --bg: #061727; --surface: #0b2238; --surface-2: #10304d;
+    --blue: #4aa3e0; --blue-soft: #0f3456; --orange: #ff7a45; --orange-soft: #3b1e12;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --ink: #eef2f7; --ink-2: #c3ccd8; --muted: #93a1b3; --line: #233247;
-  --bg: #0b1422; --surface: #111d2f; --surface-2: #16253b;
-  --blue: #4ea3e6; --blue-soft: #13304d; --orange: #ff8a4c; --orange-soft: #3a2316;
+  --ink: #eef4fa; --ink-2: #c2d2e2; --muted: #8fa5bc; --line: #1d3550;
+  --bg: #061727; --surface: #0b2238; --surface-2: #10304d;
+  --blue: #4aa3e0; --blue-soft: #0f3456; --orange: #ff7a45; --orange-soft: #3b1e12;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
   color-scheme: dark;
 }
@@ -59,8 +63,8 @@ img { max-width: 100%; display: block; }
 a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--orange); }
 h1, h2, h3, h4 { line-height: 1.2; margin: 0 0 .5em; color: var(--ink); }
-h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
-h3 { font-size: 1.12rem; font-weight: 700; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 700; letter-spacing: -.02em; text-wrap: balance; }
+h3 { font-size: 1.14rem; font-weight: 600; letter-spacing: -.01em; }
 p { margin: 0 0 1em; }
 .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 20px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -113,9 +117,9 @@ p { margin: 0 0 1em; }
 }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--orange) 35%, transparent); }
-.btn-primary:hover { background: #e15a10; color: #fff; }
+.btn-primary:hover { background: #d9481a; color: #fff; }
 .btn-dark { background: var(--navy); color: #fff; }
-.btn-dark:hover { background: #10325c; color: #fff; }
+.btn-dark:hover { background: var(--blue); color: #fff; }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
 .btn-sm { padding: 8px 14px; font-size: .85rem; }
@@ -158,7 +162,7 @@ section { padding: 84px 0; }
 }
 .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; position: relative; }
 .hero h1 { font-size: clamp(2.3rem, 5.2vw, 4rem); line-height: 1.05; margin-bottom: 18px; }
-.hero h1 em { font-style: italic; color: var(--orange); }
+.hero h1 em { font-style: normal; color: var(--orange); }
 .hero .lead { font-size: 1.15rem; color: var(--ink-2); max-width: 560px; }
 .hero-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 4px; }
 .hero-role { color: var(--muted); font-size: .95rem; margin-bottom: 26px; }
@@ -237,13 +241,13 @@ section { padding: 84px 0; }
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px;
   color: #fff; background: linear-gradient(140deg, var(--navy), var(--blue));
 }
-.act-media .ph.k-Internasional { background: linear-gradient(140deg, #0b2545, #0a6db5); }
-.act-media .ph.k-Media { background: linear-gradient(140deg, #3b1d5e, #8a3fd1); }
-.act-media .ph.k-Narasumber { background: linear-gradient(140deg, #7a2a05, #f26b21); }
-.act-media .ph.k-Pengabdian { background: linear-gradient(140deg, #0f4d34, #1f8a5b); }
-.act-media .ph.k-Mengajar { background: linear-gradient(140deg, #123a5e, #2b8fbf); }
-.act-media .ph.k-Penghargaan { background: linear-gradient(140deg, #6b4a00, #c98a06); }
-.act-media .ph.k-Pendampingan-Atlet { background: linear-gradient(140deg, #6e0f1a, #c43d2f); }
+.act-media .ph.k-Internasional { background: linear-gradient(140deg, #003a63, #0070b8); }
+.act-media .ph.k-Media { background: linear-gradient(140deg, #0070b8, #3890c8); }
+.act-media .ph.k-Narasumber { background: linear-gradient(140deg, #c7401a, #f05828); }
+.act-media .ph.k-Pengabdian { background: linear-gradient(140deg, #005592, #4898c8); }
+.act-media .ph.k-Mengajar { background: linear-gradient(140deg, #003a63, #3890c8); }
+.act-media .ph.k-Penghargaan { background: linear-gradient(140deg, #f05828, #f7893f); }
+.act-media .ph.k-Pendampingan-Atlet { background: linear-gradient(140deg, #003a63, #f05828); }
 .act-media .ph .big { font-family: var(--serif); font-size: 2.6rem; line-height: 1; opacity: .95; }
 .act-media .ph .sm { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
 .act-media .ph svg { position: absolute; right: 16px; top: 16px; width: 54px; height: 54px; opacity: .25; }
@@ -334,13 +338,13 @@ label { font-weight: 700; font-size: .88rem; display: block; margin-bottom: 6px;
 
 /* ---------- CV download band ---------- */
 .cv-band {
-  background: linear-gradient(120deg, var(--navy) 0%, #0d3a6e 55%, var(--blue) 100%);
+  background: linear-gradient(120deg, var(--navy) 0%, #005592 55%, var(--blue) 100%);
   color: #fff; border-radius: 28px; padding: 46px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; align-items: center;
   position: relative; overflow: hidden;
 }
 .cv-band::after {
   content: ""; position: absolute; right: -80px; bottom: -120px; width: 340px; height: 340px; border-radius: 50%;
-  border: 40px solid rgba(242,107,33,.35);
+  border: 40px solid rgba(240,88,40,.38);
 }
 .cv-band h2 { color: #fff; font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
 .cv-band p { color: #d6e4f3; }
@@ -444,3 +448,55 @@ pre.code {
   .act-media { display: none; }
   .reveal { opacity: 1 !important; transform: none !important; }
 }
+
+/* ---------- Tipografi data (JetBrains Mono) ---------- */
+.eyebrow, .chip, .act-meta, .roles .yr, .stats span, .pub-stats span, .pub-item .cit,
+.book-cover .y, .hero-badge, .kv dd, .scale-labels, .filter-btn span, .brand small, .trust p, .foot-grid h4 {
+  font-family: var(--mono);
+}
+.eyebrow { font-size: .72rem; font-weight: 500; letter-spacing: .12em; }
+.chip { font-weight: 500; font-size: .72rem; letter-spacing: .02em; }
+.act-meta { font-size: .76rem; }
+.stats span, .pub-stats span { font-size: .72rem; letter-spacing: .02em; }
+.hero-badge { font-size: .74rem; }
+.hero-badge strong { font-family: var(--font); font-weight: 700; }
+.stats strong, .pub-stats strong, .result .big, .edu strong { font-family: var(--font); font-weight: 700; letter-spacing: -.02em; }
+.hero h1 { font-weight: 700; letter-spacing: -.03em; line-height: 1.04; }
+.section-head h2 { font-weight: 700; }
+.lead, .section-head p { font-weight: 400; }
+.about blockquote { font-family: var(--font); font-weight: 500; font-size: 1.3rem; }
+.brand { font-weight: 700; }
+.nav a { font-weight: 500; }
+.btn { font-weight: 600; letter-spacing: .01em; }
+
+/* ---------- Galeri sampul buku (tidak bisa diunduh) ---------- */
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 28px 22px; }
+.shelf-item { display: flex; flex-direction: column; gap: 10px; }
+.shelf-cover {
+  position: relative; aspect-ratio: 2 / 3; border-radius: 4px 10px 10px 4px; overflow: hidden;
+  background: var(--surface-2); box-shadow: 0 2px 4px rgba(0,58,99,.12), 0 16px 30px -10px rgba(0,58,99,.35);
+  transition: transform .25s ease, box-shadow .25s ease; user-select: none; -webkit-user-select: none;
+}
+.shelf-cover::after {
+  /* efek punggung buku + lapisan pelindung agar gambar tidak bisa disimpan lewat klik */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,.22) 0, rgba(255,255,255,.18) 3px, rgba(0,0,0,0) 10px);
+}
+.shelf-item:hover .shelf-cover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(0,58,99,.12), 0 26px 40px -12px rgba(0,58,99,.45); }
+.shelf-cover img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+.shelf-cover .design {
+  position: absolute; inset: 0; padding: 18px 16px 16px 20px; display: flex; flex-direction: column; justify-content: space-between;
+  color: #fff; background: linear-gradient(160deg, var(--navy), var(--blue) 70%, var(--orange) 140%);
+}
+.shelf-cover .design b { font-size: 1.02rem; line-height: 1.2; font-weight: 700; }
+.shelf-cover .design span { font-family: var(--mono); font-size: .66rem; letter-spacing: .08em; opacity: .9; text-transform: uppercase; }
+.shelf-meta .y { font-family: var(--mono); font-size: .7rem; color: var(--orange); letter-spacing: .06em; }
+.shelf-meta h3 { font-size: .98rem; margin: 2px 0 2px; line-height: 1.3; }
+.shelf-meta p { margin: 0; font-size: .8rem; color: var(--muted); }
+@media (max-width: 520px) {
+  .shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; }
+  .shelf-cover .design { padding: 12px 10px 10px 14px; }
+  .shelf-cover .design b { font-size: .8rem; }
+  .shelf-cover .design span { font-size: .56rem; }
+}
+@media print { .shelf { grid-template-columns: repeat(4, 1fr); } .shelf-cover { box-shadow: none; } }
