@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /input.html
+Sitemap: https://murykuswari.com/sitemap.xml

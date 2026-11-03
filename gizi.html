@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalkulator Gizi Olahraga: IMT, Persen Lemak, Berat Ideal | Dr. Mury Kuswari</title>
+  <meta name="description" content="Hitung IMT (standar Kemenkes & WHO), persen lemak tubuh (metode US Navy & Deurenberg), berat badan ideal, serta kebutuhan energi dan zat gizi atlet. Lanjutkan dengan konsultasi online.">
+  <link rel="canonical" href="https://murykuswari.com/gizi.html">
+  <meta property="og:title" content="Kalkulator Gizi Olahraga | Dr. Mury Kuswari">
+  <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
+  <meta name="theme-color" content="#0b2545">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Kalkulator Gizi Olahraga</span>
+        <h1>Kenali tubuhmu, lalu latih dengan tepat</h1>
+        <p>Empat alat ukur yang biasa saya gunakan saat mendampingi atlet dan peserta program wellness. Data yang Anda isi hanya dihitung di perangkat Anda dan tidak disimpan di server.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:6px">
+      <div class="wrap calc-layout">
+        <div class="calc-tabs" role="tablist" aria-label="Pilih kalkulator">
+          <button class="calc-tab" role="tab" aria-selected="true" aria-controls="p-imt" id="t-imt">IMT<small>Indeks Massa Tubuh</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-lemak" id="t-lemak">% Lemak Tubuh<small>US Navy &amp; Deurenberg</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-bbi" id="t-bbi">Berat Badan Ideal<small>Broca, rentang IMT, target atlet</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-energi" id="t-energi">Kebutuhan Energi<small>Kalori, makro &amp; cairan</small></button>
+        </div>
+
+        <div>
+          <!-- IMT -->
+          <div class="card calc-panel" role="tabpanel" id="p-imt" aria-labelledby="t-imt">
+            <h2 style="font-size:1.7rem">Indeks Massa Tubuh (IMT)</h2>
+            <div class="calc-grid">
+              <form data-calc="imt" onsubmit="return false">
+                <div class="row">
+                  <div class="field"><label for="imt-bb">Berat badan (kg)</label><input id="imt-bb" data-share="bb" type="number" inputmode="decimal" min="20" max="300" step="0.1" placeholder="65"></div>
+                  <div class="field"><label for="imt-tb">Tinggi badan (cm)</label><input id="imt-tb" data-share="tb" type="number" inputmode="decimal" min="100" max="230" step="0.1" placeholder="168"></div>
+                </div>
+                <div class="field">
+                  <label for="imt-std">Standar klasifikasi</label>
+                  <select id="imt-std">
+                    <option value="kemenkes">Kemenkes RI (dewasa Indonesia)</option>
+                    <option value="asia">WHO Asia-Pasifik</option>
+                    <option value="who">WHO Internasional</option>
+                  </select>
+                  <small>Untuk usia 18 tahun ke atas. Anak dan remaja menggunakan IMT menurut umur (z-score).</small>
+                </div>
+              </form>
+              <div class="result" id="r-imt" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- LEMAK -->
+          <div class="card calc-panel" role="tabpanel" id="p-lemak" aria-labelledby="t-lemak" hidden>
+            <h2 style="font-size:1.7rem">Persen Lemak Tubuh</h2>
+            <div class="calc-grid">
+              <form data-calc="lemak" onsubmit="return false">
+                <div class="field"><label>Metode</label>
+                  <div class="seg" id="lemak-metode"><button type="button" aria-pressed="true" data-v="navy">Lingkar tubuh (US Navy)</button><button type="button" aria-pressed="false" data-v="bmi">Dari IMT (Deurenberg)</button></div>
+                </div>
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="lm-bb">Berat badan (kg)</label><input id="lm-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="65"></div>
+                  <div class="field"><label for="lm-tb">Tinggi badan (cm)</label><input id="lm-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="168"></div>
+                </div>
+                <div class="row" data-show="bmi" hidden>
+                  <div class="field"><label for="lm-usia">Usia (tahun)</label><input id="lm-usia" data-share="usia" type="number" inputmode="numeric" min="18" max="90" placeholder="30"></div>
+                </div>
+                <div data-show="navy">
+                  <div class="row">
+                    <div class="field"><label for="lm-pinggang">Lingkar pinggang (cm)</label><input id="lm-pinggang" type="number" inputmode="decimal" step="0.1" placeholder="82"><small>Setinggi pusar, akhir napas biasa.</small></div>
+                    <div class="field"><label for="lm-leher">Lingkar leher (cm)</label><input id="lm-leher" type="number" inputmode="decimal" step="0.1" placeholder="37"><small>Tepat di bawah jakun.</small></div>
+                  </div>
+                  <div class="field" data-only="P" hidden><label for="lm-panggul">Lingkar panggul (cm)</label><input id="lm-panggul" type="number" inputmode="decimal" step="0.1" placeholder="98"><small>Bagian terlebar bokong.</small></div>
+                </div>
+              </form>
+              <div class="result" id="r-lemak" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- BBI -->
+          <div class="card calc-panel" role="tabpanel" id="p-bbi" aria-labelledby="t-bbi" hidden>
+            <h2 style="font-size:1.7rem">Berat Badan Ideal</h2>
+            <div class="calc-grid">
+              <form data-calc="bbi" onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="bbi-tb">Tinggi badan (cm)</label><input id="bbi-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="168"></div>
+                  <div class="field"><label for="bbi-bb">Berat sekarang (kg)</label><input id="bbi-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="65"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="bbi-lemak">% lemak sekarang <small style="display:inline">(opsional)</small></label><input id="bbi-lemak" data-share="lemak" type="number" inputmode="decimal" step="0.1" placeholder="22"></div>
+                  <div class="field"><label for="bbi-target">Target % lemak</label><input id="bbi-target" type="number" inputmode="decimal" step="0.5" placeholder="15"><small>Mis. atlet putra 8–15%, putri 15–22%.</small></div>
+                </div>
+              </form>
+              <div class="result" id="r-bbi" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- ENERGI -->
+          <div class="card calc-panel" role="tabpanel" id="p-energi" aria-labelledby="t-energi" hidden>
+            <h2 style="font-size:1.7rem">Kebutuhan Energi &amp; Zat Gizi</h2>
+            <div class="calc-grid">
+              <form data-calc="energi" onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-bb">Berat badan (kg)</label><input id="en-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="65"></div>
+                  <div class="field"><label for="en-tb">Tinggi badan (cm)</label><input id="en-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="168"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-usia">Usia (tahun)</label><input id="en-usia" data-share="usia" type="number" inputmode="numeric" placeholder="30"></div>
+                  <div class="field"><label for="en-tujuan">Tujuan</label>
+                    <select id="en-tujuan"><option value="0">Mempertahankan berat</option><option value="-500">Menurunkan berat/lemak</option><option value="300">Menambah massa otot</option></select>
+                  </div>
+                </div>
+                <div class="field"><label for="en-akt">Aktivitas &amp; beban latihan</label>
+                  <select id="en-akt">
+                    <option value="1.2|3|1.0">Sedentari: kerja duduk, jarang olahraga</option>
+                    <option value="1.375|4|1.2">Ringan: olahraga 1–3x/minggu</option>
+                    <option value="1.55|5|1.4" selected>Sedang: latihan 3–5x/minggu, ±1 jam</option>
+                    <option value="1.725|7|1.6">Berat: latihan harian 1–2 jam</option>
+                    <option value="1.9|9|1.8">Atlet elite: 2 sesi/hari, intensitas tinggi</option>
+                  </select>
+                </div>
+              </form>
+              <div class="result" id="r-energi" aria-live="polite"></div>
+            </div>
+          </div>
+          <p class="disclaimer">Hasil kalkulator adalah estimasi skrining, bukan diagnosis. Untuk atlet, ibu hamil, remaja, atau kondisi medis tertentu, diskusikan dengan ahli gizi.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KONSULTASI -->
+    <section class="section-alt" id="konsultasi">
+      <div class="wrap consult-box">
+        <div>
+          <span class="eyebrow">Konsultasi Online</span>
+          <h2 style="font-size:clamp(1.8rem,3.6vw,2.5rem)">Sudah tahu angkanya? Mari susun strateginya.</h2>
+          <p style="color:var(--ink-2)">Konsultasi gizi olahraga untuk atlet dan klub, pelatih, peserta program penurunan berat badan, maupun individu aktif yang ingin performa lebih baik. Isi formulir singkat ini; pesan akan terbuka di WhatsApp atau email Anda, lengkap dengan hasil kalkulator.</p>
+          <ul style="color:var(--ink-2);padding-left:18px">
+            <li>Periodisasi gizi untuk musim latihan dan kompetisi</li>
+            <li>Strategi membuat berat badan kelas tanding yang aman</li>
+            <li>Program penurunan lemak dan peningkatan massa otot</li>
+            <li>Program wellness dan Weight Loss Challenge untuk perusahaan</li>
+          </ul>
+          <div id="form-link"></div>
+        </div>
+        <form class="card" id="consult" onsubmit="return false">
+          <div class="row">
+            <div class="field"><label for="c-nama">Nama</label><input id="c-nama" required autocomplete="name"></div>
+            <div class="field"><label for="c-usia">Usia</label><input id="c-usia" data-share="usia" type="number" inputmode="numeric"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="c-kat">Saya adalah</label>
+              <select id="c-kat"><option>Atlet</option><option>Pelatih / manajer tim</option><option>Pekerja / karyawan</option><option>Mahasiswa</option><option>Perusahaan / instansi</option><option>Umum</option></select>
+            </div>
+            <div class="field"><label for="c-cabor">Cabang olahraga / aktivitas</label><input id="c-cabor" placeholder="mis. taekwondo, lari, gym"></div>
+          </div>
+          <div class="field"><label for="c-tujuan">Tujuan utama</label>
+            <select id="c-tujuan"><option>Meningkatkan performa</option><option>Menurunkan berat badan / lemak</option><option>Menambah massa otot</option><option>Membuat berat badan kelas tanding</option><option>Program wellness perusahaan</option><option>Lainnya</option></select>
+          </div>
+          <div class="field"><label for="c-pesan">Pertanyaan atau kondisi Anda</label><textarea id="c-pesan" rows="4" placeholder="Ceritakan singkat pola latihan, pola makan, atau keluhan Anda."></textarea></div>
+          <div class="field" style="display:flex;gap:10px;align-items:center">
+            <input id="c-hasil" type="checkbox" checked style="width:auto"><label for="c-hasil" style="margin:0;font-weight:600">Sertakan hasil kalkulator saya</label>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="c-wa" type="button">Kirim via WhatsApp</button>
+            <button class="btn btn-ghost" id="c-mail" type="button">Kirim via Email</button>
+          </div>
+          <p class="disclaimer" style="margin-bottom:0">Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/gizi.js"></script>
+</body>
+</html>

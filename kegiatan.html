@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kabar Kegiatan | Dr. Mury Kuswari</title>
+  <meta name="description" content="Dokumentasi kegiatan Dr. Mury Kuswari sebagai narasumber, pembicara internasional, juri, dan pendamping gizi atlet, lengkap dengan caption media sosial.">
+  <link rel="canonical" href="https://murykuswari.com/kegiatan.html">
+  <meta property="og:title" content="Kabar Kegiatan Dr. Mury Kuswari">
+  <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
+  <meta name="theme-color" content="#0b2545">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Kabar Kegiatan</span>
+        <h1>Jejak di lapangan, studio, dan panggung dunia</h1>
+        <p>Setiap kegiatan dilengkapi tanggal, tempat, peran, deskripsi, dan caption siap unggah yang disusun dengan prinsip komunikasi personal branding: membuka dengan cerita, memberi wawasan, dan mengajak berdialog.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:10px">
+      <div class="wrap">
+        <div id="featured" style="margin-bottom:34px"></div>
+        <div class="toolbar">
+          <div class="filters" id="filters" role="group" aria-label="Filter kategori"></div>
+          <select id="year" aria-label="Filter tahun" style="width:auto"></select>
+          <input class="search" id="q" type="search" placeholder="Cari kegiatan, tempat…" aria-label="Cari kegiatan">
+        </div>
+        <div class="grid grid-3" id="list"></div>
+        <p class="empty" id="empty" hidden>Belum ada kegiatan yang cocok dengan filter ini.</p>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="data/kegiatan.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const MK = window.MK;
+      const all = await MK.loadKegiatan();
+      const featured = document.getElementById("featured");
+      const list = document.getElementById("list");
+      const empty = document.getElementById("empty");
+      const q = document.getElementById("q");
+      const yearSel = document.getElementById("year");
+
+      const cats = ["Semua", ...new Set(all.map((k) => k.kategori).filter(Boolean))];
+      let cat = "Semua";
+      document.getElementById("filters").innerHTML = cats.map((c) =>
+        `<button class="filter-btn" aria-pressed="${c === cat}" data-cat="${MK.esc(c)}">${MK.esc(c)}</button>`).join("");
+      const years = [...new Set(all.map((k) => String(k.tanggal).slice(0, 4)))].sort().reverse();
+      yearSel.innerHTML = `<option value="">Semua tahun</option>` + years.map((y) => `<option>${y}</option>`).join("");
+
+      // Kegiatan terbaru yang berfoto ditampilkan besar sebagai sorotan.
+      const hero = all.find((k) => k.foto) || all[0];
+      if (hero) featured.innerHTML = MK.cardHtml(hero, { feature: true });
+
+      function render() {
+        const term = q.value.trim().toLowerCase();
+        const y = yearSel.value;
+        const rows = all.filter((k) =>
+          (cat === "Semua" || k.kategori === cat) &&
+          (!y || String(k.tanggal).startsWith(y)) &&
+          (!term || [k.judul, k.tempat, k.peran, k.deskripsi, k.penyelenggara].join(" ").toLowerCase().includes(term)));
+        list.innerHTML = rows.map((k) => MK.cardHtml(k)).join("");
+        empty.hidden = rows.length > 0;
+      }
+
+      document.getElementById("filters").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-cat]");
+        if (!b) return;
+        cat = b.dataset.cat;
+        document.querySelectorAll("#filters .filter-btn").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        render();
+      });
+      q.addEventListener("input", render);
+      yearSel.addEventListener("change", render);
+      MK.bindCopyCaption(document.body, all);
+      render();
+
+      if (location.hash) {
+        const el = document.getElementById(location.hash.slice(1));
+        if (el) { el.scrollIntoView({ block: "center" }); el.style.boxShadow = "0 0 0 3px var(--orange)"; }
+      }
+    });
+  </script>
+</body>
+</html>

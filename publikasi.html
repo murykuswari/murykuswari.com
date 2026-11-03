@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Penelitian, Buku & Abdimas | Dr. Mury Kuswari</title>
+  <meta name="description" content="Daftar penelitian, buku, pengabdian masyarakat, dan prosiding Dr. Mury Kuswari di bidang gizi olahraga dan kebugaran. Bisa dicetak dan diunduh.">
+  <link rel="canonical" href="https://murykuswari.com/publikasi.html">
+  <meta property="og:title" content="Karya Ilmiah Dr. Mury Kuswari">
+  <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
+  <meta name="theme-color" content="#0b2545">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <div class="print-only" style="margin-bottom:6px"><strong>Dr. Mury Kuswari, S.Pd., M.Si</strong> · Universitas Esa Unggul · murykuswari.com</div>
+        <span class="eyebrow">Karya Ilmiah</span>
+        <h1 id="page-title">Penelitian, buku, pengabdian &amp; prosiding</h1>
+        <p class="no-print">Pilih kategori, cari judul, lalu cetak atau simpan sebagai PDF. Daftar disusun dari Google Scholar dan CV; klik judul untuk membuka sumbernya.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:6px">
+      <div class="wrap">
+        <div class="pub-stats" id="stats"></div>
+
+        <div class="toolbar">
+          <div class="filters" id="types" role="group" aria-label="Jenis karya"></div>
+          <select id="sort" aria-label="Urutkan" style="width:auto">
+            <option value="year">Terbaru</option>
+            <option value="cite">Sitasi terbanyak</option>
+          </select>
+          <input class="search" id="q" type="search" placeholder="Cari judul, penulis, jurnal…" aria-label="Cari karya">
+        </div>
+
+        <div class="toolbar no-print" style="margin-top:-12px">
+          <button class="btn btn-dark btn-sm" id="print">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+            Cetak / Simpan PDF
+          </button>
+          <button class="btn btn-ghost btn-sm" id="csv">Unduh CSV (Excel)</button>
+          <button class="btn btn-ghost btn-sm" id="apa">Salin daftar (gaya APA)</button>
+          <a class="btn btn-ghost btn-sm" data-cv href="#">Unduh CV</a>
+          <span id="count" style="margin-left:auto;color:var(--muted);font-size:.9rem"></span>
+        </div>
+
+        <div id="out"></div>
+        <p class="disclaimer">Sumber: Google Scholar Mury Kuswari (<span id="upd"></span>) dan CV 2026. Jumlah sitasi dapat berubah. <a href="https://scholar.google.com/citations?user=Z8e0i-0AAAAJ&hl=en" target="_blank" rel="noopener">Lihat profil Scholar</a>.</p>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="data/publikasi.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const MK = window.MK, S = window.SITE;
+      const TYPES = { semua: "Semua", jurnal: "Penelitian (Jurnal)", buku: "Buku", abdimas: "Pengabdian (Abdimas)", prosiding: "Prosiding & Konferensi" };
+      const all = (window.PUBLIKASI || []).map((p, i) => ({ i, y: p[0], t: p[1], title: p[2], au: p[3], v: p[4], c: p[5] || 0, link: p[6] || "" }));
+      let type = ({ "#buku": "buku", "#abdimas": "abdimas", "#penelitian": "jurnal", "#prosiding": "prosiding" })[location.hash] || "semua";
+
+      const n = (t) => all.filter((p) => p.t === t).length;
+      document.getElementById("stats").innerHTML = `
+        <div class="card"><strong>${S.scholarStats.sitasi.toLocaleString("id-ID")}</strong><span>Sitasi</span></div>
+        <div class="card"><strong>${S.scholarStats.hIndex}</strong><span>h-index</span></div>
+        <div class="card"><strong>${n("jurnal")}</strong><span>Artikel penelitian</span></div>
+        <div class="card"><strong>${n("buku")} · ${n("abdimas")}</strong><span>Buku · Abdimas</span></div>`;
+      document.getElementById("upd").textContent = "per " + S.scholarStats.diperbarui;
+
+      const typesEl = document.getElementById("types");
+      typesEl.innerHTML = Object.entries(TYPES).map(([k, v]) =>
+        `<button class="filter-btn" data-t="${k}" aria-pressed="${k === type}">${v}${k === "semua" ? "" : ` <span style="opacity:.6">${n(k)}</span>`}</button>`).join("");
+
+      const q = document.getElementById("q"), sort = document.getElementById("sort");
+      let rows = [];
+
+      function link(p) {
+        return p.link || "https://scholar.google.com/scholar?q=" + encodeURIComponent('"' + p.title + '"');
+      }
+      function apa(p) {
+        return `${p.au} (${p.y}). ${p.title}. ${p.v && p.v !== "—" ? p.v + "." : ""}`.replace(/\s+/g, " ").trim();
+      }
+
+      function render() {
+        const term = q.value.trim().toLowerCase();
+        rows = all.filter((p) => (type === "semua" || p.t === type) &&
+          (!term || (p.title + " " + p.au + " " + p.v).toLowerCase().includes(term)));
+        rows.sort(sort.value === "cite" ? (a, b) => b.c - a.c || b.y - a.y : (a, b) => b.y - a.y || a.i - b.i);
+        document.getElementById("count").textContent = rows.length + " karya";
+        document.getElementById("page-title").textContent = type === "semua" ? "Penelitian, buku, pengabdian & prosiding" : TYPES[type];
+
+        const item = (p) => `<li class="pub-item">
+            <div>
+              <a class="ttl" href="${MK.esc(link(p))}" target="_blank" rel="noopener">${MK.esc(p.title)}</a>
+              <div class="au">${MK.esc(p.au)}</div>
+              <div class="vn">${MK.esc(p.v)}</div>
+            </div>
+            <div class="side">
+              <span class="chip ${p.t === "buku" ? "orange" : p.t === "abdimas" ? "" : "blue"}">${TYPES[p.t].split(" (")[0]}</span>
+              <span class="cit">${p.c ? p.c + " sitasi" : ""}</span>
+            </div>
+          </li>`;
+
+        const out = document.getElementById("out");
+        if (!rows.length) { out.innerHTML = '<p class="empty">Tidak ada karya yang cocok.</p>'; return; }
+        if (sort.value === "cite") { out.innerHTML = `<ol class="pub-list">${rows.map(item).join("")}</ol>`; return; }
+        const byYear = {};
+        rows.forEach((p) => (byYear[p.y] = byYear[p.y] || []).push(p));
+        out.innerHTML = Object.keys(byYear).sort((a, b) => b - a).map((y) =>
+          `<h2 class="pub-year">${y} <span style="font-family:var(--font);font-size:.9rem;color:var(--muted)">· ${byYear[y].length}</span></h2>
+           <ol class="pub-list">${byYear[y].map(item).join("")}</ol>`).join("");
+      }
+
+      typesEl.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-t]"); if (!b) return;
+        type = b.dataset.t;
+        typesEl.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        render();
+      });
+      q.addEventListener("input", render);
+      sort.addEventListener("change", render);
+      document.getElementById("print").addEventListener("click", () => window.print());
+      document.getElementById("apa").addEventListener("click", () => MK.copyText(rows.map((p, i) => `${i + 1}. ${apa(p)}`).join("\n"), rows.length + " referensi tersalin"));
+      document.getElementById("csv").addEventListener("click", () => {
+        const cell = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+        const csv = ["Tahun,Jenis,Judul,Penulis,Terbitan,Sitasi,Link"].concat(
+          rows.map((p) => [p.y, TYPES[p.t], p.title, p.au, p.v, p.c, link(p)].map(cell).join(","))).join("\r\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+        a.download = "karya-ilmiah-mury-kuswari-" + type + ".csv";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      });
+      render();
+    });
+  </script>
+</body>
+</html>

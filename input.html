@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Input Kegiatan & Caption | Dr. Mury Kuswari</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b2545">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Ruang Admin</span>
+        <h1>Tambah kegiatan baru dalam 3 menit</h1>
+        <p>Isi data kegiatan, website menyusun caption media sosial otomatis, lalu salin hasilnya ke Google Sheet atau ke file <code>data/kegiatan.js</code>. Halaman ini tidak menyimpan apa pun ke server.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:6px">
+      <div class="wrap grid grid-2" style="align-items:start">
+        <form class="card" id="f" onsubmit="return false">
+          <div class="field"><label for="judul">Nama kegiatan *</label><input id="judul" placeholder="Seminar Gizi Atlet Pelatda DKI 2026"></div>
+          <div class="row">
+            <div class="field"><label for="tanggal">Tanggal mulai *</label><input id="tanggal" type="date"></div>
+            <div class="field"><label for="sampai">Tanggal selesai</label><input id="sampai" type="date"></div>
+          </div>
+          <div class="field"><label for="tempat">Tempat *</label><input id="tempat" placeholder="GOR Ciracas, Jakarta Timur"></div>
+          <div class="row">
+            <div class="field"><label for="kategori">Kategori</label>
+              <select id="kategori"><option>Narasumber</option><option>Internasional</option><option>Media</option><option>Pendampingan Atlet</option><option>Pengabdian</option><option>Mengajar</option><option>Penghargaan</option></select>
+            </div>
+            <div class="field"><label for="penyelenggara">Penyelenggara</label><input id="penyelenggara" placeholder="KONI DKI Jakarta"></div>
+          </div>
+          <div class="field"><label for="peran">Peran saya</label><input id="peran" placeholder="Narasumber utama"></div>
+          <div class="field"><label for="topik">Topik / judul materi</label><input id="topik" placeholder="Strategi gizi menjelang kompetisi"></div>
+          <div class="field"><label for="peserta">Peserta / sasaran</label><input id="peserta" placeholder="120 pelatih dan atlet pelatda"></div>
+          <div class="field"><label for="pesan">Pesan kunci yang ingin disampaikan</label><textarea id="pesan" rows="3" placeholder="Atlet perlu sarapan sebelum latihan pagi agar performa dan pemulihan optimal."></textarea></div>
+          <div class="field"><label for="deskripsi">Deskripsi untuk website</label><textarea id="deskripsi" rows="3" placeholder="Biarkan kosong untuk dibuat otomatis."></textarea></div>
+          <div class="field"><label for="foto">Foto dokumentasi</label><input id="foto" placeholder="https://drive.google.com/file/d/.../view atau assets/img/kegiatan/nama.jpg">
+            <small>Link file Google Drive harus diatur "Siapa saja yang memiliki link dapat melihat".</small></div>
+          <div class="field"><label for="dokumentasi">Link folder dokumentasi (opsional)</label><input id="dokumentasi" placeholder="https://drive.google.com/drive/folders/..."></div>
+          <div class="field"><label for="hashtag">Hashtag tambahan</label><input id="hashtag" placeholder="KONIDKI PelatdaDKI"></div>
+        </form>
+
+        <div style="display:grid;gap:18px">
+          <div id="preview"></div>
+          <div class="card">
+            <h3>Caption media sosial</h3>
+            <div class="caption-box" id="cap"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <button class="btn btn-ghost btn-sm" id="regen">Variasi lain</button>
+              <button class="btn btn-ghost btn-sm" id="copy-cap">Salin caption</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Simpan ke website</h3>
+            <div class="seg" id="fmt" style="margin-bottom:12px"><button type="button" aria-pressed="true" data-v="sheet">Baris Google Sheet</button><button type="button" aria-pressed="false" data-v="js">Kode data/kegiatan.js</button></div>
+            <pre class="code" id="out"></pre>
+            <button class="btn btn-primary btn-sm" id="copy-out">Salin</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-alt" id="panduan">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Panduan</span>
+          <h2>Tiga cara memperbarui kegiatan</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card"><span class="chip orange">Paling mudah</span><h3 style="margin-top:10px">1. Google Sheet</h3>
+            <p style="color:var(--ink-2);font-size:.93rem">Buat Google Sheet dengan kolom: <code>id, judul, tanggal, sampai, tempat, kategori, peran, penyelenggara, deskripsi, caption, hashtag, foto, dokumentasi</code>. Pilih <b>File → Bagikan → Publikasikan ke web → CSV</b>, salin link-nya ke <code>sheetKegiatanCsv</code> di <code>config.js</code>. Setelah itu cukup tambah baris di Sheet; website memperbarui sendiri. Template tersedia di <a href="docs/template-kegiatan.csv" download>docs/template-kegiatan.csv</a>.</p></div>
+          <div class="card"><span class="chip blue">Rapi &amp; terkontrol</span><h3 style="margin-top:10px">2. Edit di GitHub</h3>
+            <p style="color:var(--ink-2);font-size:.93rem">Buka repositori di github.com, klik file <code>data/kegiatan.js</code> → ikon pensil, tempel hasil "Kode data/kegiatan.js" di paling atas daftar, lalu <b>Commit changes</b>. Foto diunggah ke folder <code>assets/img/kegiatan/</code> lewat tombol <b>Add file → Upload files</b>. Website diperbarui otomatis dalam 1–2 menit.</p></div>
+          <div class="card"><span class="chip">Dibantu AI</span><h3 style="margin-top:10px">3. Minta Claude</h3>
+            <p style="color:var(--ink-2);font-size:.93rem">Simpan undangan, surat tugas, foto, dan laporan kegiatan ke folder Google Drive. Lalu minta Claude: <i>"Baca dokumen terbaru di Drive kegiatan saya, buatkan caption, dan tambahkan ke website murykuswari"</i>. Claude akan membaca dokumennya, menulis caption, dan mengirim perubahan ke GitHub.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/input.js"></script>
+</body>
+</html>
