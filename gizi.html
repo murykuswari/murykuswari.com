@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kalkulator Gizi Olahraga: IMT, Persen Lemak, Berat Ideal | Assoc. Prof. Dr. Mury Kuswari</title>
-  <meta name="description" content="Hitung IMT (standar Kemenkes & WHO), persen lemak tubuh (metode US Navy & Deurenberg), berat badan ideal, serta kebutuhan energi dan zat gizi atlet. Lanjutkan dengan konsultasi online.">
+  <title>Kalkulator Gizi Olahraga: Energi, Makro, Meal Timing, Laju Keringat, VO2max | Assoc. Prof. Dr. Mury Kuswari</title>
+  <meta name="description" content="Kalkulator gizi olahraga berbasis Panduan Kemenkes RI 2021 & 2022 dan literatur ilmiah: IMT, persen lemak, berat ideal, kebutuhan energi, karbohidrat, protein, lemak sesuai jenis & durasi latihan, makan sebelum-saat-setelah latihan, laju keringat, serta persen lemak terhadap VO2max dan performa.">
   <link rel="canonical" href="https://murykuswari.com/gizi.html">
   <meta property="og:title" content="Kalkulator Gizi Olahraga | Assoc. Prof. Dr. Mury Kuswari">
   <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
@@ -22,7 +22,7 @@
       <div class="wrap">
         <span class="eyebrow">Kalkulator Gizi Olahraga</span>
         <h1>Kenali tubuhmu, lalu latih dengan tepat</h1>
-        <p>Empat alat ukur yang biasa saya gunakan saat mendampingi atlet dan peserta program wellness. Data yang Anda isi hanya dihitung di perangkat Anda dan tidak disimpan di server.</p>
+        <p>Alat ukur yang biasa saya gunakan saat mendampingi atlet: komposisi tubuh, kebutuhan energi dan zat gizi makro menurut jenis dan durasi latihan, jadwal makan sekitar latihan, laju keringat, hingga kaitan persen lemak dengan VO2max. Perhitungan mengikuti Panduan Kemenkes RI 2021 dan 2022 serta literatur ilmiah yang banyak disitasi. Data hanya dihitung di perangkat Anda dan tidak disimpan di server.</p>
       </div>
     </div>
 
@@ -32,7 +32,10 @@
           <button class="calc-tab" role="tab" aria-selected="true" aria-controls="p-imt" id="t-imt">IMT<small>Indeks Massa Tubuh</small></button>
           <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-lemak" id="t-lemak">% Lemak Tubuh<small>US Navy &amp; Deurenberg</small></button>
           <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-bbi" id="t-bbi">Berat Badan Ideal<small>Broca, rentang IMT, target atlet</small></button>
-          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-energi" id="t-energi">Kebutuhan Energi<small>Kalori, makro &amp; cairan</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-energi" id="t-energi">Energi &amp; Zat Gizi Makro<small>Sesuai jenis &amp; durasi latihan</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-makan" id="t-makan">Makan Sekitar Latihan<small>Sebelum, saat, setelah</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-keringat" id="t-keringat">Laju Keringat<small>Kebutuhan minum per 10–30 menit</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-performa" id="t-performa">Performa &amp; VO2max<small>% lemak vs kapasitas aerobik</small></button>
         </div>
 
         <div>
@@ -103,7 +106,7 @@
                 </div>
                 <div class="row">
                   <div class="field"><label for="bbi-lemak">% lemak sekarang <small style="display:inline">(opsional)</small></label><input id="bbi-lemak" data-share="lemak" type="number" inputmode="decimal" step="0.1" placeholder="22"></div>
-                  <div class="field"><label for="bbi-target">Target % lemak</label><input id="bbi-target" type="number" inputmode="decimal" step="0.5" placeholder="15"><small>Mis. atlet putra 8–15%, putri 15–22%.</small></div>
+                  <div class="field"><label for="bbi-target">Target % lemak</label><input id="bbi-target" data-share="target" type="number" inputmode="decimal" step="0.5" placeholder="15"><small>Mis. atlet putra 8–15%, putri 15–22%.</small></div>
                 </div>
               </form>
               <div class="result" id="r-bbi" aria-live="polite"></div>
@@ -112,7 +115,8 @@
 
           <!-- ENERGI -->
           <div class="card calc-panel" role="tabpanel" id="p-energi" aria-labelledby="t-energi" hidden>
-            <h2 style="font-size:1.7rem">Kebutuhan Energi &amp; Zat Gizi</h2>
+            <h2 style="font-size:1.7rem">Kebutuhan Energi, Karbohidrat, Protein &amp; Lemak</h2>
+            <p class="note-intro">Energi dihitung dengan rumus Panduan Pendampingan Gizi pada Atlet (Kemenkes RI 2021), dengan tingkat aktivitas fisik ditentukan dari <strong>jenis latihan (nilai MET)</strong> dan <strong>durasi latihan</strong>. Karbohidrat, protein, dan lemak mengikuti tabel kebutuhan per kelompok cabang olahraga, lalu disesuaikan dengan beban latihan hari itu dan fase periodisasi.</p>
             <div class="calc-grid">
               <form data-calc="energi" onsubmit="return false">
                 <div class="field"><label>Jenis kelamin</label>
@@ -123,26 +127,207 @@
                   <div class="field"><label for="en-tb">Tinggi badan (cm)</label><input id="en-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="168"></div>
                 </div>
                 <div class="row">
-                  <div class="field"><label for="en-usia">Usia (tahun)</label><input id="en-usia" data-share="usia" type="number" inputmode="numeric" placeholder="30"></div>
-                  <div class="field"><label for="en-tujuan">Tujuan</label>
-                    <select id="en-tujuan"><option value="0">Mempertahankan berat</option><option value="-500">Menurunkan berat/lemak</option><option value="300">Menambah massa otot</option></select>
+                  <div class="field"><label for="en-usia">Usia (tahun)</label><input id="en-usia" data-share="usia" type="number" inputmode="numeric" min="9" max="90" placeholder="22"></div>
+                  <div class="field"><label for="en-lemak">% lemak tubuh <small style="display:inline">(opsional)</small></label><input id="en-lemak" data-share="lemak" type="number" inputmode="decimal" step="0.1" placeholder="15"><small>Untuk menghitung ketersediaan energi.</small></div>
+                </div>
+                <div class="field"><label for="en-cabor">Cabang olahraga</label>
+                  <select id="en-cabor" class="cabor-select" data-share="cabor"></select>
+                </div>
+                <div class="field"><label for="en-kel">Kelompok kebutuhan gizi</label>
+                  <select id="en-kel" class="kel-select" data-share="kel"></select>
+                  <small>Terisi otomatis dari cabang olahraga (Kemenkes 2021, Tabel 1 &amp; 27–29). Boleh diubah.</small>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-int">Intensitas latihan</label>
+                    <select id="en-int" data-share="int"><option value="0">Ringan (teknik, pemulihan)</option><option value="1" selected>Sedang (latihan rutin)</option><option value="2">Berat (interval, tanding, uji coba)</option></select>
+                  </div>
+                  <div class="field"><label for="en-dur">Durasi latihan per hari (menit)</label><input id="en-dur" data-share="dur" type="number" inputmode="numeric" min="0" max="600" step="5" placeholder="90"><small>Jumlah semua sesi hari itu. Isi 0 untuk hari istirahat.</small></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-base">Aktivitas di luar latihan</label>
+                    <select id="en-base"><option value="1.25">Banyak duduk (kuliah, kantor)</option><option value="1.4" selected>Cukup aktif (berjalan, berdiri)</option><option value="1.55">Kerja fisik</option></select>
+                  </div>
+                  <div class="field"><label for="en-fase">Fase periodisasi</label>
+                    <select id="en-fase" data-share="fase"><option value="pre">Persiapan (pre-season)</option><option value="in">Pertandingan (in-season)</option><option value="off">Transisi (off-season)</option></select>
                   </div>
                 </div>
-                <div class="field"><label for="en-akt">Aktivitas &amp; beban latihan</label>
-                  <select id="en-akt">
-                    <option value="1.2|3|1.0">Sedentari: kerja duduk, jarang olahraga</option>
-                    <option value="1.375|4|1.2">Ringan: olahraga 1–3x/minggu</option>
-                    <option value="1.55|5|1.4" selected>Sedang: latihan 3–5x/minggu, ±1 jam</option>
-                    <option value="1.725|7|1.6">Berat: latihan harian 1–2 jam</option>
-                    <option value="1.9|9|1.8">Atlet elite: 2 sesi/hari, intensitas tinggi</option>
-                  </select>
+                <div class="field"><label for="en-tujuan">Tujuan</label>
+                  <select id="en-tujuan"><option value="0">Mempertahankan berat badan</option><option value="-500">Menurunkan berat / lemak tubuh</option><option value="400">Menambah massa otot</option></select>
                 </div>
               </form>
               <div class="result" id="r-energi" aria-live="polite"></div>
             </div>
+            <div id="r-energi-detail"></div>
           </div>
-          <p class="disclaimer">Hasil kalkulator adalah estimasi skrining, bukan diagnosis. Untuk atlet, ibu hamil, remaja, atau kondisi medis tertentu, diskusikan dengan ahli gizi.</p>
+
+          <!-- MAKAN SEKITAR LATIHAN -->
+          <div class="card calc-panel" role="tabpanel" id="p-makan" aria-labelledby="t-makan" hidden>
+            <h2 style="font-size:1.7rem">Makan Sebelum, Saat &amp; Setelah Latihan</h2>
+            <p class="note-intro">Jadwal dan takaran dihitung dari berat badan, jenis dan durasi latihan, serta fase periodisasi. Bila tab <em>Energi &amp; Zat Gizi Makro</em> sudah diisi, sisa kebutuhan harian dibagi ke waktu makan lainnya. Bila tab <em>Laju Keringat</em> sudah diisi, kebutuhan minum memakai laju keringat pribadi Anda.</p>
+            <form data-calc="makan" onsubmit="return false">
+              <div class="row-3">
+                <div class="field"><label for="mk-bb">Berat badan (kg)</label><input id="mk-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="65"></div>
+                <div class="field"><label for="mk-dur">Durasi latihan (menit)</label><input id="mk-dur" data-share="dur" type="number" inputmode="numeric" min="0" step="5" placeholder="90"></div>
+                <div class="field"><label for="mk-jam">Jam mulai latihan</label><input id="mk-jam" type="time" value="16:00"></div>
+              </div>
+              <div class="row-3">
+                <div class="field"><label for="mk-cabor">Cabang olahraga</label><select id="mk-cabor" class="cabor-select" data-share="cabor"></select></div>
+                <div class="field"><label for="mk-int">Intensitas</label>
+                  <select id="mk-int" data-share="int"><option value="0">Ringan</option><option value="1" selected>Sedang</option><option value="2">Berat / tanding</option></select>
+                </div>
+                <div class="field"><label for="mk-jarak">Makan besar terakhir sebelum latihan</label>
+                  <select id="mk-jarak"><option value="1">1 jam sebelum</option><option value="2">2 jam sebelum</option><option value="3" selected>3 jam sebelum</option><option value="4">4 jam sebelum</option></select>
+                </div>
+              </div>
+              <div class="row-3">
+                <div class="field"><label for="mk-fase">Fase periodisasi</label>
+                  <select id="mk-fase" data-share="fase"><option value="pre">Persiapan (pre-season)</option><option value="in">Pertandingan (in-season)</option><option value="off">Transisi (off-season)</option></select>
+                </div>
+              </div>
+            </form>
+            <div class="result" id="r-makan" aria-live="polite"></div>
+          </div>
+
+          <!-- LAJU KERINGAT -->
+          <div class="card calc-panel" role="tabpanel" id="p-keringat" aria-labelledby="t-keringat" hidden>
+            <h2 style="font-size:1.7rem">Laju Keringat &amp; Kebutuhan Minum</h2>
+            <p class="note-intro">Timbang badan tanpa baju (atau dengan pakaian minim yang sama) sesudah buang air kecil, tepat sebelum latihan dan segera setelah latihan setelah keringat diseka. Catat volume yang diminum dan, bila ada, volume urin selama latihan.</p>
+            <div class="calc-grid">
+              <form data-calc="keringat" onsubmit="return false">
+                <div class="row">
+                  <div class="field"><label for="kr-pre">BB sebelum latihan (kg)</label><input id="kr-pre" type="number" inputmode="decimal" step="0.05" placeholder="65,0"></div>
+                  <div class="field"><label for="kr-post">BB setelah latihan (kg)</label><input id="kr-post" type="number" inputmode="decimal" step="0.05" placeholder="64,2"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="kr-minum">Cairan diminum saat latihan (mL)</label><input id="kr-minum" type="number" inputmode="numeric" min="0" step="10" placeholder="500"></div>
+                  <div class="field"><label for="kr-urin">Urin saat latihan (mL) <small style="display:inline">(opsional)</small></label><input id="kr-urin" type="number" inputmode="numeric" min="0" step="10" placeholder="0"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="kr-dur">Durasi latihan saat diukur (menit)</label><input id="kr-dur" type="number" inputmode="numeric" min="5" step="5" placeholder="60"></div>
+                  <div class="field"><label for="kr-rencana">Durasi latihan yang direncanakan (menit)</label><input id="kr-rencana" data-share="dur" type="number" inputmode="numeric" min="5" step="5" placeholder="90"><small>Untuk menghitung anjuran minum sesi berikutnya.</small></div>
+                </div>
+                <div class="field"><label for="kr-int">Intensitas latihan</label>
+                  <select id="kr-int" data-share="int"><option value="0">Ringan</option><option value="1" selected>Sedang</option><option value="2">Berat / tanding</option></select>
+                </div>
+                <p class="note" style="margin:0">Ukur di kondisi (suhu, kelembapan, pakaian, intensitas) yang mirip dengan latihan atau pertandingan Anda. Laju keringat bisa berubah 2–3 kali lipat antara cuaca sejuk dan panas.</p>
+              </form>
+              <div class="result" id="r-keringat" aria-live="polite"></div>
+            </div>
+            <div id="r-keringat-detail"></div>
+          </div>
+
+          <!-- PERFORMA -->
+          <div class="card calc-panel" role="tabpanel" id="p-performa" aria-labelledby="t-performa" hidden>
+            <h2 style="font-size:1.7rem">Persen Lemak Tubuh, VO2max &amp; Performa</h2>
+            <p class="note-intro">VO2max relatif (mL/kg/menit) dibagi dengan berat badan total, sehingga massa lemak berlebih menurunkan nilainya walaupun kapasitas jantung-paru sama. Kalkulator ini memperkirakan VO2max dari tes lapangan yang tervalidasi, menghitung pengaruh persen lemak, dan menyimulasikan perubahan jika lemak tubuh turun ke target.</p>
+            <div class="calc-grid">
+              <form data-calc="performa" onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pf-bb">Berat badan (kg)</label><input id="pf-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="65"></div>
+                  <div class="field"><label for="pf-tb">Tinggi badan (cm)</label><input id="pf-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="168"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pf-usia">Usia (tahun)</label><input id="pf-usia" data-share="usia" type="number" inputmode="numeric" placeholder="22"></div>
+                  <div class="field"><label for="pf-lemak">% lemak tubuh</label><input id="pf-lemak" data-share="lemak" type="number" inputmode="decimal" step="0.1" placeholder="18"><small>Dari BIA, skinfold, atau tab % Lemak.</small></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pf-target">Target % lemak</label><input id="pf-target" data-share="target" type="number" inputmode="decimal" step="0.5" placeholder="12"></div>
+                  <div class="field"><label for="pf-par">Tingkat aktivitas (skala PA-R 0–7)</label>
+                    <select id="pf-par">
+                      <option value="0">0 · Menghindari aktivitas fisik</option>
+                      <option value="1">1 · Aktivitas ringan, tidak rutin</option>
+                      <option value="2">2 · Olahraga ringan 10–60 menit/minggu</option>
+                      <option value="3">3 · Olahraga ringan &gt;1 jam/minggu</option>
+                      <option value="4">4 · Aerobik berat &lt;30 menit/minggu</option>
+                      <option value="5">5 · Aerobik berat 30–60 menit/minggu</option>
+                      <option value="6">6 · Aerobik berat 1–3 jam/minggu</option>
+                      <option value="7" selected>7 · Aerobik berat &gt;3 jam/minggu</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field"><label for="pf-metode">Cara memperoleh VO2max</label>
+                  <select id="pf-metode">
+                    <option value="mft">Multistage Fitness Test / bleep test 20 m (Léger 1988)</option>
+                    <option value="cooper">Tes lari 12 menit (Cooper 1968)</option>
+                    <option value="rockport">Tes jalan 1 mil / 1.609 m (Rockport, Kline 1987)</option>
+                    <option value="uth">Rasio denyut nadi maksimal/istirahat (Uth 2004)</option>
+                    <option value="lab">Hasil uji laboratorium (gas analyzer)</option>
+                    <option value="nonex">Tanpa tes: dari % lemak &amp; aktivitas (Jackson 1990)</option>
+                  </select>
+                </div>
+                <div data-pm="mft" class="row">
+                  <div class="field"><label for="pf-level">Level terakhir yang diselesaikan</label><input id="pf-level" type="number" inputmode="numeric" min="1" max="21" step="1" placeholder="10"></div>
+                  <div class="field"><label for="pf-shuttle">Shuttle pada level berikutnya</label><input id="pf-shuttle" type="number" inputmode="numeric" min="0" max="16" step="1" placeholder="0"><small>Opsional, untuk interpolasi.</small></div>
+                </div>
+                <div data-pm="cooper" class="field" hidden><label for="pf-jarak">Jarak tempuh 12 menit (meter)</label><input id="pf-jarak" type="number" inputmode="numeric" step="10" placeholder="2800"></div>
+                <div data-pm="rockport" class="row" hidden>
+                  <div class="field"><label for="pf-waktu">Waktu tempuh 1 mil (menit)</label><input id="pf-waktu" type="number" inputmode="decimal" step="0.1" placeholder="13,5"><small>Desimal, mis. 13 menit 30 detik = 13,5.</small></div>
+                  <div class="field"><label for="pf-hrjalan">Denyut nadi di garis akhir (/menit)</label><input id="pf-hrjalan" type="number" inputmode="numeric" placeholder="140"></div>
+                </div>
+                <div data-pm="uth" class="row" hidden>
+                  <div class="field"><label for="pf-hrrest">Denyut nadi istirahat (/menit)</label><input id="pf-hrrest" type="number" inputmode="numeric" placeholder="58"><small>Pagi hari, berbaring, sebelum bangun.</small></div>
+                  <div class="field"><label for="pf-hrmax">Denyut nadi maksimal (/menit)</label><input id="pf-hrmax" type="number" inputmode="numeric" placeholder="otomatis"><small>Kosongkan untuk memakai 208 − 0,7 × usia.</small></div>
+                </div>
+                <div data-pm="lab" class="field" hidden><label for="pf-vo2">VO2max hasil uji (mL/kg/menit)</label><input id="pf-vo2" type="number" inputmode="decimal" step="0.1" placeholder="52"></div>
+                <div class="field"><label for="pf-vj">Lompat vertikal (cm) <small style="display:inline">(opsional, untuk daya otot tungkai)</small></label><input id="pf-vj" type="number" inputmode="decimal" step="0.5" placeholder="45"></div>
+              </form>
+              <div class="result" id="r-performa" aria-live="polite"></div>
+            </div>
+            <div id="r-performa-detail"></div>
+          </div>
+          <p class="disclaimer">Hasil kalkulator adalah estimasi skrining, bukan diagnosis atau resep diet. Untuk atlet usia sekolah, ibu hamil, penyandang penyakit kronis, atau atlet yang sedang menurunkan berat badan untuk kelas tanding, diskusikan dengan ahli gizi olahraga.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- RUJUKAN -->
+    <section id="rujukan" style="padding-top:10px">
+      <div class="wrap">
+        <details class="refs card">
+          <summary><strong>Dasar perhitungan &amp; daftar rujukan</strong> <span class="note">(klik untuk membuka)</span></summary>
+          <div class="refs-body">
+            <h3>Rujukan utama</h3>
+            <ol>
+              <li>Kementerian Kesehatan RI. <em>Panduan Pendampingan Gizi pada Atlet</em>. Jakarta: Kemenkes RI; 2021. ISBN 978-623-301-108-2. Rumus kebutuhan energi, kategori aktivitas fisik (Tabel 26), kebutuhan karbohidrat, protein, dan lemak per kelompok olahraga (Tabel 27–29), periodisasi gizi (Tabel 10–15), pengaturan waktu makan, rumus BBI Broca, dan anjuran karbohidrat saat latihan menurut durasi.</li>
+              <li>Kementerian Kesehatan RI. <em>Panduan Penyelenggaraan Makanan Olahragawan dalam Kejuaraan Olahraga</em>. Jakarta: Kemenkes RI; 2022. ISBN 978-623-301-362-8. Pengelompokan cabang olahraga KONI dan distribusi energi (Tabel 4), kebutuhan gizi sebelum, saat, dan setelah pertandingan (Tabel 1), serta waktu makan menurut jadwal tanding.</li>
+            </ol>
+            <h3>Energi, zat gizi makro &amp; waktu makan</h3>
+            <ol start="3">
+              <li>Institute of Medicine. <em>Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids</em>. Washington DC: National Academies Press; 2005. (Sumber rumus energi dan koefisien aktivitas fisik pada panduan Kemenkes; perhitungan PAL dari MET.)</li>
+              <li>Ainsworth BE, Haskell WL, Herrmann SD, dkk. 2011 Compendium of Physical Activities: a second update of codes and MET values. <em>Med Sci Sports Exerc</em>. 2011;43(8):1575–1581.</li>
+              <li>Thomas DT, Erdman KA, Burke LM. American College of Sports Medicine Joint Position Statement: Nutrition and athletic performance. <em>Med Sci Sports Exerc</em>. 2016;48(3):543–568.</li>
+              <li>Burke LM, Hawley JA, Wong SH, Jeukendrup AE. Carbohydrates for training and competition. <em>J Sports Sci</em>. 2011;29(Suppl 1):S17–S27.</li>
+              <li>Jeukendrup A. A step towards personalized sports nutrition: carbohydrate intake during exercise. <em>Sports Med</em>. 2014;44(Suppl 1):S25–S33.</li>
+              <li>Jäger R, Kerksick CM, Campbell BI, dkk. International Society of Sports Nutrition position stand: protein and exercise. <em>J Int Soc Sports Nutr</em>. 2017;14:20.</li>
+              <li>Loucks AB, Kiens B, Wright HH. Energy availability in athletes. <em>J Sports Sci</em>. 2011;29(Suppl 1):S7–S15.</li>
+              <li>Mountjoy M, Sundgot-Borgen JK, Burke LM, dkk. IOC consensus statement on relative energy deficiency in sport (RED-S): 2018 update. <em>Br J Sports Med</em>. 2018;52(11):687–697.</li>
+              <li>Mifflin MD, St Jeor ST, Hill LA, dkk. A new predictive equation for resting energy expenditure in healthy individuals. <em>Am J Clin Nutr</em>. 1990;51(2):241–247.</li>
+            </ol>
+            <h3>Cairan &amp; laju keringat</h3>
+            <ol start="12">
+              <li>Sawka MN, Burke LM, Eichner ER, Maughan RJ, Montain SJ, Stachenfeld NS. American College of Sports Medicine position stand: Exercise and fluid replacement. <em>Med Sci Sports Exerc</em>. 2007;39(2):377–390.</li>
+              <li>Casa DJ, Armstrong LE, Hillman SK, dkk. National Athletic Trainers' Association position statement: fluid replacement for athletes. <em>J Athl Train</em>. 2000;35(2):212–224.</li>
+              <li>Shirreffs SM, Taylor AJ, Leiper JB, Maughan RJ. Post-exercise rehydration in man: effects of volume consumed and drink sodium content. <em>Med Sci Sports Exerc</em>. 1996;28(10):1260–1271.</li>
+            </ol>
+            <h3>Komposisi tubuh, VO2max &amp; performa</h3>
+            <ol start="15">
+              <li>Jackson AS, Blair SN, Mahar MT, Wier LT, Ross RM, Stuteville JE. Prediction of functional aerobic capacity without exercise testing. <em>Med Sci Sports Exerc</em>. 1990;22(6):863–870.</li>
+              <li>Cooper KH. A means of assessing maximal oxygen intake: correlation between field and treadmill testing. <em>JAMA</em>. 1968;203(3):201–204.</li>
+              <li>Léger LA, Mercier D, Gadoury C, Lambert J. The multistage 20 metre shuttle run test for aerobic fitness. <em>J Sports Sci</em>. 1988;6(2):93–101.</li>
+              <li>Kline GM, Porcari JP, Hintermeister R, dkk. Estimation of VO2max from a one-mile track walk, gender, age, and body weight. <em>Med Sci Sports Exerc</em>. 1987;19(3):253–259.</li>
+              <li>Uth N, Sørensen H, Overgaard K, Pedersen PK. Estimation of VO2max from the ratio between HRmax and HRrest: the Heart Rate Ratio Method. <em>Eur J Appl Physiol</em>. 2004;91(1):111–115.</li>
+              <li>Tanaka H, Monahan KD, Seals DR. Age-predicted maximal heart rate revisited. <em>J Am Coll Cardiol</em>. 2001;37(1):153–156.</li>
+              <li>Shvartz E, Reibold RC. Aerobic fitness norms for males and females aged 6 to 75 years: a review. <em>Aviat Space Environ Med</em>. 1990;61(1):3–11.</li>
+              <li>Kouri EM, Pope HG Jr, Katz DL, Oliva P. Fat-free mass index in users and nonusers of anabolic-androgenic steroids. <em>Clin J Sport Med</em>. 1995;5(4):223–228.</li>
+              <li>Sayers SP, Harackiewicz DV, Harman EA, Frykman PN, Rosenstein MT. Cross-validation of three jump power equations. <em>Med Sci Sports Exerc</em>. 1999;31(4):572–577.</li>
+              <li>Hodgdon JA, Beckett MB. <em>Prediction of percent body fat for U.S. Navy men and women from body circumferences and height</em>. Naval Health Research Center Report No. 84-11; 1984.</li>
+              <li>Deurenberg P, Weststrate JA, Seidell JC. Body mass index as a measure of body fatness: age- and sex-specific prediction formulas. <em>Br J Nutr</em>. 1991;65(2):105–114.</li>
+            </ol>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -152,38 +337,52 @@
         <div>
           <span class="eyebrow">Konsultasi Online</span>
           <h2 style="font-size:clamp(1.8rem,3.6vw,2.5rem)">Sudah tahu angkanya? Mari susun strateginya.</h2>
-          <p style="color:var(--ink-2)">Konsultasi gizi olahraga untuk atlet dan klub, pelatih, peserta program penurunan berat badan, maupun individu aktif yang ingin performa lebih baik. Isi formulir singkat ini; pesan akan terbuka di WhatsApp atau email Anda, lengkap dengan hasil kalkulator.</p>
-          <ul style="color:var(--ink-2);padding-left:18px">
-            <li>Periodisasi gizi untuk musim latihan dan kompetisi</li>
-            <li>Strategi membuat berat badan kelas tanding yang aman</li>
-            <li>Program penurunan lemak dan peningkatan massa otot</li>
-            <li>Program wellness dan Weight Loss Challenge untuk perusahaan</li>
-          </ul>
+          <p style="color:var(--ink-2)">Konsultasi gizi olahraga untuk atlet dan klub, pelatih, peserta program penurunan berat badan, maupun individu aktif yang ingin performa lebih baik. Pesan akan terbuka di WhatsApp atau email Anda, lengkap dengan hasil kalkulator.</p>
+          <div class="rules">
+            <h3>Ketentuan konsultasi</h3>
+            <ol>
+              <li>Wajib mengisi <strong>nama lengkap</strong> sesuai identitas.</li>
+              <li>Wajib mengisi <strong>asal</strong>: kota/kabupaten dan instansi, klub, atau sekolah.</li>
+              <li>Wajib mengisi <strong>nomor WhatsApp aktif</strong> dan <strong>alamat email</strong> yang valid untuk tindak lanjut.</li>
+              <li>Wajib menuliskan <strong>tujuan konsultasi</strong> dalam deskripsi singkat (minimal 30 karakter): kondisi saat ini, target, dan waktu yang diharapkan.</li>
+              <li>Konsultasi bersifat edukatif dan tidak menggantikan pemeriksaan medis. Atlet di bawah 18 tahun sebaiknya didampingi orang tua atau pelatih.</li>
+              <li>Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</li>
+            </ol>
+          </div>
           <div id="form-link"></div>
         </div>
-        <form class="card" id="consult" onsubmit="return false">
+        <form class="card" id="consult" onsubmit="return false" novalidate>
+          <div class="field"><label for="c-nama">Nama lengkap <span class="req">*</span></label><input id="c-nama" required autocomplete="name" placeholder="Nama sesuai identitas"><small class="err" data-err="c-nama"></small></div>
+          <div class="field"><label for="c-asal">Asal (kota &amp; instansi/klub) <span class="req">*</span></label><input id="c-asal" required autocomplete="address-level2" placeholder="mis. Jakarta Barat · Klub Taekwondo X"><small class="err" data-err="c-asal"></small></div>
           <div class="row">
-            <div class="field"><label for="c-nama">Nama</label><input id="c-nama" required autocomplete="name"></div>
-            <div class="field"><label for="c-usia">Usia</label><input id="c-usia" data-share="usia" type="number" inputmode="numeric"></div>
+            <div class="field"><label for="c-wa-no">No. WhatsApp <span class="req">*</span></label><input id="c-wa-no" required type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx"><small class="err" data-err="c-wa-no"></small></div>
+            <div class="field"><label for="c-email">Email <span class="req">*</span></label><input id="c-email" required type="email" inputmode="email" autocomplete="email" placeholder="nama@email.com"><small class="err" data-err="c-email"></small></div>
           </div>
           <div class="row">
+            <div class="field"><label for="c-usia">Usia</label><input id="c-usia" data-share="usia" type="number" inputmode="numeric"></div>
             <div class="field"><label for="c-kat">Saya adalah</label>
               <select id="c-kat"><option>Atlet</option><option>Pelatih / manajer tim</option><option>Pekerja / karyawan</option><option>Mahasiswa</option><option>Perusahaan / instansi</option><option>Umum</option></select>
             </div>
+          </div>
+          <div class="row">
             <div class="field"><label for="c-cabor">Cabang olahraga / aktivitas</label><input id="c-cabor" placeholder="mis. taekwondo, lari, gym"></div>
+            <div class="field"><label for="c-tujuan">Kategori tujuan</label>
+              <select id="c-tujuan"><option>Meningkatkan performa</option><option>Menurunkan berat badan / lemak</option><option>Menambah massa otot</option><option>Membuat berat badan kelas tanding</option><option>Program wellness perusahaan</option><option>Lainnya</option></select>
+            </div>
           </div>
-          <div class="field"><label for="c-tujuan">Tujuan utama</label>
-            <select id="c-tujuan"><option>Meningkatkan performa</option><option>Menurunkan berat badan / lemak</option><option>Menambah massa otot</option><option>Membuat berat badan kelas tanding</option><option>Program wellness perusahaan</option><option>Lainnya</option></select>
-          </div>
-          <div class="field"><label for="c-pesan">Pertanyaan atau kondisi Anda</label><textarea id="c-pesan" rows="4" placeholder="Ceritakan singkat pola latihan, pola makan, atau keluhan Anda."></textarea></div>
+          <div class="field"><label for="c-pesan">Tujuan konsultasi (deskripsi singkat) <span class="req">*</span></label><textarea id="c-pesan" rows="4" required maxlength="800" placeholder="Contoh: Saya atlet lari 10K, latihan 6x/minggu. Ingin menurunkan lemak dari 20% ke 15% tanpa menurunkan performa, menjelang kejuaraan 3 bulan lagi."></textarea><small class="hint"><span id="c-count">0</span>/800 karakter · minimal 30</small><small class="err" data-err="c-pesan"></small></div>
           <div class="field" style="display:flex;gap:10px;align-items:center">
             <input id="c-hasil" type="checkbox" checked style="width:auto"><label for="c-hasil" style="margin:0;font-weight:600">Sertakan hasil kalkulator saya</label>
           </div>
+          <div class="field" style="display:flex;gap:10px;align-items:flex-start">
+            <input id="c-setuju" type="checkbox" style="width:auto;margin-top:5px"><label for="c-setuju" style="margin:0;font-weight:600">Saya telah membaca ketentuan konsultasi dan data yang saya isi benar. <span class="req">*</span></label>
+          </div>
+          <small class="err" data-err="c-setuju" style="display:block;margin:-8px 0 12px"></small>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn btn-primary" id="c-wa" type="button">Kirim via WhatsApp</button>
             <button class="btn btn-ghost" id="c-mail" type="button">Kirim via Email</button>
           </div>
-          <p class="disclaimer" style="margin-bottom:0">Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</p>
+          <p class="disclaimer" style="margin-bottom:0"><span class="req">*</span> wajib diisi. Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</p>
         </form>
       </div>
     </section>

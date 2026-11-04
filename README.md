@@ -14,7 +14,7 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 | `publikasi.html` | Penelitian, buku, abdimas, prosiding; filter, urut sitasi, **cetak/PDF, unduh CSV, salin gaya APA** |
 | `berita.html` | Liputan media dengan thumbnail dan ringkasan, tautan ke artikel asli |
 | `unduhan.html` | Unduhan modul dengan verifikasi **OTP email**, data pengunduh masuk ke Google Sheet |
-| `gizi.html` | Kalkulator IMT, persen lemak tubuh, berat badan ideal, kebutuhan energi + **konsultasi online** (WhatsApp/email) |
+| `gizi.html` | Kalkulator gizi olahraga: IMT, persen lemak, berat badan ideal, **energi & KH/protein/lemak sesuai jenis dan durasi latihan**, **makan sebelum-saat-setelah latihan**, **laju keringat & anjuran minum per 10–30 menit**, **% lemak vs VO2max & performa**, rujukan ilmiah, dan **konsultasi online** dengan isian wajib (nama lengkap, asal, WhatsApp, email, tujuan) |
 | `input.html` | Ruang admin: formulir kegiatan baru dengan **generator caption otomatis** |
 
 ## Struktur folder
@@ -64,6 +64,12 @@ Warna diambil dari logo Universitas Esa Unggul (biru `#0070B8`, oranye `#F05828`
 4. **Minta Claude.** Simpan undangan/foto/laporan ke folder Google Drive kegiatan, lalu minta Claude membaca dan menambahkannya.
 
 **Foto dari Google Drive:** atur berbagi file menjadi *Siapa saja yang memiliki link dapat melihat*, lalu tempel link file di kolom `foto`. Jangan membagikan dokumen yang memuat data pribadi (KTP, nomor HP, tanda tangan) sebagai link dokumentasi publik.
+
+### Dasar perhitungan kalkulator gizi
+- Energi: rumus Panduan Pendampingan Gizi pada Atlet (Kemenkes RI 2021; IOM 2005). Kategori aktivitas fisik dihitung dari nilai MET jenis latihan × durasi (Compendium of Physical Activities 2011).
+- KH, protein, lemak: Tabel 27–29 per kelompok olahraga (Kemenkes 2021), posisi dalam rentang mengikuti beban latihan (ACSM 2016), fase periodisasi (Tabel 10–15), batas % lemak per kelompok KONI (Kemenkes 2022 Tabel 4).
+- Makan sekitar latihan, laju keringat, VO2max: lihat daftar rujukan lengkap di bagian bawah `gizi.html`.
+- Data rujukan (MET per cabor, rentang g/kg, norma VO2max) ada di bagian atas `assets/js/gizi.js` dan dapat diubah di sana.
 
 ### Mengaktifkan WhatsApp konsultasi
 Isi `whatsapp: "62812xxxxxxx"` di `config.js`. Tombol WhatsApp di halaman konsultasi dan tombol mengambang akan muncul otomatis.

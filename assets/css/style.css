@@ -385,6 +385,50 @@ label { font-weight: 700; font-size: .88rem; display: block; margin-bottom: 6px;
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; margin: 14px 0 0; font-size: .92rem; }
 .kv dt { color: var(--ink-2); } .kv dd { margin: 0; font-weight: 800; text-align: right; }
 .disclaimer { font-size: .8rem; color: var(--muted); margin-top: 18px; }
+/* Kalkulator lanjutan: tabel, langkah hitung, rujukan, formulir */
+.calc-layout > *, .calc-grid > *, .consult-box > * { min-width: 0; }
+.note-intro { color: var(--ink-2); font-size: .95rem; margin: -4px 0 18px; }
+.row-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .row-3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .row-3 { grid-template-columns: 1fr; } }
+.tbl-wrap { overflow-x: auto; margin: 14px 0 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.tbl { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.tbl th, .tbl td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl th { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); font-weight: 700; }
+.tbl td.n, .tbl th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.result .calc-grid .tbl th, .calc-grid .result .tbl th, .calc-grid .result .tbl td { padding: 8px 8px; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tfoot td { font-weight: 800; background: var(--surface-2); }
+.tbl .t-time { font-family: var(--mono); font-size: .82rem; white-space: nowrap; color: var(--blue); font-weight: 600; }
+.steps { margin-top: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.steps > summary { cursor: pointer; padding: 14px 18px; font-weight: 800; list-style-position: inside; }
+.steps > div { padding: 0 18px 16px; font-size: .9rem; color: var(--ink-2); }
+.steps ol { padding-left: 20px; margin: 0; }
+.steps li { margin-bottom: 8px; }
+.steps code, .formula { font-family: var(--mono); font-size: .8rem; background: var(--surface-2); padding: 2px 6px; border-radius: 6px; color: var(--ink); overflow-wrap: anywhere; }
+.callout { margin-top: 14px; padding: 12px 14px; border-radius: 12px; font-size: .88rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); }
+.callout.warn { border-color: color-mix(in srgb, var(--amber) 55%, transparent); background: color-mix(in srgb, var(--amber) 10%, var(--surface)); }
+.callout.bad { border-color: color-mix(in srgb, var(--red) 55%, transparent); background: color-mix(in srgb, var(--red) 9%, var(--surface)); }
+.callout.good { border-color: color-mix(in srgb, var(--green) 55%, transparent); background: color-mix(in srgb, var(--green) 9%, var(--surface)); }
+.mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+.mini { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.mini b { display: block; font-size: 1.35rem; line-height: 1.15; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mini span { font-size: .78rem; color: var(--muted); }
+.result h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+.refs { padding: 0; }
+.refs > summary { cursor: pointer; padding: 20px 26px; }
+.refs-body { padding: 0 26px 22px; font-size: .9rem; color: var(--ink-2); }
+.refs-body h3 { font-size: 1rem; margin: 18px 0 6px; color: var(--ink); }
+.refs-body li { margin-bottom: 6px; }
+.rules { margin-top: 18px; padding: 18px 20px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); }
+.rules h3 { font-size: 1.05rem; margin-bottom: 8px; }
+.rules ol { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: .92rem; }
+.rules li { margin-bottom: 4px; }
+.req { color: var(--red); font-weight: 800; }
+.err, .field small.err { display: block; color: var(--red); font-weight: 600; min-height: 0; }
+.err:empty { display: none; }
+.hint { display: block; color: var(--muted); }
+input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--red); }
 .consult-box { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
 @media (max-width: 860px) { .consult-box { grid-template-columns: 1fr; } }
 
