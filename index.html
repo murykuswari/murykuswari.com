@@ -53,8 +53,6 @@
           <span class="eyebrow">Dosen Peneliti Gizi Olahraga &amp; Kebugaran</span>
           <h1><span class="h1-line">Bukan sekadar hadir.</span> Datang untuk <em>menang</em>, dan bertahan.</h1>
           <p class="lead">Saya mendampingi atlet Indonesia dengan gizi berbasis riset, agar prestasi di panggung dunia lahir dari ilmu dan terjaga sepanjang karier. Ilmu yang sama saya bawa untuk kebugaran pekerja dan pendidikan ilmuwan gizi olahraga.</p>
-          <div class="hero-name">Dr. Mury Kuswari, S.Pd., M.Si</div>
-          <div class="hero-role">Wakil Rektor Bidang Kemahasiswaan, Universitas Esa Unggul · Ketua Umum ANOKI</div>
           <div class="hero-cta">
             <a class="btn btn-primary" data-cv href="#">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
@@ -64,11 +62,24 @@
           </div>
           <div class="stats" id="hero-stats"></div>
         </div>
-        <div class="hero-photo">
-          <div class="frame"><img src="assets/img/mury.jpg" alt="Potret Dr. Mury Kuswari" width="800" height="1000" fetchpriority="high"></div>
-          <div class="hero-badge b2"><img class="ueu" src="assets/img/logo-esaunggul.png" alt="Universitas Esa Unggul" width="120" height="68"></div>
-          <div class="hero-badge b1"><strong>8+ negara</strong>pembicara &amp; juri forum<br>sport science internasional</div>
-        </div>
+        <aside class="hero-card" aria-label="Profil singkat Dr. Mury Kuswari">
+          <figure class="hc-photo">
+            <img src="assets/img/mury.jpg" alt="Potret Dr. Mury Kuswari" width="800" height="1000" fetchpriority="high">
+            <figcaption>
+              <span>Wakil Rektor Bidang Kemahasiswaan</span>
+              <strong>Dr. Mury Kuswari, S.Pd., M.Si</strong>
+            </figcaption>
+          </figure>
+          <a class="hc-ueu" href="https://www.esaunggul.ac.id" target="_blank" rel="noopener">
+            <img src="assets/img/logo-esaunggul.png" alt="Universitas Esa Unggul, powered by Arizona State University" width="170" height="96">
+            <span>Dosen Peneliti Gizi Olahraga, Program Studi Ilmu Gizi</span>
+          </a>
+          <ul class="hc-cred">
+            <li><strong>Sekjen ANSSH</strong><span>Gizi olahraga tingkat Asia</span></li>
+            <li><strong>Ketua Umum ANOKI</strong><span>Asosiasi profesi nasional</span></li>
+            <li><strong id="hc-intl">Forum dunia</strong><span>Pembicara internasional</span></li>
+          </ul>
+        </aside>
       </div>
     </section>
 
@@ -309,7 +320,9 @@
         <div><strong>150+</strong><span>publikasi ilmiah</span></div>
         <div><strong>${st.sitasi.toLocaleString("id-ID")}</strong><span>sitasi Google Scholar</span></div>
         <div><strong>${st.hIndex}</strong><span>h-index</span></div>
-        <div><strong>8</strong><span>buku gizi olahraga</span></div>`;
+        <div><strong>${(window.BUKU || []).filter((b) => !b.unduh).length}</strong><span>buku &amp; bab buku</span></div>`;
+      const intl = (window.PEMBICARA || []).filter((r) => r[2] === "I").length;
+      if (intl) document.getElementById("hc-intl").textContent = intl + " forum dunia";
 
       document.getElementById("books").innerHTML = MK.shelfHtml(window.BUKU || []);
 
