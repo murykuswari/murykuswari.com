@@ -723,3 +723,12 @@ section[id] { scroll-margin-top: 72px; }
 .brand small { font-family: var(--font); font-size: .68rem; font-weight: 500; letter-spacing: .035em; text-transform: none; margin-top: 3px; }
 .site-footer .brand > span { font-size: 1.22rem; }
 .foot-nama { margin: 14px 0 0; color: #c8d6e4; font-weight: 500; }
+
+/* ===== Logo: lambang + tulisan MK sebagai fokus ===== */
+.brand { gap: 8px; }
+.brand-logo { width: 46px; height: 46px; border-radius: 0; }
+.brand > .brand-mk { font-family: "Lora", Georgia, "Times New Roman", serif; font-size: 2.15rem; font-weight: 700; line-height: 1; letter-spacing: -.01em; text-transform: none; color: var(--blue); }
+.brand > .brand-text { font-family: var(--font); font-size: .9rem; font-weight: 700; letter-spacing: 0; text-transform: none; line-height: 1.2; color: inherit; padding-left: 9px; margin-left: 2px; border-left: 2px solid var(--orange); }
+.brand-text small { font-size: .66rem; margin-top: 2px; }
+.site-footer .brand > .brand-mk { color: #fff; font-size: 2.5rem; }
+.site-footer .brand > .brand-text { font-size: 1rem; }
