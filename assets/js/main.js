@@ -29,7 +29,7 @@
     ["publikasi.html", "Karya Ilmiah"],
     ["berita.html", "Berita"],
     ["unduhan.html", "Unduhan"],
-    ["gizi.html", "Kalkulator Gizi"],
+    ["gizi.html", "Kalkulator"],
     ["gizi.html#konsultasi", "Konsultasi"]
   ];
 
@@ -94,7 +94,8 @@
         <div class="foot-grid">
           <div>
             <a class="brand" href="index.html" style="color:#fff"><span class="brand-mark">M</span><span>${S.nama}<small style="color:#9fb3c8">${S.tagline}</small></span></a>
-            <p style="margin-top:14px;max-width:420px">Menghubungkan riset gizi olahraga dengan prestasi atlet, kebugaran pekerja, dan kesehatan masyarakat Indonesia.</p>
+            <p class="foot-sign">Bukan sekadar hadir. Datang untuk menang, dan bertahan.</p>
+            <p style="max-width:420px">Menghubungkan riset gizi olahraga dengan prestasi atlet, kebugaran pekerja, dan kesehatan masyarakat Indonesia.</p>
             <a class="foot-ueu" href="https://www.esaunggul.ac.id" target="_blank" rel="noopener"><img src="assets/img/logo-esaunggul.png" alt="Universitas Esa Unggul" width="170" height="96"></a>
           </div>
           <div>

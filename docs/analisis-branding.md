@@ -26,7 +26,7 @@ Keunikan yang jarang dimiliki pakar lain:
 3. **Inovasi yang bisa dijual ke korporat.** Tele-exercise dan Weight Loss Challenge (Kemenkes RI, Indofood, Nutrifood, Pertamina, Nestlé) dengan hasil terukur.
 4. **Pengakuan regional.** Sekjen ANSSH, Executive Committee ASK, pembicara dan juri di Yordania, Malaysia, Korea, dan Singapura.
 
-**Tagline utama:** "Gizi yang tepat, performa yang hebat."
+**Tagline utama:** "Bukan sekadar hadir. Datang untuk menang, dan bertahan." (dari manifesto Merah Putih di Panggung Dunia, masukan pakar branding Universitas Esa Unggul)
 
 ## 3. Tiga pilar konten
 
