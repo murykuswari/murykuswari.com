@@ -46,8 +46,8 @@
     el.innerHTML = `
       <div class="wrap">
         <a class="brand" href="index.html" aria-label="Beranda Mury Kuswari">
-          <span class="brand-mark">M</span>
-          <span>Mury Kuswari<small>Gizi Olahraga &amp; Kebugaran</small></span>
+          <img class="brand-logo" src="assets/img/logo-mk.svg" alt="" width="40" height="40">
+          <span>Mury Kuswari<small>Assoc. Prof. Gizi Olahraga</small></span>
         </a>
         <button class="menu-toggle" aria-label="Buka menu" aria-expanded="false">${ICON.menu}</button>
         <nav class="nav" aria-label="Navigasi utama">
@@ -93,7 +93,7 @@
       <div class="wrap">
         <div class="foot-grid">
           <div>
-            <a class="brand" href="index.html" style="color:#fff"><span class="brand-mark">M</span><span>${S.nama}<small style="color:#9fb3c8">${S.tagline}</small></span></a>
+            <a class="brand" href="index.html" style="color:#fff"><img class="brand-logo" src="assets/img/logo-mk.svg" alt="" width="40" height="40"><span>${S.nama}<small style="color:#9fb3c8">${S.tagline}</small></span></a>
             <p class="foot-sign">Bukan sekadar hadir. Datang untuk menang, dan bertahan.</p>
             <p style="max-width:420px">Menghubungkan riset gizi olahraga dengan prestasi atlet, kebugaran pekerja, dan kesehatan masyarakat Indonesia.</p>
             <a class="foot-ueu" href="https://www.esaunggul.ac.id" target="_blank" rel="noopener"><img src="assets/img/logo-esaunggul.png" alt="Universitas Esa Unggul" width="170" height="96"></a>

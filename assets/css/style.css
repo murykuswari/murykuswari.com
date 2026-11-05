@@ -711,3 +711,8 @@ section[id] { scroll-margin-top: 72px; }
   .hc-cred strong { font-size: .78rem; }
 }
 .hc-photo img { position: absolute; left: -7%; top: -1%; width: 114%; height: 114%; max-width: none; object-position: center top; }
+
+/* ===== Logo MK dan nama bergelar ===== */
+.brand-logo { width: 40px; height: 40px; flex: none; }
+.hc-photo figcaption strong { font-size: 1.16rem; line-height: 1.25; text-wrap: balance; }
+.hc-photo figcaption strong span { display: inline; font: inherit; color: inherit; letter-spacing: inherit; text-transform: none; margin: 0; }

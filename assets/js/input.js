@@ -51,7 +51,7 @@
   function autoDesc() {
     const parts = [];
     if (v("judul")) parts.push(`${v("judul")}${v("penyelenggara") ? " yang diselenggarakan " + v("penyelenggara") : ""}${v("tempat") ? " di " + v("tempat") : ""}.`);
-    if (v("peran") || v("topik")) parts.push(`Dr. Mury Kuswari hadir sebagai ${v("peran") || "narasumber"}${v("topik") ? " dengan materi \"" + v("topik") + "\"" : ""}${v("peserta") ? " di hadapan " + v("peserta") : ""}.`);
+    if (v("peran") || v("topik")) parts.push(`Assoc. Prof. Dr. Mury Kuswari hadir sebagai ${v("peran") || "narasumber"}${v("topik") ? " dengan materi \"" + v("topik") + "\"" : ""}${v("peserta") ? " di hadapan " + v("peserta") : ""}.`);
     if (v("pesan")) parts.push(v("pesan").replace(/\.?$/, "."));
     return parts.join(" ");
   }

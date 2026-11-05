@@ -1,6 +1,6 @@
 # murykuswari.com
 
-Website personal branding **Dr. Mury Kuswari, S.Pd., M.Si**, Dosen Peneliti Gizi Olahraga & Kebugaran, Wakil Rektor Bidang Kemahasiswaan Universitas Esa Unggul.
+Website personal branding **Assoc. Prof. Dr. Mury Kuswari, S.Pd., M.Si**, Dosen Peneliti Gizi Olahraga & Kebugaran, Wakil Rektor Bidang Kemahasiswaan Universitas Esa Unggul.
 
 Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting di **GitHub Pages** dengan domain `murykuswari.com`.
 
