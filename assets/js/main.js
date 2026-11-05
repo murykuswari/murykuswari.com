@@ -25,6 +25,7 @@
   const NAV = [
     ["index.html", "Beranda"],
     ["kegiatan.html", "Kegiatan"],
+    ["pembicara.html", "Pembicara"],
     ["publikasi.html", "Karya Ilmiah"],
     ["gizi.html", "Kalkulator Gizi"],
     ["gizi.html#konsultasi", "Konsultasi"]
@@ -98,6 +99,7 @@
             <h4>Jelajahi</h4>
             <ul>
               <li><a href="kegiatan.html">Kabar Kegiatan</a></li>
+              <li><a href="pembicara.html">Portofolio Pembicara</a></li>
               <li><a href="publikasi.html">Penelitian, Buku &amp; Abdimas</a></li>
               <li><a href="gizi.html">Kalkulator Gizi Olahraga</a></li>
               <li><a href="${S.cv}" download>Unduh CV / Profil</a></li>

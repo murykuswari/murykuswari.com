@@ -10,6 +10,7 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 |---|---|
 | `index.html` | Landing page: profil, kepakaran, rak sampul buku, penghargaan, **unduh CV**, layanan, lalu kegiatan & dokumentasi di bagian bawah |
 | `kegiatan.html` | Kabar kegiatan: foto, tanggal, tempat, peran, deskripsi, caption media sosial, link dokumentasi; filter kategori/tahun dan pencarian |
+| `pembicara.html` | Portofolio pembicara per tahun: statistik, filter jenis/lingkup, pencarian, **cetak/PDF, unduh CSV** |
 | `publikasi.html` | Penelitian, buku, abdimas, prosiding; filter, urut sitasi, **cetak/PDF, unduh CSV, salin gaya APA** |
 | `gizi.html` | Kalkulator IMT, persen lemak tubuh, berat badan ideal, kebutuhan energi + **konsultasi online** (WhatsApp/email) |
 | `input.html` | Ruang admin: formulir kegiatan baru dengan **generator caption otomatis** |
@@ -21,6 +22,7 @@ config.js              ← pengaturan utama (WhatsApp, email, link Sheet, statis
 data/kegiatan.js       ← daftar kegiatan
 data/publikasi.js      ← daftar karya ilmiah
 data/buku.js           ← daftar buku + gambar sampul (tanpa file unduhan)
+data/pembicara.js      ← portofolio pembicara per tahun
 assets/cv/             ← file CV yang diunduh pengunjung
 assets/img/            ← foto profil, logo Esa Unggul, foto kegiatan
 assets/img/buku/       ← gambar sampul buku
@@ -33,6 +35,9 @@ docs/                  ← analisis branding & template Google Sheet
 
 ### Mengganti CV
 Unggah PDF baru ke `assets/cv/` dengan nama yang sama (`CV-Dr-Mury-Kuswari-2026.pdf`), atau ubah nilai `cv` di `config.js`.
+
+### Menambah data pembicara
+Tambahkan satu baris di `data/pembicara.js` (format ada di bagian atas file). Website mengurutkan dan mengelompokkan per tahun secara otomatis, statistiknya juga menghitung sendiri. Jangan menautkan dokumen asli karena memuat data pribadi.
 
 ### Menambah buku
 Unggah gambar sampul (JPG, lebar ±600 px) ke `assets/img/buku/`, lalu tambahkan satu baris di `data/buku.js` berisi tahun, judul, penulis, penerbit, dan path sampul. Buku hanya ditampilkan sebagai sampul; file bukunya tidak ikut diunggah.

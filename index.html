@@ -186,6 +186,21 @@
       </div>
     </section>
 
+    <!-- SPEAKER PORTFOLIO -->
+    <section class="section-alt" id="pembicara">
+      <div class="wrap">
+        <div class="section-head reveal" style="display:flex;justify-content:space-between;align-items:end;gap:20px;max-width:none;flex-wrap:wrap">
+          <div style="max-width:640px">
+            <span class="eyebrow">Portofolio Pembicara</span>
+            <h2>Dipercaya berbicara di berbagai forum</h2>
+            <p>Rekam jejak sebagai pembicara, narasumber, dan dosen tamu sampai saat ini, dari puskesmas dan klub atlet hingga kongres di Yordania, Korea, Malaysia, dan Singapura.</p>
+          </div>
+          <a class="btn btn-dark" href="pembicara.html">Lihat portofolio lengkap</a>
+        </div>
+        <div class="pub-stats" id="sp-stats"></div>
+      </div>
+    </section>
+
     <!-- CV BAND -->
     <section style="padding-top:0" id="cv">
       <div class="wrap">
@@ -249,6 +264,7 @@
   <script src="config.js"></script>
   <script src="data/kegiatan.js"></script>
   <script src="data/buku.js"></script>
+  <script src="data/pembicara.js"></script>
   <script src="assets/js/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
@@ -261,6 +277,15 @@
         <div><strong>8</strong><span>buku gizi olahraga</span></div>`;
 
       document.getElementById("books").innerHTML = MK.shelfHtml(window.BUKU || []);
+
+      const sp = window.PEMBICARA || [];
+      const spYears = sp.map((r) => r[0].slice(0, 4)).sort();
+      const spCount = (j) => sp.filter((r) => r[3] === j).length;
+      document.getElementById("sp-stats").innerHTML = `
+        <div class="card"><strong>${sp.length}</strong><span>Kegiatan tercatat</span></div>
+        <div class="card"><strong>${sp.filter((r) => r[2] === "I").length}</strong><span>Forum internasional</span></div>
+        <div class="card"><strong>${spCount("kuliah")}</strong><span>Kuliah tamu</span></div>
+        <div class="card"><strong>${spYears[0]}–${spYears[spYears.length - 1]}</strong><span>Rentang tahun</span></div>`;
 
       const list = await MK.loadKegiatan();
       document.getElementById("latest").innerHTML = list.slice(0, 6).map((k) => MK.cardHtml(k, { short: true })).join("");
