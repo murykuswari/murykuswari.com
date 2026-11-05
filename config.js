@@ -29,6 +29,10 @@ window.SITE = {
   // Jika diisi, kegiatan dari Sheet otomatis tampil di website (digabung dengan data/kegiatan.js).
   sheetKegiatanCsv: "",
 
+  // URL layanan unduhan ber-OTP (Google Apps Script, berakhiran /exec).
+  // Panduan: docs/panduan-unduhan-otp.md. Jika kosong, formulir unduhan dinonaktifkan.
+  otpEndpoint: "",
+
   // Statistik Google Scholar (perbarui berkala, mis. tiap semester).
   scholarStats: { sitasi: 1112, hIndex: 17, i10: 30, karya: 122, diperbarui: "November 2026" }
 };

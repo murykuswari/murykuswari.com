@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unduhan Modul | Dr. Mury Kuswari</title>
+  <meta name="description" content="Unduh modul dan bahan bacaan gizi olahraga serta kebugaran dari Dr. Mury Kuswari dengan verifikasi kode OTP melalui email.">
+  <link rel="canonical" href="https://murykuswari.com/unduhan.html">
+  <meta property="og:title" content="Unduhan Modul Dr. Mury Kuswari">
+  <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
+  <meta name="theme-color" content="#003a63">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Unduhan</span>
+        <h1>Modul &amp; bahan bacaan</h1>
+        <p>Pilih berkas, isi data diri, lalu masukkan kode OTP yang dikirim ke email Anda. Setelah terverifikasi, berkas langsung bisa diunduh.</p>
+      </div>
+    </div>
+    <section style="padding-top:6px">
+      <div class="wrap dl-layout">
+        <div>
+          <h2 class="dl-h">Daftar berkas</h2>
+          <div id="items"></div>
+        </div>
+
+        <aside class="card dl-panel" aria-live="polite">
+          <ol class="dl-steps" id="steps">
+            <li class="on">Data diri</li>
+            <li>Kode OTP</li>
+            <li>Unduh</li>
+          </ol>
+          <p class="dl-off" id="off" hidden>Layanan unduhan sedang disiapkan. Untuk sementara, kirim permintaan ke <a data-mail href="#"></a>.</p>
+
+          <form id="f1" novalidate>
+            <p class="dl-sel">Berkas terpilih: <strong id="sel"></strong></p>
+            <label class="dl-f">Nama lengkap<input name="nama" required maxlength="80" autocomplete="name"></label>
+            <label class="dl-f">Email aktif<input name="email" type="email" required maxlength="120" autocomplete="email" inputmode="email" placeholder="nama@email.com"></label>
+            <label class="dl-f">Nomor WhatsApp<input name="wa" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="08xxxxxxxxxx"></label>
+            <label class="dl-f">Instansi <span>(opsional)</span><input name="instansi" maxlength="100" autocomplete="organization"></label>
+            <label class="dl-hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+            <label class="dl-cek"><input type="checkbox" name="setuju" required> <span>Saya setuju data ini disimpan oleh pengelola murykuswari.com untuk mencatat unduhan dan dapat digunakan untuk menghubungi saya terkait materi ini.</span></label>
+            <button class="btn btn-primary" type="submit" id="b1">Kirim kode OTP</button>
+          </form>
+
+          <form id="f2" novalidate hidden>
+            <p>Kode 6 digit dikirim ke <strong id="to"></strong>. Berlaku 10 menit. Periksa juga folder spam.</p>
+            <label class="dl-f">Kode OTP<input class="dl-otp" name="otp" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"></label>
+            <button class="btn btn-primary" type="submit" id="b2">Verifikasi</button>
+            <p class="dl-links"><button type="button" class="dl-link" id="again">Kirim ulang kode</button> · <button type="button" class="dl-link" id="back">Ganti data</button></p>
+          </form>
+
+          <div id="f3" hidden>
+            <p><strong>Email terverifikasi.</strong> Berkas siap diunduh.</p>
+            <button class="btn btn-primary" type="button" id="b3">Unduh berkas</button>
+            <p class="dl-note">Verifikasi berlaku 30 menit untuk berkas lain di halaman ini.</p>
+          </div>
+
+          <p class="dl-msg" id="msg" role="alert" hidden></p>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="data/unduhan.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/unduhan.js"></script>
+</body>
+</html>

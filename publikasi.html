@@ -23,7 +23,7 @@
         <div class="print-only" style="margin-bottom:6px"><strong>Dr. Mury Kuswari, S.Pd., M.Si</strong> · Universitas Esa Unggul · murykuswari.com</div>
         <span class="eyebrow">Karya Ilmiah</span>
         <h1 id="page-title">Penelitian, buku, pengabdian &amp; prosiding</h1>
-        <p class="no-print">Pilih kategori, cari judul, lalu cetak atau simpan sebagai PDF. Daftar disusun dari Google Scholar dan CV; klik judul untuk membuka sumbernya.</p>
+        <p class="no-print">Pilih kategori, cari judul, lalu cetak atau simpan sebagai PDF. Daftar disusun dari Google Scholar dan CV. Klik judul untuk membaca abstrak, atau klik sampul buku untuk membaca sinopsisnya.</p>
       </div>
     </div>
 
@@ -61,7 +61,9 @@
   <script src="config.js"></script>
   <script src="data/publikasi.js"></script>
   <script src="data/buku.js"></script>
+  <script src="data/abstrak.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/abstrak.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const MK = window.MK, S = window.SITE;
@@ -87,6 +89,11 @@
       function link(p) {
         return p.link || "https://scholar.google.com/scholar?q=" + encodeURIComponent('"' + p.title + '"');
       }
+      const lemah = (t) => String(t).toLowerCase().replace(/[^a-z0-9]/g, "");
+      function bukuOf(p) {
+        const k = lemah(p.title).slice(0, 18);
+        return (window.BUKU || []).find((b) => lemah(b.judul).startsWith(k));
+      }
       function apa(p) {
         return `${p.au} (${p.y}). ${p.title}. ${p.v && p.v !== "—" ? p.v + "." : ""}`.replace(/\s+/g, " ").trim();
       }
@@ -102,8 +109,10 @@
         const item = (p) => `<li class="pub-item">
             <div>
               ${p.t === "buku"
-                ? `<span class="ttl">${MK.esc(p.title)}</span>`
-                : `<a class="ttl" href="${MK.esc(link(p))}" target="_blank" rel="noopener">${MK.esc(p.title)}</a>`}
+                ? (bukuOf(p)
+                  ? `<button class="ttl ttl-btn" type="button" data-book="${MK.esc(bukuOf(p).judul)}">${MK.esc(p.title)}</button>`
+                  : `<span class="ttl">${MK.esc(p.title)}</span>`)
+                : `<button class="ttl ttl-btn" type="button" data-pub="${p.i}">${MK.esc(p.title)}</button>`}
               <div class="au">${MK.esc(p.au)}</div>
               <div class="vn">${MK.esc(p.v)}</div>
             </div>
@@ -135,6 +144,12 @@
         type = b.dataset.t;
         typesEl.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
         render();
+      });
+      document.getElementById("out").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-pub]");
+        if (!b) return;
+        const p = all[Number(b.dataset.pub)];
+        MKAbstrak.open(p, TYPES[p.t].split(" (")[0], link(p));
       });
       q.addEventListener("input", render);
       sort.addEventListener("change", render);

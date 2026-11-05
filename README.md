@@ -12,6 +12,8 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 | `kegiatan.html` | Kabar kegiatan: foto, tanggal, tempat, peran, deskripsi, caption media sosial, link dokumentasi; filter kategori/tahun dan pencarian |
 | `pembicara.html` | Portofolio pembicara per tahun: statistik, filter jenis/lingkup, pencarian, **cetak/PDF, unduh CSV** |
 | `publikasi.html` | Penelitian, buku, abdimas, prosiding; filter, urut sitasi, **cetak/PDF, unduh CSV, salin gaya APA** |
+| `berita.html` | Liputan media dengan thumbnail dan ringkasan, tautan ke artikel asli |
+| `unduhan.html` | Unduhan modul dengan verifikasi **OTP email**, data pengunduh masuk ke Google Sheet |
 | `gizi.html` | Kalkulator IMT, persen lemak tubuh, berat badan ideal, kebutuhan energi + **konsultasi online** (WhatsApp/email) |
 | `input.html` | Ruang admin: formulir kegiatan baru dengan **generator caption otomatis** |
 
@@ -40,7 +42,16 @@ Unggah PDF baru ke `assets/cv/` dengan nama yang sama (`CV-Dr-Mury-Kuswari-2026.
 Tambahkan satu baris di `data/pembicara.js` (format ada di bagian atas file). Website mengurutkan dan mengelompokkan per tahun secara otomatis, statistiknya juga menghitung sendiri. Jangan menautkan dokumen asli karena memuat data pribadi.
 
 ### Menambah buku
-Unggah gambar sampul (JPG, lebar ±600 px) ke `assets/img/buku/`, lalu tambahkan satu baris di `data/buku.js` berisi tahun, judul, penulis, penerbit, dan path sampul. Buku hanya ditampilkan sebagai sampul; file bukunya tidak ikut diunggah.
+Unggah gambar sampul (JPG, lebar ±600 px) ke `assets/img/buku/`, lalu tambahkan satu baris di `data/buku.js` berisi tahun, judul, penulis, penerbit, sinopsis, dan path sampul. Sinopsis muncul saat sampul diklik. File buku tidak diunggah ke repositori.
+
+### Menambah berita
+Tambahkan satu entri di `data/berita.js`. Tulis ringkasan dengan kata-kata sendiri, jangan menyalin artikel. Thumbnail memakai tautan foto dari media asal; bila gagal dimuat, website menampilkan thumbnail desain.
+
+### Abstrak karya ilmiah
+`data/abstrak.js` menyimpan DOI dan teks abstrak berlisensi Creative Commons. Abstrak lain dimuat langsung dari Crossref atau OpenAlex saat judul diklik. Jika tidak ada, pengunjung diarahkan ke sumber aslinya.
+
+### Unduhan ber-OTP
+Berkas tetap privat di Google Drive dan diserahkan oleh Google Apps Script (`apps-script/Kode.gs`) setelah pengunjung memasukkan OTP dari email. Pemasangan dan cara menambah berkas ada di `docs/panduan-unduhan-otp.md`.
 
 ### Tampilan
 Warna diambil dari logo Universitas Esa Unggul (biru `#0070B8`, oranye `#F05828`) dan didefinisikan di bagian atas `assets/css/style.css`. Font: Outfit untuk judul dan isi, JetBrains Mono untuk label dan angka.

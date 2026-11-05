@@ -27,6 +27,8 @@
     ["kegiatan.html", "Kegiatan"],
     ["pembicara.html", "Pembicara"],
     ["publikasi.html", "Karya Ilmiah"],
+    ["berita.html", "Berita"],
+    ["unduhan.html", "Unduhan"],
     ["gizi.html", "Kalkulator Gizi"],
     ["gizi.html#konsultasi", "Konsultasi"]
   ];
@@ -101,6 +103,8 @@
               <li><a href="kegiatan.html">Kabar Kegiatan</a></li>
               <li><a href="pembicara.html">Portofolio Pembicara</a></li>
               <li><a href="publikasi.html">Penelitian, Buku &amp; Abdimas</a></li>
+              <li><a href="berita.html">Berita &amp; Liputan Media</a></li>
+              <li><a href="unduhan.html">Unduhan Modul</a></li>
               <li><a href="gizi.html">Kalkulator Gizi Olahraga</a></li>
               <li><a href="${S.cv}" download>Unduh CV / Profil</a></li>
             </ul>
@@ -314,27 +318,70 @@
     });
   }
 
-  /* ---------- Rak buku: sampul saja, tanpa tautan unduhan ---------- */
+  /* ---------- Popup umum: sinopsis buku, abstrak, dan berita ---------- */
+  function modal(html, label) {
+    let d = document.getElementById("mk-modal");
+    if (!d) {
+      d = document.createElement("dialog");
+      d.id = "mk-modal";
+      d.className = "mk-modal";
+      d.innerHTML = '<div class="mk-inner"><button class="mk-close" type="button" aria-label="Tutup">&times;</button><div class="mk-body"></div></div>';
+      document.body.appendChild(d);
+      d.addEventListener("click", (e) => { if (e.target === d || e.target.closest(".mk-close")) d.close(); });
+    }
+    d.setAttribute("aria-label", label || "Detail");
+    d.querySelector(".mk-body").innerHTML = html;
+    if (!d.open) d.showModal();
+    d.querySelector(".mk-inner").scrollTop = 0;
+    return d;
+  }
+
+  /* ---------- Rak buku: klik sampul untuk membaca sinopsis ---------- */
+  function coverHtml(b) {
+    return b.sampul
+      ? `<img src="${esc(b.sampul)}" alt="Sampul buku ${esc(b.judul)}" loading="lazy" draggable="false">`
+      : `<div class="design"><span>${b.tahun}</span><b>${esc(b.judul)}</b><span>${esc(b.penerbit)}</span></div>`;
+  }
   function shelfHtml(books) {
     return books.map((b) => `
       <article class="shelf-item">
-        <div class="shelf-cover" aria-hidden="${b.sampul ? "false" : "true"}">
-          ${b.sampul
-            ? `<img src="${esc(b.sampul)}" alt="Sampul buku ${esc(b.judul)}" loading="lazy" draggable="false">`
-            : `<div class="design"><span>${b.tahun}</span><b>${esc(b.judul)}</b><span>${esc(b.penerbit)}</span></div>`}
-        </div>
-        <div class="shelf-meta">
-          <span class="y">${b.tahun}</span>
-          <h3>${esc(b.judul)}</h3>
-          <p>${esc(b.penerbit)}</p>
-        </div>
+        <button class="shelf-open" type="button" data-book="${esc(b.judul)}" aria-label="Lihat sinopsis ${esc(b.judul)}">
+          <span class="shelf-cover">${coverHtml(b)}</span>
+          <span class="shelf-meta">
+            <span class="y">${b.tahun}${b.unduh ? ' · <em>Bisa diunduh</em>' : ""}</span>
+            <strong>${esc(b.judul)}</strong>
+            <small>${esc(b.penerbit)}</small>
+          </span>
+        </button>
       </article>`).join("");
   }
+  function bookModal(b) {
+    modal(`
+      <div class="mk-book">
+        <div class="shelf-cover mk-cover">${coverHtml(b)}</div>
+        <div>
+          <span class="eyebrow">Sinopsis buku</span>
+          <h2>${esc(b.judul)}</h2>
+          ${b.sub ? `<p class="mk-sub">${esc(b.sub)}</p>` : ""}
+          <p class="mk-by">${esc(b.penulis)}<br>${esc(b.penerbit)}, ${b.tahun}</p>
+          <p>${esc(b.sinopsis || "Sinopsis buku ini belum tersedia.")}</p>
+          ${b.unduh
+            ? `<a class="btn btn-primary" href="unduhan.html?item=${esc(b.unduh)}">Unduh dengan verifikasi email</a>`
+            : `<p class="mk-note">Buku ini ditampilkan sebagai referensi dan tidak tersedia untuk diunduh.</p>`}
+        </div>
+      </div>`, "Sinopsis " + b.judul);
+  }
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-book]");
+    if (!t) return;
+    const b = (window.BUKU || []).find((x) => x.judul === t.dataset.book);
+    if (b) bookModal(b);
+  });
   // Sampul hanya untuk dilihat: matikan menu klik kanan dan seret gambar di rak buku.
   document.addEventListener("contextmenu", (e) => { if (e.target.closest(".shelf-cover")) e.preventDefault(); });
   document.addEventListener("dragstart", (e) => { if (e.target.closest(".shelf-cover")) e.preventDefault(); });
 
-  window.MK = { ICON, esc, fmtTanggal, imgSrc, cardHtml, shelfHtml, loadKegiatan, bindCopyCaption, fullCaption, hashtagText, copyText, toast, waLink, parseCSV, revealOnScroll, BULAN };
+  window.MK = { ICON, esc, modal, bookModal, fmtTanggal, imgSrc, cardHtml, shelfHtml, loadKegiatan, bindCopyCaption, fullCaption, hashtagText, copyText, toast, waLink, parseCSV, revealOnScroll, BULAN };
 
   document.addEventListener("DOMContentLoaded", () => {
     renderHeader();
