@@ -31,7 +31,7 @@ window.SITE = {
 
   // URL layanan unduhan ber-OTP (Google Apps Script, berakhiran /exec).
   // Panduan: docs/panduan-unduhan-otp.md. Jika kosong, formulir unduhan dinonaktifkan.
-  otpEndpoint: "",
+  otpEndpoint: "https://script.google.com/macros/s/AKfycbz2dqqXvIyjTKSYWazlR5ZQ91pD-_a0oq9X1qPkrcuJyvgw9bUFfzy0rxAZGiGzcMxFwA/exec",
 
   // Statistik Google Scholar (perbarui berkala, mis. tiap semester).
   scholarStats: { sitasi: 1112, hIndex: 17, i10: 30, karya: 122, diperbarui: "November 2026" }
