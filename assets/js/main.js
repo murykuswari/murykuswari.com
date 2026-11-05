@@ -47,7 +47,7 @@
       <div class="wrap">
         <a class="brand" href="index.html" aria-label="Beranda Mury Kuswari">
           <img class="brand-logo" src="assets/img/logo-mk.svg?v=6" alt="" width="40" height="40">
-          <span>Mury Kuswari<small>Assoc. Prof. Gizi Olahraga</small></span>
+          <span>Mury Kuswari<small>Gizi Olahraga &amp; Kebugaran</small></span>
         </a>
         <button class="menu-toggle" aria-label="Buka menu" aria-expanded="false">${ICON.menu}</button>
         <nav class="nav" aria-label="Navigasi utama">

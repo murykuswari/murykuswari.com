@@ -720,3 +720,8 @@ section[id] { scroll-margin-top: 72px; }
 /* ===== Logo inisial MK ===== */
 .brand-logo { width: 40px; height: 40px; flex: none; }
 .foot-nama { margin: 14px 0 0; color: #c8d6e4; font-weight: 500; }
+
+/* Teks brand: nama dan keterangan proporsional */
+.brand { gap: 11px; }
+.brand > span { font-size: 1.1rem; font-weight: 700; line-height: 1.2; letter-spacing: -.012em; }
+.brand small { font-family: var(--font); font-size: .78rem; font-weight: 400; letter-spacing: 0; line-height: 1.25; margin-top: 1px; white-space: nowrap; }
