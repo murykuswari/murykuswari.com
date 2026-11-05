@@ -46,8 +46,8 @@
     el.innerHTML = `
       <div class="wrap">
         <a class="brand" href="index.html" aria-label="Beranda Mury Kuswari">
-          <img class="brand-logo" src="assets/img/logo-mk.svg?v=4" alt="" width="40" height="40">
-          <span class="brand-mk">MK</span><span class="brand-text">Mury Kuswari<small>Assoc. Prof. Gizi Olahraga</small></span>
+          <img class="brand-logo" src="assets/img/logo-mk.svg?v=5" alt="" width="40" height="40">
+          <span>Mury Kuswari<small>Assoc. Prof. Gizi Olahraga</small></span>
         </a>
         <button class="menu-toggle" aria-label="Buka menu" aria-expanded="false">${ICON.menu}</button>
         <nav class="nav" aria-label="Navigasi utama">
@@ -93,7 +93,7 @@
       <div class="wrap">
         <div class="foot-grid">
           <div>
-            <a class="brand" href="index.html" style="color:#fff"><img class="brand-logo" src="assets/img/logo-mk.svg?v=4" alt="" width="40" height="40"><span class="brand-mk">MK</span><span class="brand-text">Mury Kuswari<small style="color:#9fb3c8">${S.tagline}</small></span></a>
+            <a class="brand" href="index.html" style="color:#fff"><img class="brand-logo" src="assets/img/logo-mk.svg?v=5" alt="" width="40" height="40"><span>Mury Kuswari<small style="color:#9fb3c8">${S.tagline}</small></span></a>
             <p class="foot-nama">${S.nama}</p>
             <p class="foot-sign">Bukan sekadar hadir. Datang untuk menang, dan bertahan.</p>
             <p style="max-width:420px">Menghubungkan riset gizi olahraga dengan prestasi atlet, kebugaran pekerja, dan kesehatan masyarakat Indonesia.</p>
