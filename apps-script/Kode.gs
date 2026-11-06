@@ -61,6 +61,7 @@ function kirim_(d) {
   if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email) || email.length > 120) return { ok: false, pesan: 'Format email belum benar.' };
   if (nama.length < 2) return { ok: false, pesan: 'Isi nama lengkap Anda.' };
   if (!(/^628\d{7,12}$/.test(wa) || (!/^62/.test(wa) && /^[1-9]\d{7,14}$/.test(wa)))) return { ok: false, pesan: 'Nomor WhatsApp belum benar.' };
+  if (instansi.length < 2) return { ok: false, pesan: 'Isi nama instansi Anda.' };
   if (!FILES[d.item]) return { ok: false, pesan: 'Berkas tidak ditemukan.' };
 
   const lock = LockService.getScriptLock();
