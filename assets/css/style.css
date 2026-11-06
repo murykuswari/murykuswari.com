@@ -729,3 +729,31 @@ section[id] { scroll-margin-top: 72px; }
 /* Tanda putar pada thumbnail video */
 .news-play { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; background: rgba(0, 58, 99, .86); }
 .news-play::after { content: ""; position: absolute; left: 23px; top: 18px; border-style: solid; border-width: 11px 0 11px 18px; border-color: transparent transparent transparent #fff; }
+
+/* ===== Isi beranda sesuai rekomendasi pakar ===== */
+.hero h1 { font-size: clamp(2.2rem, 4.2vw, 3.35rem); }
+.fase { display: flex; flex-direction: column; }
+.fase-label { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+.fase h3 { font-size: 1.28rem; margin-bottom: 10px; }
+.fase p { color: var(--ink-2); }
+.fase .fase-bukti { margin: auto 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: .9rem; line-height: 1.5; color: var(--muted); }
+.kutipan { margin: 44px auto 0; max-width: 760px; text-align: center; }
+.kutipan p { font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 1.35; font-weight: 600; letter-spacing: -.012em; color: var(--ink); margin-bottom: 12px; }
+.kutipan cite { font-family: var(--mono); font-style: normal; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.visi { margin-top: 26px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.visi h3 { font-size: 1rem; color: var(--blue); margin-bottom: 6px; }
+.visi p { margin-bottom: 16px; }
+.visi ol { margin: 0; padding-left: 20px; }
+.visi li { margin-bottom: 6px; font-size: 1rem; line-height: 1.55; }
+.layanan { display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: transform .18s ease, border-color .18s ease; }
+.layanan:hover { transform: translateY(-3px); border-color: var(--blue); color: inherit; }
+.layanan p { color: var(--ink-2); font-size: .95rem; }
+.layanan span { margin-top: auto; font-weight: 600; font-size: .92rem; color: var(--blue); }
+.penutup { background: linear-gradient(150deg, #002b4b, #003a63 58%, #005a94); color: #e8f1f9; padding: 84px 0; text-align: center; }
+.penutup h2 { color: #fff; font-size: clamp(1.85rem, 3.6vw, 2.75rem); line-height: 1.15; letter-spacing: -.025em; max-width: 720px; margin: 0 auto 14px; }
+.penutup p { font-size: 1.1rem; margin: 0 auto 26px; max-width: 58ch; }
+.penutup-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.penutup .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, .45); }
+.penutup .btn-ghost:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.trust p { flex-basis: 100%; }
+@media print { .penutup { background: none; color: #000; padding: 20px 0; } .penutup h2 { color: #000; } .penutup-cta { display: none; } }

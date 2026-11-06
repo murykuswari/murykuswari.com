@@ -5,7 +5,7 @@
 window.SITE = {
   nama: "Assoc. Prof. Dr. Mury Kuswari, S.Pd., M.Si",
   namaPendek: "Mury Kuswari",
-  tagline: "Dosen Peneliti Gizi Olahraga & Kebugaran",
+  tagline: "Ilmuwan Gizi Olahraga & Kebugaran",
   jabatan: "Wakil Rektor Bidang Kemahasiswaan, Universitas Esa Unggul",
   domain: "https://murykuswari.com",
 
