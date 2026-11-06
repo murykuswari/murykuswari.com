@@ -11,6 +11,10 @@ const FILES = {
   'modul-kondisi-fisik': {
     id: '1D16JIVlJWDMvgy4t2RZAxqOopMJFZr2ruxu_O_Kt9H0',
     nama: 'Modul-UTS-Kondisi-Fisik-dan-Program-Latihan.pdf'
+  },
+  'modul-gizi-kebugaran': {
+    id: '1v5xkOH-6TElF5qOcUDbRFulwMmBU4f8T',
+    nama: 'Modul-UTS-Gizi-Kebugaran.pdf'
   }
 };
 
