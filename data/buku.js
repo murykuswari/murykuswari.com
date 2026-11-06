@@ -5,6 +5,8 @@
  * unduh   : (opsional) id berkas di data/unduhan.js. Tanpa nilai ini, buku tidak bisa diunduh.
  */
 window.BUKU = [
+  { tahun: 2026, judul: "Modul Bahan Bacaan UTS: Gizi Kebugaran", penulis: "Dr. Mury Kuswari, S.Pd., M.Si.", penerbit: "Universitas Esa Unggul", sampul: "", unduh: "modul-gizi-kebugaran",
+    sinopsis: "Modul untuk mahasiswa Ilmu Gizi yang merangkum tujuh pokok bahasan: pengantar gizi kebugaran, sistem energi, karbohidrat, protein, lemak, vitamin dan mineral, serta hidrasi dan performa tubuh. Setiap bab berisi tujuan belajar, tabel ringkas, contoh perhitungan, dan poin penting, dilengkapi kisi-kisi UTS dan ringkasan rumus untuk latihan menghitung kebutuhan gizi atlet." },
   { tahun: 2026, judul: "Modul Bahan Bacaan UTS: Kondisi Fisik dan Program Latihan", penulis: "Dr. Mury Kuswari, S.Pd., M.Si.", penerbit: "Universitas Esa Unggul", sampul: "", unduh: "modul-kondisi-fisik",
     sinopsis: "Modul untuk mahasiswa Ilmu Gizi yang merangkum sembilan pokok bahasan: prinsip latihan dan FITT-M, pengukuran aktivitas fisik dan kebugaran, somatotype Heath-Carter, latihan kekuatan dan kardio, core training, plyometric, SAQ, serta latihan endurance. Setiap bab berisi tujuan belajar, tabel ringkas, contoh perhitungan, dan poin penting, dilengkapi kisi-kisi UTS dan ringkasan rumus." },
   { tahun: 2024, judul: "Sports Nutrition: Uncommon Knowledge in Shape, Physical Fitness, and Longevity", penulis: "Kuo, Nicholls, Dewi, Kuswari, et al.", penerbit: "Asian Nutrition Society for Sports and Health", sampul: "",

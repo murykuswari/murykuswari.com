@@ -5,6 +5,15 @@
  */
 window.UNDUHAN = [
   {
+    id: "modul-gizi-kebugaran",
+    judul: "Modul Bahan Bacaan UTS: Gizi Kebugaran",
+    jenis: "Modul",
+    tahun: 2026,
+    penulis: "Dr. Mury Kuswari, S.Pd., M.Si.",
+    format: "PDF",
+    ringkasan: "Tujuh bab tentang pengantar gizi kebugaran, sistem energi, karbohidrat, protein, lemak, vitamin dan mineral, serta hidrasi, dilengkapi kisi-kisi UTS dan ringkasan rumus."
+  },
+  {
     id: "modul-kondisi-fisik",
     judul: "Modul Bahan Bacaan UTS: Kondisi Fisik dan Program Latihan",
     jenis: "Modul",
