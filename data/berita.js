@@ -8,6 +8,15 @@
  * Entri "LinkedIn Mury Kuswari" ditulis dari unggahan pribadi; fotonya disimpan di assets/img/berita/.
  */
 window.BERITA = [
+  { tanggal: "2025-11-03", media: "IPB University", kategori: "Akademik", judul: "Kebersamaan Alumni Gizi IPB: Berbagi Inspirasi untuk Gizi Berkelanjutan", url: "https://www.ipb.ac.id/news/index/2025/11/kebersamaan-alumni-gizi-ipb-berbagi-inspirasi-untuk-gizi-berkelanjutan/", gambar: "https://www.ipb.ac.id/wp-content/uploads/2025/11/seminar-nasional.jpg",
+    ringkasan: "Temu Alumni Pascasarjana Ilmu Gizi IPB 2025 mempertemukan lebih dari 200 peserta lintas generasi, dari jalan pagi di Kebun Raya Bogor hingga seminar bertema Protein for Sustainable Weight Management.",
+    poin: ["Lebih dari 200 peserta lintas generasi", "Memperkuat jejaring dan kemitraan alumni", "Masukan bagi pendidikan Pascasarjana Ilmu Gizi IPB"] },
+  { tanggal: "2025-11-01", media: "FK Gizi IPB University", kategori: "Prestasi", judul: "Seminar Nasional dan Temu Alumni Pascasarjana Ilmu Gizi IPB Bahas Peran Protein dalam Pengelolaan Berat Badan Berkelanjutan", url: "https://fkgiz.ipb.ac.id/seminar-nasional-dan-temu-alumni-pascasarjana-ilmu-gizi-ipb-bahas-peran-protein-dalam-pengelolaan-berat-badan-berkelanjutan/", gambar: "https://fkgiz.ipb.ac.id/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-05-at-9.51.16-AM.jpeg",
+    ringkasan: "Dalam sesi temu alumni di IPB University, forum memilih Dr. Mury Kuswari sebagai Ketua Ikatan Alumni Pascasarjana Ilmu Gizi IPB University. Acara ini juga menghadirkan seminar nasional tentang peran protein dalam pengelolaan berat badan berkelanjutan.",
+    poin: ["Terpilih sebagai Ketua Ikatan Alumni Pascasarjana Ilmu Gizi IPB", "Dihadiri lebih dari 200 dosen, mahasiswa, dan alumni", "Bogor, 1 November 2025"] },
+  { tanggal: "2025-06-20", media: "FK Gizi IPB University", kategori: "Akademik", judul: "IPB University Dorong Gaya Hidup Sehat Melalui Program Healthy Lifestyle", url: "https://gizi.ipb.ac.id/ipb-university-dorong-gaya-hidup-sehat-melalui-program-healthy-lifestyle/", gambar: "https://fkgiz.ipb.ac.id/wp-content/uploads/2025/10/DSC00418-scaled.jpg",
+    ringkasan: "Dr. Mury Kuswari memandu sesi workout dan workshop Eat & Train bagi 50 dosen, tenaga kependidikan, dan mahasiswa Departemen Gizi IPB University, membahas personalisasi pola makan, manajemen energi, dan program latihan sesuai kebutuhan gizi individu.",
+    poin: ["Tema: Eat & Train, gizi dan latihan untuk program wellness", "Diikuti 50 peserta sivitas Departemen Gizi IPB", "Kampus IPB Dramaga"] },
   { tanggal: "2024-10-19", media: "Universitas Esa Unggul", kategori: "Video", video: true, judul: "Podcast Kampus KECEE - Dr. Mury Kuswari", url: "https://www.youtube.com/watch?v=XD7xGlTlYoo", gambar: "https://i.ytimg.com/vi/XD7xGlTlYoo/maxresdefault.jpg",
     ringkasan: "Dr. Mury Kuswari tampil dalam Podcast Kampus KECEE, program podcast dari kanal resmi Universitas Esa Unggul.",
     poin: ["Program podcast resmi Universitas Esa Unggul", "Durasi sekitar 38 menit", "Tayang di YouTube"] },
