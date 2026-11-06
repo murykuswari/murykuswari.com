@@ -8,6 +8,9 @@
  * Entri "LinkedIn Mury Kuswari" ditulis dari unggahan pribadi; fotonya disimpan di assets/img/berita/.
  */
 window.BERITA = [
+  { tanggal: "2026-10-28", media: "Badminton Indonesia", kategori: "Video", video: true, judul: "Webinar Nasional Bulutangkis Batch 7: Kebutuhan dan Strategi Gizi Atlet Bulutangkis", url: "https://www.youtube.com/watch?v=fNOrXr43n6Y", gambar: "https://i.ytimg.com/vi/fNOrXr43n6Y/maxresdefault.jpg",
+    ringkasan: "PP PBSI melalui Bidang Pembinaan Prestasi Daerah menghadirkan Dr. Mury Kuswari sebagai narasumber Webinar Nasional Bulutangkis Batch 7, dengan tema kebutuhan dan strategi gizi atlet bulutangkis.",
+    poin: ["Diselenggarakan PP PBSI", "Tampil sebagai narasumber", "Tayangan siaran langsung sekitar 2,5 jam"] },
   { tanggal: "2025-09-07", media: "LinkedIn Mury Kuswari", kategori: "Atlet", tombol: "Lihat unggahan di LinkedIn", judul: "Periodisasi Gizi Jangka Panjang untuk Atlet Elite Taekwondo Indonesia", url: "https://www.linkedin.com/posts/murykuswari_nutrition-periodization-program-has-been-ugcPost-7370593121526743040-U8Cw/", gambar: "assets/img/berita/li-taekwondo-sea-games-2025.jpg",
     ringkasan: "Program pendampingan gizi jangka panjang bagi atlet elite taekwondo Indonesia terus berjalan untuk persiapan SEA Games 2025 di Thailand. Atlet dibantu mencapai target timbang badan jauh sebelum kompetisi, sambil menjaga asupan dan pemulihan di tengah latihan intensif.",
     poin: ["Berjalan sejak 2019 bersama Nazhif Gifari dan tim performa", "Periodisasi gizi berbasis bukti", "Target timbang badan tercapai jauh sebelum laga"] },
