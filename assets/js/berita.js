@@ -7,6 +7,7 @@ window.MKBerita = (() => {
     <span class="news-thumb" data-media="${MK.esc(n.media)}">
       <span class="news-fallback"><b>${MK.esc(n.media)}</b><small>${MK.esc(n.kategori)}</small></span>
       ${n.gambar ? `<img src="${MK.esc(n.gambar)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}
+      ${n.video ? '<span class="news-play" aria-hidden="true"></span>' : ""}
     </span>`;
 
   const card = (n) => `
@@ -30,7 +31,7 @@ window.MKBerita = (() => {
         <p class="mk-by">Sumber: ${MK.esc(n.media)}</p>
         <p>${MK.esc(n.ringkasan)}</p>
         <ul class="mk-list">${(n.poin || []).map((p) => `<li>${MK.esc(p)}</li>`).join("")}</ul>
-        <p class="mk-actions"><a class="btn btn-primary" href="${MK.esc(n.url)}" target="_blank" rel="noopener">Baca artikel lengkap di ${MK.esc(n.media)}</a></p>
+        <p class="mk-actions"><a class="btn btn-primary" href="${MK.esc(n.url)}" target="_blank" rel="noopener">${n.video ? "Tonton video di YouTube" : "Baca artikel lengkap di " + MK.esc(n.media)}</a></p>
       </div>`, n.judul);
   }
 

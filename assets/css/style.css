@@ -725,3 +725,7 @@ section[id] { scroll-margin-top: 72px; }
 .brand { gap: 11px; }
 .brand > span { font-size: 1.1rem; font-weight: 700; line-height: 1.2; letter-spacing: -.012em; }
 .brand small { font-family: var(--font); font-size: .78rem; font-weight: 400; letter-spacing: 0; line-height: 1.25; margin-top: 1px; white-space: nowrap; }
+
+/* Tanda putar pada thumbnail video */
+.news-play { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; background: rgba(0, 58, 99, .86); }
+.news-play::after { content: ""; position: absolute; left: 23px; top: 18px; border-style: solid; border-width: 11px 0 11px 18px; border-color: transparent transparent transparent #fff; }
