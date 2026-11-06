@@ -108,8 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (nama.length < 2) return msg("Isi nama lengkap Anda.");
     if (!emailValid(email)) return msg("Format email belum benar.");
     if (!waValid(wa)) return msg("Nomor WhatsApp belum benar. Contoh: 081234567890.");
+    const instansi = f1.instansi.value.trim();
+    if (instansi.length < 2) return msg("Isi nama instansi Anda.");
     if (!f1.setuju.checked) return msg("Centang persetujuan penggunaan data terlebih dahulu.");
-    data = { nama, email, wa, instansi: f1.instansi.value.trim(), website: f1.website.value };
+    data = { nama, email, wa, instansi, website: f1.website.value };
     busy($("b1"), true, "Mengirim…");
     try { await kirim(); } catch (err) { msg(GAGAL); }
     busy($("b1"), false);
