@@ -15,6 +15,14 @@ const FILES = {
   'modul-gizi-kebugaran': {
     id: '1v5xkOH-6TElF5qOcUDbRFulwMmBU4f8T',
     nama: 'Modul-UTS-Gizi-Kebugaran.pdf'
+  },
+  'buku-panduan-pendampingan-gizi-atlet': {
+    id: '1hLgaUul4omrb61FErk3FU24IP09zo3jV',
+    nama: 'Panduan-Pendampingan-Gizi-pada-Atlet-Kemenkes-2021.pdf'
+  },
+  'buku-pintar-gizi-atlet': {
+    id: '1_d8UB1X14hnqb58Fqc9soVcgLA8qnXrs',
+    nama: 'Buku-Pintar-Gizi-bagi-Atlet-Kemenkes-2021.pdf'
   }
 };
 
