@@ -321,7 +321,7 @@
 
   <script src="config.js"></script>
   <script src="data/kegiatan.js"></script>
-  <script src="data/buku.js?v=2026k"></script>
+  <script src="data/buku.js?v=2026p"></script>
   <script src="data/pembicara.js"></script>
   <script src="data/berita.js?v=2026o"></script>
   <script src="assets/js/main.js?v=2026j"></script>
@@ -333,7 +333,7 @@
       document.getElementById("hero-stats").innerHTML = `
         <div><strong>20+</strong><span>tahun mendampingi atlet</span></div>
         <div><strong>150+</strong><span>publikasi ilmiah</span></div>
-        <div><strong>${(window.BUKU || []).filter((b) => !b.unduh).length}</strong><span>buku rujukan</span></div>
+        <div><strong>${(window.BUKU || []).filter((b) => !/^Modul/.test(b.judul)).length}</strong><span>buku rujukan</span></div>
         <div><strong>${(window.PEMBICARA || []).length}</strong><span>kegiatan pembicara</span></div>`;
       const intl = (window.PEMBICARA || []).filter((r) => r[2] === "I").length;
       if (intl) document.getElementById("hc-intl").textContent = intl + " forum dunia";
