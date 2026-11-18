@@ -801,3 +801,44 @@ section[id] { scroll-margin-top: 72px; }
 .penutup .btn-ghost:hover { background: rgba(255, 255, 255, .12); color: #fff; }
 .trust p { flex-basis: 100%; }
 @media print { .penutup { background: none; color: #000; padding: 20px 0; } .penutup h2 { color: #000; } .penutup-cta { display: none; } }
+
+/* ---------- Program Gizi Personal (program.html) ---------- */
+.pg-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 28px; align-items: start; }
+@media (max-width: 960px) { .pg-layout { grid-template-columns: minmax(0, 1fr); } }
+.pg-main > * { min-width: 0; }
+.pg-steps { margin-bottom: 16px; }
+.pg-card { padding: 26px; margin-bottom: 18px; }
+.pg-card h2 { font-size: 1.6rem; }
+.pg-side { padding: 22px; position: sticky; top: 88px; }
+@media (max-width: 960px) { .pg-side { position: static; } }
+.pg-fs { border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px 6px; margin: 0 0 16px; }
+.pg-fs legend { font-weight: 800; padding: 0 6px; }
+.pg-opt { padding-bottom: 12px; }
+.pg-opt > summary { cursor: pointer; margin-bottom: 10px; }
+.pg-skgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0 12px; }
+.pg-day { border-top: 1px dashed var(--line); padding: 8px 0; }
+.pg-day:first-child { border-top: 0; }
+.pg-day-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.pg-sesi { display: grid; grid-template-columns: minmax(0, 1fr) 84px 70px 32px; gap: 8px; align-items: end; margin-bottom: 6px; }
+.pg-sesi select, .pg-sesi input { padding: 8px 10px; font-size: .88rem; }
+.pg-mini { font-size: .72rem; color: var(--muted); font-weight: 600; display: grid; gap: 2px; }
+.pg-x { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 10px; height: 38px; font-size: 1.1rem; cursor: pointer; }
+.pg-x:hover { color: var(--red); border-color: var(--red); }
+.pg-libur { margin: 0; }
+@media (max-width: 520px) { .pg-sesi { grid-template-columns: minmax(0, 1fr) 70px 58px 32px; } }
+.pg-cek { display: grid; gap: 6px; margin-bottom: 10px; }
+.pg-cek label { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; color: var(--ink-2); }
+.pg-cek input { width: auto; margin-top: 4px; }
+.pg-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.pg-head h2 { margin-bottom: 2px; }
+.pg-bahas { border-left: 3px solid var(--blue); padding: 2px 0 2px 14px; margin: 10px 0; }
+.pg-bahas h4 { margin: 0 0 4px; font-size: .98rem; }
+.pg-bahas p { margin: 0; color: var(--ink-2); font-size: .94rem; }
+#hasil h3 { margin: 26px 0 8px; font-size: 1.15rem; }
+.pg-chart { width: 100%; height: auto; display: block; }
+@media print {
+  .pg-layout { display: block; }
+  #s-masuk, #s-profil, #s-asesmen, .pg-steps, #lokal { display: none !important; }
+  #s-hasil { display: block !important; }
+  .pg-card { box-shadow: none; border: 0; padding: 0; }
+}

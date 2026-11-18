@@ -41,6 +41,7 @@ function doGet() {
 function doPost(e) {
   try {
     const d = JSON.parse((e.postData && e.postData.contents) || '{}');
+    if (String(d.aksi || '').indexOf('kons-') === 0) return json_(konsultasi_(d)); // Konsultasi.gs
     if (d.aksi === 'kirim') return json_(kirim_(d));
     if (d.aksi === 'verifikasi') return json_(verifikasi_(d));
     if (d.aksi === 'unduh') return json_(unduh_(d));

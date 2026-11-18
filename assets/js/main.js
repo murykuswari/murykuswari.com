@@ -30,7 +30,7 @@
     ["berita.html", "Berita"],
     ["unduhan.html", "Unduhan"],
     ["gizi.html", "Kalkulator"],
-    ["gizi.html#konsultasi", "Konsultasi"]
+    ["program.html", "Konsultasi"]
   ];
 
   function currentPage() {
@@ -108,6 +108,7 @@
               <li><a href="berita.html">Berita &amp; Liputan Media</a></li>
               <li><a href="unduhan.html">Unduhan Modul</a></li>
               <li><a href="gizi.html">Kalkulator Gizi Olahraga</a></li>
+              <li><a href="program.html">Program Gizi Personal</a></li>
               <li><a href="${S.cv}" download>Unduh CV / Profil</a></li>
             </ul>
           </div>
