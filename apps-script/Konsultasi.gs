@@ -16,7 +16,7 @@ const KONS = {
   FOLDER_ID: '1NUQ1tXIEDL2dp88tGNTggseucZZPkZ-N',   // Claude 2026 / Konsultasi Gizi Olahraga – murykuswari.com
   SHEET_ID: '19XM6Gwdka7yYLBXsicHootqRMoQqj707Ti6hapAAanA', // Database Konsultasi Gizi Olahraga
   EMAIL_PEMILIK: 'mury@esaunggul.ac.id',
-  ADMIN: ['mury@esaunggul.ac.id'], // email yang boleh membuka dashboard.html
+  ADMIN: ['mury@esaunggul.ac.id', 'murykuswari@gmail.com'], // email yang boleh membuka dashboard.html
   SESI_JAM: 6,              // masa berlaku sesi masuk (maksimal 6 jam, batas CacheService)
   KIRIM_SALINAN_KLIEN: true, // kirim ringkasan hasil ke email klien setelah disimpan
   KABARI_PEMILIK: true,      // kirim pemberitahuan ke pemilik untuk setiap konsultasi baru
