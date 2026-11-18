@@ -945,3 +945,24 @@ section[id] { scroll-margin-top: 72px; }
 .pg-paket-aksi b { font-size: 1rem; color: var(--navy); }
 .pg-bayar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; font-size: .85rem; padding: 6px 0; border-bottom: 1px solid var(--line); }
 .db-paid { background: #d8f8ea; color: #087a4d; }
+.pg-tanya { display: grid; gap: 8px; margin-bottom: 6px; }
+.pg-tanya select, .pg-tanya textarea { font-size: .85rem; padding: 8px 10px; }
+.pg-tq { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; background: var(--surface); }
+.pg-tq-h { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; font-size: .86rem; }
+.pg-tq-h .badge { font-size: .68rem; white-space: nowrap; }
+.pg-tq-isi { font-size: .84rem; color: var(--ink-2); margin: 6px 0; white-space: pre-line; max-height: 7.5em; overflow: auto; }
+.pg-tq-cat { font-size: .82rem; margin: 6px 0; padding: 6px 8px; border-radius: 8px; background: var(--orange-soft); }
+.pg-tq-jwb summary { cursor: pointer; font-weight: 700; font-size: .86rem; color: var(--green); }
+.pg-tq-jwb p { font-size: .86rem; margin: 6px 0 0; }
+.db-tanya-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.db-seg { width: auto; }
+.db-seg button { flex: none; padding: 7px 12px; font-size: .82rem; }
+.db-tq { border: 1px solid var(--line); border-left: 5px solid var(--orange); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; display: grid; gap: 6px; background: var(--surface); }
+.db-tq-h { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.db-tq-isi { margin: 0; color: var(--ink-2); white-space: pre-line; }
+.db-putus, .db-jawab { display: grid; gap: 8px; padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.db-harga { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr); gap: 8px; }
+.db-harga[hidden] { display: none; }
+.db-harga .note { grid-column: 1 / -1; }
+@media (max-width: 700px) { .db-harga { grid-template-columns: minmax(0, 1fr); } }
+.db-jawab .note { display: inline; }

@@ -37,7 +37,10 @@ const PAKET = [
   { id: 'paket-4', nama: 'Pendampingan 4 minggu', harga: 750000, deskripsi: '2 sesi video call, evaluasi mingguan via WhatsApp, penyesuaian program tiap 2 minggu.' },
   { id: 'paket-12', nama: 'Pendampingan 12 minggu', harga: 1800000, deskripsi: '6 sesi video call, evaluasi mingguan, periodisasi gizi sampai kompetisi.' }
 ];
-const KOLOM_BAYAR = ['Order ID', 'Dibuat', 'Email', 'Nama', 'Paket', 'Jumlah (Rp)', 'Status', 'Metode', 'Dibayar', 'ID klien praktisi', 'Catatan', 'Status Midtrans', 'Diperbarui'];
+const KOLOM_BAYAR = ['Order ID', 'Dibuat', 'Email', 'Nama', 'Paket', 'Jumlah (Rp)', 'Status', 'Metode', 'Dibayar', 'ID klien praktisi', 'Catatan', 'Status Midtrans', 'Diperbarui', 'ID permintaan'];
+// Permintaan konsultasi lanjutan: admin memutuskan gratis / berbayar / ditolak sebelum menjawab.
+const KOLOM_TANYA = ['ID', 'Dibuat', 'Email', 'Nama', 'ID klien praktisi', 'Topik', 'Pertanyaan', 'Status', 'Jenis', 'Paket', 'Harga (Rp)', 'Catatan admin', 'Order ID', 'Jawaban', 'Dijawab', 'Diperbarui'];
+const TOPIK = ['Performa & persiapan kompetisi', 'Komposisi tubuh (turun lemak / naik otot)', 'Membuat berat badan kelas tanding', 'Menu & pola makan harian', 'Suplemen', 'Cedera, pemulihan, atau keluhan kesehatan', 'Program untuk tim / klien', 'Lainnya'];
 
 const KOLOM_KLIEN = ['Email', 'Nama lengkap', 'Jenis kelamin', 'Tanggal lahir', 'Asal', 'WhatsApp', 'Cabang olahraga', 'Level', 'Terdaftar', 'Terakhir masuk', 'Jumlah konsultasi', 'Folder klien', 'Peran', 'Profesi & lisensi', 'Foto'];
 const KOLOM_KONS = ['ID', 'Waktu', 'Email', 'Nama', 'Cabang olahraga', 'Tujuan', 'Fase', 'BB (kg)', 'TB (cm)', '% lemak', 'FFM (kg)', 'Energi rata-rata (kkal)', 'KH rata-rata (g)', 'Protein (g)', 'Lemak (g)', 'EA (kkal/kg FFM)', 'Laju keringat (L/jam)', 'Tujuan konsultasi', 'Laporan', 'Data (JSON)', 'ID klien praktisi', 'Nama klien praktisi'];
@@ -56,7 +59,10 @@ function konsultasi_(d) {
     case 'kons-foto': return konsFoto_(d);
     case 'kons-foto-ambil': return konsFotoAmbil_(d);
     case 'kons-admin': return konsAdmin_(d);
-    case 'kons-paket': return { ok: true, aktif: !!kunciMidtrans_(), paket: PAKET, jadwal: KONS.JADWAL_URL };
+    case 'kons-paket': return { ok: true, aktif: !!kunciMidtrans_(), paket: PAKET, topik: TOPIK, jadwal: KONS.JADWAL_URL };
+    case 'kons-tanya': return konsTanya_(d);
+    case 'kons-putus': return konsPutus_(d);
+    case 'kons-jawab': return konsJawab_(d);
     case 'kons-bayar': return konsBayar_(d);
     case 'kons-status': return konsStatus_(d);
     default: return { ok: false, pesan: 'Permintaan tidak dikenali.' };
@@ -69,6 +75,7 @@ function siapkanKonsultasi() {
   tab_('Konsultasi', KOLOM_KONS);
   tab_('Klien Praktisi', KOLOM_KP);
   tab_('Pembayaran', KOLOM_BAYAR);
+  tab_('Permintaan', KOLOM_TANYA);
   folderKlienInduk_();
   UrlFetchApp.fetch('https://api.midtrans.com', { muteHttpExceptions: true }); // meminta izin akses jaringan untuk Midtrans
   const uji = DocumentApp.create('uji-izin-program-gizi');
@@ -145,7 +152,7 @@ function konsMasuk_(d) {
 function paketMasuk_(email, token) {
   const profil = cariKlien_(email);
   if (profil) setSel_('Klien', profil.baris, 'Terakhir masuk', waktu_());
-  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, admin: isAdmin_(email), profil: profil ? profil.data : null, foto: profil ? fotoBase64_(profil.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email), pembayaran: daftarBayar_(email) };
+  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, admin: isAdmin_(email), profil: profil ? profil.data : null, foto: profil ? fotoBase64_(profil.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email), pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
 }
 
 /* ---------- Ingat perangkat (tanpa OTP selama INGAT_HARI) ---------- */
@@ -194,7 +201,7 @@ function konsRiwayat_(d) {
   const email = sesi_(d);
   if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
   const p = cariKlien_(email);
-  return { ok: true, email: email, admin: isAdmin_(email), profil: p ? p.data : null, foto: p ? fotoBase64_(p.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email), pembayaran: daftarBayar_(email) };
+  return { ok: true, email: email, admin: isAdmin_(email), profil: p ? p.data : null, foto: p ? fotoBase64_(p.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email), pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
 }
 
 /* ---------- Profil ---------- */
@@ -575,7 +582,7 @@ function konsAdmin_(d) {
     out.push({ jenis: 'klien-praktisi', id: k.id, praktisiEmail: pem, praktisiNama: prak ? prak.nama : pem, email: k.email, nama: k.nama, jk: k.jk, tglLahir: k.tglLahir, wa: k.wa, cabor: k.cabor, caborLain: k.caborLain, level: k.level, catatan: k.catatan, terdaftar: String(k.dibuat), adaFoto: !!k.foto, folder: k.folder,
       riwayat: ringkasR((semua[pem] || {})[k.id] || []) });
   });
-  return { ok: true, peserta: out, pembayaran: semuaBayar_(), dibuat: waktu_() };
+  return { ok: true, peserta: out, pembayaran: semuaBayar_(), permintaan: semuaTanya_(), paket: PAKET, bayarAktif: !!kunciMidtrans_(), dibuat: waktu_() };
 }
 
 function cariKlienDariBaris_(email, r) {
@@ -622,15 +629,15 @@ function konsBayar_(d) {
   if (!kunciMidtrans_()) return { ok: false, pesan: 'Pembayaran online belum diaktifkan. Silakan hubungi ' + KONS.EMAIL_PEMILIK + '.' };
   const akun = cariKlien_(email);
   if (!akun) return { ok: false, pesan: 'Lengkapi profil terlebih dahulu.' };
-  const paket = PAKET.filter(function (p) { return p.id === d.paket; })[0];
-  if (!paket) return { ok: false, pesan: 'Paket tidak ditemukan.' };
-  const klienId = bersih_(d.klienId, 40);
-  let namaKlien = akun.data.nama;
-  if (klienId) { const kp = cariKP_(email, klienId); if (!kp) return { ok: false, pesan: 'Klien tidak ditemukan.' }; namaKlien = kp.data.nama + ' (via ' + akun.data.nama + ')'; }
+  // Harga hanya dari keputusan admin pada permintaan, bukan dari pilihan klien.
+  const t = cariTanya_(bersih_(d.permintaanId, 40));
+  if (!t || t.data.email !== email) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
+  if (t.data.status !== 'menunggu-bayar' || !(t.data.harga > 0)) return { ok: false, pesan: 'Permintaan ini tidak memerlukan pembayaran saat ini.' };
   const orderId = 'MK-' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + '-' + Utilities.getUuid().slice(0, 4).toUpperCase();
+  const namaPaket = (t.data.paket || 'Konsultasi lanjutan').slice(0, 50);
   const body = {
-    transaction_details: { order_id: orderId, gross_amount: paket.harga },
-    item_details: [{ id: paket.id, price: paket.harga, quantity: 1, name: paket.nama.slice(0, 50) }],
+    transaction_details: { order_id: orderId, gross_amount: t.data.harga },
+    item_details: [{ id: t.data.id, price: t.data.harga, quantity: 1, name: namaPaket }],
     customer_details: { first_name: akun.data.nama.slice(0, 50), email: email, phone: akun.data.wa ? '+' + akun.data.wa : '' },
     callbacks: { finish: KONS.SITUS + '?bayar=' + encodeURIComponent(orderId) },
     expiry: { unit: 'hours', duration: 24 }
@@ -642,7 +649,8 @@ function konsBayar_(d) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    tab_('Pembayaran', KOLOM_BAYAR).appendRow([orderId, waktu_(), aman_(email), aman_(namaKlien), aman_(paket.nama), paket.harga, 'menunggu', '', '', klienId, aman_(bersih_(d.catatan, 500)), '', waktu_()]);
+    tab_('Pembayaran', KOLOM_BAYAR).appendRow([orderId, waktu_(), aman_(email), aman_(t.data.nama), aman_(namaPaket), t.data.harga, 'menunggu', '', '', t.data.klienId, aman_(t.data.topik), '', waktu_(), t.data.id]);
+    setTanya_(t.baris, { 'Order ID': orderId });
   } finally { lock.releaseLock(); }
   return { ok: true, orderId: orderId, redirect: j.redirect_url };
 }
@@ -696,11 +704,19 @@ function terapkanStatus_(orderId, m) {
     const st = petaStatus_(m);
     const lama = String(row.r[6]);
     const sh = ss_().getSheetByName('Pembayaran');
-    sh.getRange(row.baris, 7, 1, 7).setValues([[st, String(m.payment_type || row.r[7] || ''), st === 'lunas' ? (row.r[8] || waktu_()) : row.r[8], row.r[9], row.r[10], String(m.transaction_status || ''), waktu_()]]);
+    sh.getRange(row.baris, 7, 1, 7).setValues([[st, String(m.payment_type || row.r[7] || ''), st === 'lunas' ? (row.r[8] || waktu_()) : row.r[8], row.r[9], row.r[10], String(m.transaction_status || ''), waktu_()]]); // kolom 14 (ID permintaan) tidak diubah
     baru = st === 'lunas' && lama !== 'lunas';
     row = cariBayar_(orderId);
   } finally { lock.releaseLock(); }
-  if (baru) kabariLunas_(row.r);
+  if (baru) {
+    kabariLunas_(row.r);
+    const tid = String(row.r[13] || '');
+    const t = tid ? cariTanya_(tid) : null;
+    if (t && t.data.status === 'menunggu-bayar') {
+      setTanya_(t.baris, { 'Status': 'lunas' });
+      try { MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: 'Siap dijawab (lunas): ' + t.data.topik + ' – ' + t.data.nama, htmlBody: '<p>Permintaan dari <b>' + esc_(t.data.nama) + '</b> sudah dibayar dan siap Anda jawab di dashboard.</p><p><i>' + esc_(t.data.pertanyaan) + '</i></p><p>https://murykuswari.com/dashboard.html</p>' }); } catch (e) { console.error(e); }
+    }
+  }
   return row;
 }
 
@@ -726,11 +742,11 @@ function konsStatus_(d) {
     const m = statusMidtrans_(orderId);
     if (m) row = terapkanStatus_(orderId, m) || row;
   }
-  return { ok: true, status: String(row.r[6]), jadwal: KONS.JADWAL_URL, pembayaran: daftarBayar_(email) };
+  return { ok: true, status: String(row.r[6]), jadwal: KONS.JADWAL_URL, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
 }
 
 function barisBayar_(r) {
-  return { orderId: String(r[0]), dibuat: String(r[1]), email: String(r[2]).replace(/^'/, ''), nama: String(r[3]).replace(/^'/, ''), paket: String(r[4]).replace(/^'/, ''), jumlah: Number(r[5]), status: String(r[6]), metode: String(r[7]), dibayar: String(r[8]), klienId: String(r[9]) };
+  return { orderId: String(r[0]), dibuat: String(r[1]), email: String(r[2]).replace(/^'/, ''), nama: String(r[3]).replace(/^'/, ''), paket: String(r[4]).replace(/^'/, ''), jumlah: Number(r[5]), status: String(r[6]), metode: String(r[7]), dibayar: String(r[8]), klienId: String(r[9]), permintaanId: String(r[13] || '') };
 }
 function daftarBayar_(email) {
   const sh = tab_('Pembayaran', KOLOM_BAYAR);
@@ -743,4 +759,112 @@ function semuaBayar_() {
   const n = sh.getLastRow();
   if (n < 2) return [];
   return sh.getRange(2, 1, n - 1, KOLOM_BAYAR.length).getValues().map(barisBayar_);
+}
+
+/* ---------- Permintaan konsultasi lanjutan (keputusan admin) ---------- */
+
+function barisTanya_(r) {
+  const t = function (v) { return String(v == null ? '' : v).replace(/^'/, ''); };
+  return { id: t(r[0]), dibuat: t(r[1]), email: t(r[2]).toLowerCase(), nama: t(r[3]), klienId: t(r[4]), topik: t(r[5]), pertanyaan: t(r[6]), status: t(r[7]), jenis: t(r[8]), paket: t(r[9]), harga: Number(r[10]) || 0, catatan: t(r[11]), orderId: t(r[12]), jawaban: t(r[13]), dijawab: t(r[14]), diperbarui: t(r[15]) };
+}
+function semuaTanya_() {
+  const sh = tab_('Permintaan', KOLOM_TANYA);
+  const n = sh.getLastRow();
+  return n < 2 ? [] : sh.getRange(2, 1, n - 1, KOLOM_TANYA.length).getValues().map(barisTanya_);
+}
+function daftarTanya_(email) { return semuaTanya_().filter(function (t) { return t.email === email; }).slice(-30); }
+function cariTanya_(id) {
+  if (!id) return null;
+  const sh = tab_('Permintaan', KOLOM_TANYA);
+  const n = sh.getLastRow();
+  if (n < 2) return null;
+  const v = sh.getRange(2, 1, n - 1, KOLOM_TANYA.length).getValues();
+  for (let i = 0; i < v.length; i++) if (String(v[i][0]) === id) return { baris: i + 2, data: barisTanya_(v[i]) };
+  return null;
+}
+function setTanya_(baris, nilai) {
+  const sh = ss_().getSheetByName('Permintaan');
+  Object.keys(nilai).forEach(function (k) { sh.getRange(baris, KOLOM_TANYA.indexOf(k) + 1).setValue(nilai[k]); });
+  sh.getRange(baris, KOLOM_TANYA.indexOf('Diperbarui') + 1).setValue(waktu_());
+}
+
+/** Klien mengajukan pertanyaan/masalah. Belum ada pembayaran; admin memutuskan dulu. */
+function konsTanya_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const akun = cariKlien_(email);
+  if (!akun) return { ok: false, pesan: 'Lengkapi profil terlebih dahulu.' };
+  const topik = TOPIK.indexOf(d.topik) >= 0 ? d.topik : 'Lainnya';
+  const tanya = bersih_(d.pertanyaan, 3000);
+  if (tanya.length < 30) return { ok: false, pesan: 'Jelaskan masalah Anda minimal 30 karakter.' };
+  const terbuka = daftarTanya_(email).filter(function (t) { return t.status === 'menunggu-keputusan'; }).length;
+  if (terbuka >= 3) return { ok: false, pesan: 'Masih ada 3 permintaan yang menunggu ditinjau. Mohon tunggu jawabannya.' };
+  const klienId = bersih_(d.klienId, 40);
+  let nama = akun.data.nama;
+  if (klienId) { const kp = cariKP_(email, klienId); if (!kp) return { ok: false, pesan: 'Klien tidak ditemukan.' }; nama = kp.data.nama + ' (via ' + akun.data.nama + ')'; }
+  const id = 'Q' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + Utilities.getUuid().slice(0, 3).toUpperCase();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    tab_('Permintaan', KOLOM_TANYA).appendRow([id, waktu_(), aman_(email), aman_(nama), klienId, aman_(topik), aman_(tanya), 'menunggu-keputusan', '', '', '', '', '', '', '', waktu_()]);
+  } finally { lock.releaseLock(); }
+  try {
+    MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, replyTo: email, name: 'Konsultasi Gizi murykuswari.com', subject: 'Permintaan konsultasi baru: ' + topik + ' – ' + nama,
+      htmlBody: '<p><b>' + esc_(nama) + '</b> (' + esc_(email) + ', WA ' + esc_(akun.data.wa) + ')</p><p><b>' + esc_(topik) + '</b></p><p>' + esc_(tanya) + '</p><p>Tentukan gratis atau berbayar di dashboard: https://murykuswari.com/dashboard.html</p>' });
+  } catch (e) { console.error(e); }
+  return { ok: true, id: id, permintaan: daftarTanya_(email) };
+}
+
+/** Admin memutuskan: gratis, berbayar (paket atau harga sendiri), atau tolak. */
+function konsPutus_(d) {
+  const admin = sesi_(d);
+  if (!admin) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  if (!isAdmin_(admin)) return { ok: false, pesan: 'Hanya pengelola.' };
+  const t = cariTanya_(bersih_(d.id, 40));
+  if (!t) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
+  if (['menunggu-keputusan', 'menunggu-bayar'].indexOf(t.data.status) < 0) return { ok: false, pesan: 'Permintaan ini sudah diproses (' + t.data.status + ').' };
+  const catatan = bersih_(d.catatan, 1500);
+  let nilai, subjek, isi;
+  if (d.jenis === 'gratis') {
+    nilai = { 'Status': 'gratis', 'Jenis': 'gratis', 'Paket': '', 'Harga (Rp)': 0, 'Catatan admin': catatan };
+    subjek = 'Konsultasi Anda diterima (gratis)';
+    isi = '<p>Permintaan konsultasi Anda tentang <b>' + esc_(t.data.topik) + '</b> diterima tanpa biaya. Jawaban akan dikirim melalui email dan dapat dilihat di ' + KONS.SITUS + '.</p>';
+  } else if (d.jenis === 'berbayar') {
+    const pk = PAKET.filter(function (p) { return p.id === d.paket; })[0];
+    const harga = Math.round(Number(d.harga || (pk && pk.harga) || 0));
+    if (!(harga >= 10000 && harga <= 100000000)) return { ok: false, pesan: 'Isi harga yang valid (minimal Rp10.000).' };
+    const namaPaket = bersih_(d.namaPaket || (pk && pk.nama) || 'Konsultasi lanjutan', 80);
+    nilai = { 'Status': 'menunggu-bayar', 'Jenis': 'berbayar', 'Paket': namaPaket, 'Harga (Rp)': harga, 'Catatan admin': catatan };
+    subjek = 'Konsultasi lanjutan: ' + namaPaket + ' – Rp' + harga.toLocaleString('id-ID');
+    isi = '<p>Permintaan konsultasi Anda tentang <b>' + esc_(t.data.topik) + '</b> memerlukan pendampingan lanjutan: <b>' + esc_(namaPaket) + '</b>, biaya <b>Rp' + harga.toLocaleString('id-ID') + '</b>.</p>' +
+      (kunciMidtrans_() ? '<p>Masuk ke ' + KONS.SITUS + ' lalu klik <b>Bayar</b> pada permintaan Anda. Pembayaran (QRIS, transfer VA, e-wallet) diverifikasi otomatis.</p>' : '<p>Kami akan mengirim instruksi pembayaran melalui email/WhatsApp.</p>');
+  } else if (d.jenis === 'tolak') {
+    nilai = { 'Status': 'ditolak', 'Jenis': 'ditolak', 'Catatan admin': catatan };
+    subjek = 'Tentang permintaan konsultasi Anda';
+    isi = '<p>Terima kasih atas permintaan konsultasi tentang <b>' + esc_(t.data.topik) + '</b>. Saat ini permintaan tersebut belum dapat kami layani.</p>';
+  } else return { ok: false, pesan: 'Pilih gratis, berbayar, atau tolak.' };
+  setTanya_(t.baris, nilai);
+  try {
+    MailApp.sendEmail({ to: t.data.email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: subjek,
+      htmlBody: '<p>Halo ' + esc_(t.data.nama) + ',</p>' + isi + (catatan ? '<p><b>Catatan Dr. Mury:</b> ' + esc_(catatan) + '</p>' : '') + '<p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
+  } catch (e) { console.error(e); }
+  return { ok: true, permintaan: semuaTanya_() };
+}
+
+/** Admin menjawab permintaan yang gratis atau sudah lunas. */
+function konsJawab_(d) {
+  const admin = sesi_(d);
+  if (!admin) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  if (!isAdmin_(admin)) return { ok: false, pesan: 'Hanya pengelola.' };
+  const t = cariTanya_(bersih_(d.id, 40));
+  if (!t) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
+  if (['gratis', 'lunas', 'dijawab'].indexOf(t.data.status) < 0) return { ok: false, pesan: t.data.status === 'menunggu-bayar' ? 'Menunggu pembayaran klien.' : 'Tentukan gratis atau berbayar terlebih dahulu.' };
+  const jawaban = bersih_(d.jawaban, 10000);
+  if (jawaban.length < 10) return { ok: false, pesan: 'Tulis jawaban.' };
+  setTanya_(t.baris, { 'Status': 'dijawab', 'Jawaban': aman_(jawaban), 'Dijawab': waktu_() });
+  try {
+    MailApp.sendEmail({ to: t.data.email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: 'Jawaban konsultasi: ' + t.data.topik,
+      htmlBody: '<p>Halo ' + esc_(t.data.nama) + ',</p><p><b>Pertanyaan Anda:</b><br>' + esc_(t.data.pertanyaan) + '</p><p><b>Jawaban Dr. Mury:</b><br>' + esc_(jawaban).replace(/\n/g, '<br>') + '</p><p>Jawaban ini juga tersimpan di ' + KONS.SITUS + '.</p><p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
+  } catch (e) { console.error(e); }
+  return { ok: true, permintaan: semuaTanya_() };
 }

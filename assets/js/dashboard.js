@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ENDPOINT = S.programEndpoint || S.otpEndpoint || "";
   const SESI_KEY = "mk-program-sesi", INGAT_KEY = "mk-ingat";
   const WARNA = ["#0070b8", "#f05828", "#06d6a0", "#ffd166", "#ef476f", "#118ab2", "#8338ec", "#3a86ff", "#fb5607", "#2a9d8f", "#e76f51", "#9b5de5"];
-  const st = { token: "", email: "", peserta: [], bayar: [], foto: {}, charts: {} };
+  const st = { token: "", email: "", peserta: [], bayar: [], tanya: [], paket: [], bayarAktif: false, filterTanya: "aksi", foto: {}, charts: {} };
   const bacaIngat = () => { try { const t = JSON.parse(localStorage.getItem(INGAT_KEY) || "null"); return t && t.sampai > Date.now() ? t : null; } catch (e) { return null; } };
 
   async function api(payload) {
@@ -78,11 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const j = await api({ aksi: "kons-admin", token: st.token });
       if (!j.ok) { if (!diam) pesan(j.pesan || "Gagal memuat."); if (j.ulang) { $("d-masuk").hidden = false; $("d-app").hidden = true; } return false; }
       st.bayar = j.pembayaran || [];
+      st.tanya = j.permintaan || []; st.paket = j.paket || []; st.bayarAktif = !!j.bayarAktif;
       st.peserta = (j.peserta || []).map(olah);
       $("d-masuk").hidden = true; $("d-app").hidden = false;
       $("d-who").textContent = st.email;
       $("d-upd").textContent = "· diperbarui " + (j.dibuat || "");
-      isiFilter(); renderKpi(); renderCharts(); renderBayar(); renderGrid();
+      isiFilter(); renderKpi(); renderCharts(); renderTanya(); renderBayar(); renderGrid();
       return true;
     } catch (er) { if (!diam) pesan("Layanan tidak bisa dihubungi."); return false; }
   }
@@ -118,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ["Peserta", P.filter((p) => p.peranLabel !== "Pelatih" && p.peranLabel !== "Ahli gizi").length, "Atlet & klien terdaftar", "k1"],
       ["Konsultasi", semuaK.length, "Total asesmen tersimpan", "k2"],
       ["30 hari terakhir", semuaK.filter((r) => new Date(r.tanggal).getTime() >= t30).length, "Asesmen baru", "k3"],
-      ["Praktisi", P.filter((p) => p.peranLabel === "Pelatih" || p.peranLabel === "Ahli gizi").length, "Pelatih & ahli gizi", "k4"],
+      ["Perlu tindakan", st.tanya.filter((t) => ["menunggu-keputusan", "gratis", "lunas"].includes(t.status)).length, `${st.tanya.filter((t) => t.status === "menunggu-keputusan").length} perlu keputusan · ${P.filter((p) => p.peranLabel === "Pelatih" || p.peranLabel === "Ahli gizi").length} praktisi`, "k4"],
       ["Berisiko", P.filter((p) => p.risiko).length, "EA < 30 atau ≥ 2 tanda REDs", "k5"],
       ["Pendapatan (Rp)", st.bayar.filter((b) => b.status === "lunas").reduce((a, b) => a + b.jumlah, 0), `${st.bayar.filter((b) => b.status === "lunas").length} pembayaran lunas · ${semuaK.filter((r) => String(r.tanggal).slice(0, 7) === bulanIni).length} konsultasi bulan ini`, "k6"]
     ];
@@ -306,4 +307,92 @@ document.addEventListener("DOMContentLoaded", () => {
     const chip = { lunas: "db-paid", menunggu: "", kedaluwarsa: "db-risk", gagal: "db-risk", dikembalikan: "db-risk" };
     $("d-bayar").innerHTML = L.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dibuat</th><th>Nama</th><th>Paket</th><th class="n">Jumlah</th><th>Status</th><th>Metode</th><th>Order ID</th></tr></thead><tbody>${L.slice(0, 50).map((b) => `<tr><td>${esc(String(b.dibuat).slice(0, 16))}</td><td>${esc(b.nama)}<br><small class="note">${esc(b.email)}</small></td><td>${esc(b.paket)}</td><td class="n">Rp${f0(b.jumlah)}</td><td><span class="db-chip ${chip[b.status] || ""}">${esc(b.status)}</span></td><td>${esc(b.metode || "–")}</td><td><small>${esc(b.orderId)}</small></td></tr>`).join("")}</tbody></table></div>` : '<p class="note">Belum ada pembayaran. Pembayaran online aktif setelah kunci Midtrans dipasang (docs/skema-pembayaran.md).</p>';
   }
+
+  /* ---------- Permintaan konsultasi: keputusan admin ---------- */
+  const rp = (n) => "Rp" + f0(n);
+  const LBL = { "menunggu-keputusan": ["Perlu keputusan", "db-risk"], gratis: ["Gratis · siap dijawab", "db-paid"], "menunggu-bayar": ["Menunggu bayar", ""], lunas: ["Lunas · siap dijawab", "db-paid"], dijawab: ["Dijawab", ""], ditolak: ["Ditolak", ""] };
+  $("tq-filter").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    st.filterTanya = b.dataset.v;
+    $("tq-filter").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    renderTanya();
+  });
+  function formPutus(t) {
+    const opsi = st.paket.map((p) => `<option value="${esc(p.id)}" data-harga="${p.harga}" data-nama="${esc(p.nama)}">${esc(p.nama)} – ${rp(p.harga)}</option>`).join("");
+    return `<div class="db-putus" data-id="${esc(t.id)}">
+      <div class="seg db-seg db-jenis"><button type="button" data-j="gratis" aria-pressed="${t.jenis === "gratis"}">Gratis</button><button type="button" data-j="berbayar" aria-pressed="${t.status === "menunggu-bayar"}">Berbayar</button><button type="button" data-j="tolak" aria-pressed="false">Tolak</button></div>
+      <div class="db-harga" ${t.status === "menunggu-bayar" ? "" : "hidden"}>
+        <select class="db-paket">${opsi}<option value="">Harga lain…</option></select>
+        <input class="db-nama" placeholder="Nama paket" value="${esc(t.paket || (st.paket[0] || {}).nama || "Konsultasi lanjutan")}">
+        <input class="db-rp" type="number" inputmode="numeric" min="10000" step="5000" placeholder="Harga (Rp)" value="${t.harga || (st.paket[0] || {}).harga || ""}">
+        ${st.bayarAktif ? "" : '<small class="note">Midtrans belum aktif: klien akan diminta menunggu instruksi bayar via email.</small>'}
+      </div>
+      <textarea class="db-cat" rows="2" placeholder="Catatan untuk klien (alasan, saran, atau apa yang didapat)">${esc(t.catatan || "")}</textarea>
+      <button type="button" class="btn btn-primary pg-sm db-simpan">Simpan keputusan & kirim email</button>
+    </div>`;
+  }
+  function renderTanya() {
+    const aksi = (t) => ["menunggu-keputusan", "gratis", "lunas"].includes(t.status);
+    const L = st.tanya.filter((t) => st.filterTanya === "semua" || aksi(t)).sort((a, b) => (aksi(b) - aksi(a)) || String(b.dibuat).localeCompare(String(a.dibuat)));
+    $("d-tanya").innerHTML = L.length ? L.map((t) => {
+      const l = LBL[t.status] || [t.status, ""];
+      const peserta = st.peserta.find((p) => p.email === t.email && (t.klienId ? p.id === t.klienId : p.jenis === "akun"));
+      return `<div class="db-tq">
+        <div class="db-tq-h"><span>${peserta ? `<button type="button" class="dl-link" data-k="${esc(peserta.kunci)}">${esc(t.nama)}</button>` : esc(t.nama)} <small class="note">· ${esc(t.email)} · ${esc(String(t.dibuat).slice(0, 16))}</small></span><span class="db-chip ${l[1]}">${l[0]}</span></div>
+        <strong>${esc(t.topik)}</strong>
+        <p class="db-tq-isi">${esc(t.pertanyaan)}</p>
+        ${t.status === "menunggu-bayar" ? `<p class="note">Ditetapkan berbayar: ${esc(t.paket)} · ${rp(t.harga)}. Masih bisa diubah sebelum klien membayar.</p>` : ""}
+        ${["menunggu-keputusan", "menunggu-bayar"].includes(t.status) ? formPutus(t) : ""}
+        ${["gratis", "lunas", "dijawab"].includes(t.status) ? `<div class="db-jawab" data-id="${esc(t.id)}"><textarea rows="5" class="db-jwb" placeholder="Tulis jawaban/rekomendasi untuk klien…">${esc(t.jawaban || "")}</textarea><button type="button" class="btn btn-primary pg-sm db-kirim">${t.status === "dijawab" ? "Perbarui jawaban" : "Kirim jawaban"}</button>${t.dijawab ? `<small class="note"> Dijawab ${esc(String(t.dijawab).slice(0, 16))}</small>` : ""}</div>` : ""}
+        ${t.status === "ditolak" && t.catatan ? `<p class="note">Catatan: ${esc(t.catatan)}</p>` : ""}
+      </div>`;
+    }).join("") : `<p class="note">${st.filterTanya === "aksi" ? "Tidak ada permintaan yang perlu ditindaklanjuti." : "Belum ada permintaan konsultasi."}</p>`;
+  }
+  $("d-tanya").addEventListener("click", async (e) => {
+    const k = e.target.closest("[data-k]");
+    if (k) { bukaDetail(k.dataset.k); return; }
+    const jb = e.target.closest(".db-jenis button");
+    if (jb) {
+      const box = jb.closest(".db-putus");
+      box.querySelectorAll(".db-jenis button").forEach((x) => x.setAttribute("aria-pressed", x === jb));
+      box.querySelector(".db-harga").hidden = jb.dataset.j !== "berbayar";
+      return;
+    }
+    const sv = e.target.closest(".db-simpan");
+    if (sv) {
+      const box = sv.closest(".db-putus");
+      const pilih = box.querySelector(".db-jenis [aria-pressed='true']");
+      if (!pilih) { MK.toast("Pilih gratis, berbayar, atau tolak"); return; }
+      const sel = box.querySelector(".db-paket");
+      const data = { aksi: "kons-putus", token: st.token, id: box.dataset.id, jenis: pilih.dataset.j, catatan: box.querySelector(".db-cat").value.trim() };
+      if (data.jenis === "berbayar") { data.paket = sel.value; data.namaPaket = box.querySelector(".db-nama").value.trim(); data.harga = Number(box.querySelector(".db-rp").value); if (!(data.harga >= 10000)) { MK.toast("Isi harga minimal Rp10.000"); return; } }
+      if (data.jenis === "tolak" && !data.catatan) { MK.toast("Tulis alasan/saran untuk klien"); return; }
+      sv.disabled = true; sv.textContent = "Menyimpan…";
+      try {
+        const j = await api(data);
+        if (!j.ok) { MK.toast(j.pesan || "Gagal menyimpan"); return; }
+        st.tanya = j.permintaan || st.tanya; renderTanya(); renderKpi();
+        MK.toast("Keputusan tersimpan dan email terkirim ke klien");
+      } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { if (sv.isConnected) { sv.disabled = false; sv.textContent = "Simpan keputusan & kirim email"; } }
+      return;
+    }
+    const kr = e.target.closest(".db-kirim");
+    if (kr) {
+      const box = kr.closest(".db-jawab"), jawaban = box.querySelector(".db-jwb").value.trim();
+      if (jawaban.length < 10) { MK.toast("Tulis jawaban"); return; }
+      kr.disabled = true;
+      try {
+        const j = await api({ aksi: "kons-jawab", token: st.token, id: box.dataset.id, jawaban });
+        if (!j.ok) { MK.toast(j.pesan || "Gagal mengirim"); return; }
+        st.tanya = j.permintaan || st.tanya; renderTanya(); renderKpi();
+        MK.toast("Jawaban terkirim ke email klien");
+      } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { if (kr.isConnected) kr.disabled = false; }
+    }
+  });
+  $("d-tanya").addEventListener("change", (e) => {
+    const sel = e.target.closest(".db-paket"); if (!sel) return;
+    const o = sel.selectedOptions[0], box = sel.closest(".db-putus");
+    if (o && o.dataset.harga) { box.querySelector(".db-rp").value = o.dataset.harga; box.querySelector(".db-nama").value = o.dataset.nama; }
+    else { box.querySelector(".db-rp").value = ""; box.querySelector(".db-rp").focus(); }
+  });
 });

@@ -2,33 +2,42 @@
 
 Konsultasi lanjutan dengan Assoc. Prof. Dr. Mury Kuswari dibayar lebih dulu melalui **Midtrans** (QRIS, transfer virtual account semua bank, GoPay/ShopeePay/OVO, kartu kredit). Status pembayaran divalidasi otomatis tanpa pengecekan manual.
 
-## Alur
+## Alur: admin memutuskan gratis atau berbayar
+
+Klien tidak membeli paket sendiri. Setiap konsultasi lanjutan dimulai dari **pertanyaan/masalah klien**, lalu **admin memutuskan** apakah ditangani gratis, berbayar (dengan harga yang disesuaikan masalahnya), atau tidak dilayani, sebelum menjawab.
 
 ```
-Klien (murykuswari.com/konsultasi)          Layanan Konsultasi (Apps Script)            Midtrans
-──────────────────────────────────          ────────────────────────────────            ────────
-1. Masuk, pilih paket, klik "Bayar"  ──────▶ 2. kons-bayar: buat order MK-…,
-                                              catat "menunggu" di tab Pembayaran,
-                                              minta tagihan Snap                  ──────▶ 3. tagihan + halaman bayar
-4. Diarahkan ke halaman bayar Midtrans ◀──────────────────────────────────────────────────
-5. Membayar (QRIS / VA / e-wallet)  ────────────────────────────────────────────────────▶ 6. pembayaran diterima
-                                             7. Notifikasi HTTP masuk ke doPost  ◀──────
-                                                - cek tanda tangan SHA-512
-                                                  (order_id + status_code + gross_amount + server key)
-                                                - cek ulang status resmi ke API Midtrans
-                                                - cek nominal sama dengan tagihan
-                                                - tandai "lunas", kirim email ke klien & pemilik
-8. Kembali ke /konsultasi/?bayar=MK-…  ─────▶ 9. kons-status: bila masih "menunggu",
-   halaman menampilkan "terverifikasi"         tanyakan langsung ke API Midtrans (cadangan
-                                              bila notifikasi terlambat)
-10. Email konfirmasi + tautan jadwal sesi
+Klien (murykuswari.com/konsultasi)            Admin (dashboard.html)                     Midtrans
+──────────────────────────────────            ──────────────────────                     ────────
+1. "Ajukan ke Dr. Mury": topik + masalah ──▶  2. Email "Permintaan konsultasi baru" +
+   status: Ditinjau Dr. Mury                     muncul di "Permintaan konsultasi"
+                                              3. Baca masalah, profil, riwayat program,
+                                                 lalu pilih:
+   ◀── email "diterima (gratis)"  ─────────────   • Gratis   → status gratis (siap dijawab)
+   ◀── email "Rp… untuk paket …"  ─────────────   • Berbayar → paket atau harga sendiri + catatan
+   ◀── email alasan/saran          ─────────────   • Tolak    → status ditolak
+4. (berbayar) klik "Bayar Rp…"  ────────────▶ kons-bayar: tagihan sesuai harga admin ───▶ 5. halaman bayar
+6. Membayar (QRIS / VA / e-wallet) ──────────────────────────────────────────────────────▶ 7. notifikasi
+                                              8. Validasi otomatis: tanda tangan SHA-512,  ◀──
+                                                 cek ulang API Midtrans, cek nominal
+                                                 → pembayaran "lunas", permintaan "lunas",
+                                                 email ke klien & admin ("Siap dijawab")
+9. Kembali ke /konsultasi → "terverifikasi"   10. Tulis jawaban → "Kirim jawaban"
+11. Jawaban tampil di halaman + email  ◀──────    status: dijawab
 ```
 
-Validasi berlapis: tanda tangan digital Midtrans, pengecekan ulang ke API resmi, dan pencocokan nominal. Notifikasi yang dikirim ulang tidak menggandakan email, karena email hanya dikirim saat status pertama kali berubah menjadi lunas.
+Aturan yang dijaga server:
+- Harga tagihan selalu diambil dari keputusan admin pada permintaan, bukan dari klien.
+- Klien tidak bisa membayar sebelum admin memutuskan "berbayar".
+- Jawaban hanya bisa dikirim bila permintaan gratis atau sudah lunas.
+- Keputusan masih bisa diubah selama klien belum membayar; setelah lunas terkunci.
+- Maksimal 3 permintaan terbuka per klien agar tidak membanjiri antrean.
+
+Validasi pembayaran berlapis: tanda tangan digital Midtrans, pengecekan ulang ke API resmi, dan pencocokan nominal. Notifikasi yang terkirim ulang tidak menggandakan email.
 
 ## Paket
 
-Diatur di `PAKET` pada `apps-script/Konsultasi.gs`. Harga saat ini adalah **contoh** dan wajib dikonfirmasi pemilik:
+Diatur di `PAKET` pada `apps-script/Konsultasi.gs` dan muncul sebagai **pilihan cepat** di formulir keputusan admin (admin tetap bisa menetapkan harga lain). Harga saat ini adalah **contoh** dan wajib dikonfirmasi pemilik:
 
 | ID | Paket | Harga contoh | Isi |
 |---|---|---|---|
@@ -48,9 +57,12 @@ Diatur di `PAKET` pada `apps-script/Konsultasi.gs`. Harga saat ini adalah **cont
 4. Di Midtrans › Settings › **Payment** › Notification URL, isi URL web app layanan konsultasi (nilai `programEndpoint` di `config.js`).
 5. Uji di Sandbox memakai simulator pembayaran Midtrans, lalu periksa tab **Pembayaran** di spreadsheet dan dashboard.
 
-Sebelum langkah 3, halaman konsultasi menampilkan daftar paket dengan keterangan "Pembayaran online segera dibuka".
+Sebelum langkah 3, admin tetap bisa memutuskan "berbayar"; klien diberi tahu bahwa instruksi pembayaran dikirim lewat email.
 
 ## Data
+
+Tab **Permintaan**: ID, waktu, email, nama, ID klien praktisi, topik, pertanyaan, status (`menunggu-keputusan`, `gratis`, `menunggu-bayar`, `lunas`, `dijawab`, `ditolak`), jenis, paket, harga, catatan admin, order ID, jawaban, waktu dijawab.
+
 
 Tab **Pembayaran** di spreadsheet Database Konsultasi Gizi Olahraga: Order ID, waktu, email, nama, paket, jumlah, status (`menunggu`, `lunas`, `kedaluwarsa`, `gagal`, `dikembalikan`), metode, waktu lunas, ID klien praktisi, catatan klien, status asli Midtrans. Dashboard menampilkan total pendapatan, tabel pembayaran, dan penanda "Konsultasi lanjutan" pada kartu peserta yang sudah lunas.
 
