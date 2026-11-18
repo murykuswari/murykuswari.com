@@ -12,18 +12,30 @@ Bagian **Program Gizi Personal** di `gizi.html#program` (`program.html` lama dia
 
 Saat klien masuk lagi, isian terisi otomatis dari konsultasi terakhir dan riwayat BB serta % lemak tampil di samping.
 
+## Mode pelatih dan ahli gizi
+
+Di profil, pengguna memilih peran: **atlet/individu**, **pelatih**, atau **ahli gizi/nutrisionis** (wajib mengisi profesi dan lisensi/instansi).
+
+- Pelatih dan ahli gizi mendapat langkah tambahan **Klien saya**: tambah atau ubah klien (nama, jenis kelamin, tanggal lahir, cabang, kelas/posisi, level, email/WA klien opsional, catatan medis/alergi), dengan persetujuan klien atau wali.
+- Setiap asesmen dibuat untuk satu klien; riwayat dan grafik perkembangan dipisah per klien.
+- Praktisi dapat menulis **catatan praktisi** yang ikut masuk ke laporan.
+- Laporan bertuliskan "disusun oleh <nama praktisi> (<profesi>)" dan dikirim ke email praktisi untuk diteruskan ke klien. Pemilik website tetap menerima pemberitahuan.
+- Batas 200 klien per akun praktisi.
+
 ## Tempat data di Drive
 
 ```
 Claude 2026/
   Konsultasi Gizi Olahraga – murykuswari.com/
-    Database Konsultasi Gizi Olahraga     ← Sheet: tab "Klien" dan "Konsultasi"
+    Database Konsultasi Gizi Olahraga     ← Sheet: tab "Klien", "Konsultasi", "Klien Praktisi"
     Klien/
       <Nama> – <email>/                    ← satu Google Doc per konsultasi
+        Klien – <nama klien> (<ID>)/       ← untuk akun pelatih/ahli gizi: satu subfolder per klien
 ```
 
 - Tab **Klien**: satu baris per klien (email, nama, jenis kelamin, tanggal lahir, asal, WhatsApp, cabang, level, tanggal daftar, terakhir masuk, jumlah konsultasi, tautan folder).
-- Tab **Konsultasi**: satu baris per konsultasi (ringkasan angka utama, tujuan konsultasi, tautan laporan) dan kolom **Data (JSON)** berisi seluruh isian, dipakai untuk mengisi ulang formulir dan menghitung perkembangan.
+- Tab **Klien Praktisi**: satu baris per klien milik pelatih/ahli gizi, terhubung ke email praktisi.
+- Tab **Konsultasi**: satu baris per konsultasi (kolom "ID klien praktisi" terisi bila dibuat oleh praktisi) (ringkasan angka utama, tujuan konsultasi, tautan laporan) dan kolom **Data (JSON)** berisi seluruh isian, dipakai untuk mengisi ulang formulir dan menghitung perkembangan.
 
 ID folder dan Sheet sudah ditulis di `KONS` pada `Konsultasi.gs`.
 

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026l">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026m">
 </head>
 <body>
   <header id="site-header"></header>
@@ -290,7 +290,7 @@
       <div class="wrap">
         <span class="eyebrow">Program Gizi Personal</span>
         <h2 style="font-size:clamp(1.8rem,3.6vw,2.5rem)">Program lengkap, dihitung dari data Anda dan tersimpan</h2>
-        <p style="color:var(--ink-2);max-width:760px">Masuk dengan email, lengkapi profil dan jadwal latihan satu minggu, lalu dapatkan energi, karbohidrat, protein, lemak per hari latihan, jadwal makan sekitar latihan, hidrasi, suplemen, dan pembahasan gizi olahraga. Setiap konsultasi tersimpan, sehingga saat Anda masuk lagi perkembangan BB dan komposisi tubuh langsung terlihat.</p>
+        <p style="color:var(--ink-2);max-width:760px">Masuk dengan email, lengkapi profil dan jadwal latihan satu minggu, lalu dapatkan energi, karbohidrat, protein, lemak per hari latihan, jadwal makan sekitar latihan, hidrasi, suplemen, dan pembahasan gizi olahraga. Setiap konsultasi tersimpan, sehingga saat Anda masuk lagi perkembangan BB dan komposisi tubuh langsung terlihat. <strong>Pelatih dan ahli gizi</strong> dapat mengelola banyak klien, menyusun program untuk tiap klien, dan memantau perkembangannya.</p>
       </div>
 
       <div class="wrap pg-layout">
@@ -298,6 +298,7 @@
           <ol class="dl-steps pg-steps" id="steps">
             <li class="on">Masuk</li>
             <li>Profil</li>
+            <li id="step-klien" hidden>Klien</li>
             <li>Data asesmen</li>
             <li>Program &amp; pembahasan</li>
           </ol>
@@ -324,18 +325,22 @@
           <form class="card pg-card" id="s-profil" novalidate hidden>
             <h2>Profil</h2>
             <p class="note-intro">Data ini dipakai untuk menghitung program dan menghubungi Anda. Semua isian bertanda <span class="req">*</span> wajib.</p>
+            <div class="field"><label for="p-peran">Saya menggunakan layanan ini sebagai <span class="req">*</span></label>
+              <select id="p-peran"><option value="atlet">Atlet / individu (program untuk diri sendiri)</option><option value="pelatih">Pelatih (menyusun program untuk atlet saya)</option><option value="ahligizi">Ahli gizi / nutrisionis (menyusun program untuk klien)</option></select>
+              <small>Pelatih dan ahli gizi dapat mengelola banyak klien, menyimpan asesmen tiap klien, dan memantau perkembangannya.</small></div>
+            <div class="field" id="p-profesi-wrap" hidden><label for="p-profesi">Profesi &amp; lisensi/instansi <span class="req">*</span></label><input id="p-profesi" maxlength="120" placeholder="mis. Nutrisionis (RD), STR …; Pelatih fisik lisensi B PBSI"></div>
             <div class="row">
               <div class="field"><label for="p-nama">Nama lengkap <span class="req">*</span></label><input id="p-nama" required maxlength="80" autocomplete="name"></div>
               <div class="field"><label>Jenis kelamin <span class="req">*</span></label>
                 <div class="seg" id="p-jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div></div>
             </div>
             <div class="row">
-              <div class="field"><label for="p-lahir">Tanggal lahir <span class="req">*</span></label><input id="p-lahir" type="date" required><small id="p-usia"></small></div>
+              <div class="field"><label for="p-lahir">Tanggal lahir <span class="req" id="p-lahir-req">*</span></label><input id="p-lahir" type="date" required><small id="p-usia"></small></div>
               <div class="field"><label for="p-wa">No. WhatsApp <span class="req">*</span></label><input id="p-wa" type="tel" required maxlength="20" inputmode="tel" placeholder="08xxxxxxxxxx"></div>
             </div>
             <div class="field"><label for="p-asal">Asal (kota &amp; instansi/klub) <span class="req">*</span></label><input id="p-asal" required maxlength="120" placeholder="mis. Bandung · PB Jaya Raya"></div>
             <div class="row">
-              <div class="field"><label for="p-cabor">Cabang olahraga <span class="req">*</span></label><select id="p-cabor"></select></div>
+              <div class="field"><label for="p-cabor"><span id="p-cabor-lbl">Cabang olahraga</span> <span class="req">*</span></label><select id="p-cabor"></select></div>
               <div class="field"><label for="p-level">Level</label>
                 <select id="p-level"><option>Rekreasi / kebugaran</option><option>Klub / sekolah</option><option>Daerah (Porprov/PON)</option><option>Nasional (Pelatnas)</option><option>Internasional</option></select></div>
             </div>
@@ -345,9 +350,41 @@
           </form>
 
           <!-- 3. ASESMEN -->
+          <div class="card pg-card" id="s-klien" hidden>
+            <h2>Klien saya</h2>
+            <p class="note-intro">Pilih klien untuk membuat asesmen baru, atau tambahkan klien. Riwayat setiap klien tersimpan terpisah, sehingga perkembangannya bisa dipantau dari waktu ke waktu.</p>
+            <div id="kl-daftar"></div>
+            <details class="pg-fs pg-opt" id="kl-form-wrap"><summary><strong id="kl-form-judul">+ Tambah klien</strong></summary>
+              <form id="kl-form" novalidate>
+                <input type="hidden" id="kl-id">
+                <div class="row">
+                  <div class="field"><label for="kl-nama">Nama klien <span class="req">*</span></label><input id="kl-nama" maxlength="80" required></div>
+                  <div class="field"><label for="kl-jk">Jenis kelamin <span class="req">*</span></label><select id="kl-jk"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="kl-lahir">Tanggal lahir <span class="req">*</span></label><input id="kl-lahir" type="date" required></div>
+                  <div class="field"><label for="kl-cabor">Cabang olahraga <span class="req">*</span></label><select id="kl-cabor" class="pg-cabor-opt"></select></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="kl-kelas">Nomor, posisi, atau kelas</label><input id="kl-kelas" maxlength="60"></div>
+                  <div class="field"><label for="kl-level">Level</label><select id="kl-level"><option>Rekreasi / kebugaran</option><option>Klub / sekolah</option><option>Daerah (Porprov/PON)</option><option>Nasional (Pelatnas)</option><option>Internasional</option></select></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="kl-email">Email klien <small style="display:inline">(opsional)</small></label><input id="kl-email" type="email" maxlength="120"></div>
+                  <div class="field"><label for="kl-wa">WhatsApp klien <small style="display:inline">(opsional)</small></label><input id="kl-wa" type="tel" maxlength="20"></div>
+                </div>
+                <div class="field"><label for="kl-catatan">Catatan (riwayat medis, alergi, preferensi makan)</label><textarea id="kl-catatan" rows="2" maxlength="500"></textarea></div>
+                <label class="dl-cek"><input type="checkbox" id="kl-setuju"> <span>Klien (atau orang tua/wali bila di bawah 18 tahun) sudah menyetujui datanya disimpan untuk keperluan program gizi. <span class="req">*</span></span></label>
+                <small class="err" id="kl-err"></small>
+                <button class="btn btn-primary" type="submit" id="b-klien">Simpan klien</button>
+              </form>
+            </details>
+          </div>
+
           <form class="card pg-card" id="s-asesmen" novalidate hidden>
             <h2>Data asesmen</h2>
             <p class="note-intro" id="a-prefill">Isi data terbaru Anda. Bila Anda pernah konsultasi, isian diisi otomatis dari data terakhir.</p>
+            <p class="callout" id="a-untuk" hidden></p>
 
             <fieldset class="pg-fs"><legend>Antropometri &amp; komposisi tubuh</legend>
               <div class="row-3">
@@ -422,8 +459,9 @@
               </div>
             </fieldset>
 
-            <fieldset class="pg-fs"><legend>Tujuan konsultasi</legend>
+            <fieldset class="pg-fs"><legend id="a-desk-lbl">Tujuan konsultasi</legend>
               <div class="field"><label for="a-desk">Deskripsi singkat <span class="req">*</span></label><textarea id="a-desk" rows="4" maxlength="1500" required placeholder="Kondisi saat ini, target yang ingin dicapai, kendala makan/latihan, dan waktu yang diharapkan."></textarea><small class="hint"><span id="a-count">0</span>/1500 · minimal 30 karakter</small></div>
+              <div class="field" id="a-catatan-wrap" hidden><label for="a-catatan">Catatan praktisi untuk klien (masuk ke laporan)</label><textarea id="a-catatan" rows="3" maxlength="1500" placeholder="mis. pilihan menu di asrama, jadwal makan saat sekolah, strategi saat turnamen luar kota"></textarea></div>
               <label class="dl-cek"><input type="checkbox" id="a-setuju"> <span>Saya setuju data ini disimpan di Google Drive pengelola murykuswari.com untuk keperluan konsultasi gizi dan dihubungi oleh Assoc. Prof. Dr. Mury Kuswari. <span class="req">*</span></span></label>
             </fieldset>
             <small class="err" id="a-err"></small>
@@ -445,6 +483,7 @@
         <aside class="card pg-side no-print" aria-live="polite">
           <h3>Akun</h3>
           <p id="u-status" class="note">Belum masuk.</p>
+          <div id="u-klien"></div>
           <div id="u-riwayat"></div>
           <p class="note" style="margin-top:16px">Kalkulator cepat tanpa masuk tetap tersedia <a href="#top">di bagian atas halaman ini</a>. Dasar rumus: <em>Tinjauan Sistematik Perhitungan dalam Gizi Olahraga dan Kebugaran</em> (Kuswari, 2026), Panduan Pendampingan Gizi pada Atlet (Kemenkes RI, 2021), dan position stand ACSM, ISSN, serta IOC.</p>
           <button type="button" class="dl-link" id="u-keluar" hidden>Keluar</button>
@@ -563,6 +602,6 @@
   <script src="assets/js/main.js?v=2026l"></script>
   <script src="assets/js/gizi.js?v=2026l"></script>
   <script src="assets/js/program-engine.js?v=2"></script>
-  <script src="assets/js/program.js?v=2"></script>
+  <script src="assets/js/program.js?v=3"></script>
 </body>
 </html>

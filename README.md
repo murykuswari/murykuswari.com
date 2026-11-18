@@ -15,7 +15,7 @@ Website statis (HTML, CSS, JavaScript murni), tanpa proses build, siap dihosting
 | `berita.html` | Liputan media dengan thumbnail dan ringkasan, tautan ke artikel asli |
 | `unduhan.html` | Unduhan modul dengan verifikasi **OTP email**, data pengunduh masuk ke Google Sheet |
 | `gizi.html` | Kalkulator gizi olahraga: IMT, persen lemak, berat badan ideal, **energi & KH/protein/lemak sesuai jenis dan durasi latihan**, **makan sebelum-saat-setelah latihan**, **laju keringat & anjuran minum per 10–30 menit**, **% lemak vs VO2max & performa**, rujukan ilmiah, dan **konsultasi online** dengan isian wajib (nama lengkap, asal, WhatsApp, email, tujuan) |
-| `gizi.html#program` | **Program Gizi Personal** (bagian di halaman kalkulator; `program.html` dialihkan ke sini): masuk dengan OTP email, profil, asesmen (skinfold, jadwal latihan sRPE, tes keringat, skrining REDs), program per hari + pembahasan, riwayat perkembangan; data tersimpan di Google Drive (lihat `docs/panduan-program-gizi.md`) |
+| `gizi.html#program` | **Program Gizi Personal** (bagian di halaman kalkulator; `program.html` dialihkan ke sini): masuk dengan OTP email, profil, asesmen (skinfold, jadwal latihan sRPE, tes keringat, skrining REDs), program per hari + pembahasan, riwayat perkembangan, **mode pelatih/ahli gizi dengan banyak klien**; data tersimpan di Google Drive (lihat `docs/panduan-program-gizi.md`) |
 | `input.html` | Ruang admin: formulir kegiatan baru dengan **generator caption otomatis** |
 
 ## Struktur folder

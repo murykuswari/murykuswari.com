@@ -15,17 +15,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const SESI_KEY = "mk-program-sesi", LOKAL_KEY = "mk-program-lokal";
   const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
-  const st = { token: "", email: "", profil: null, riwayat: [], lokal: !ENDPOINT, jk: "L", H: null, input: null, tersimpan: false };
+  const st = { token: "", email: "", profil: null, riwayat: [], klien: [], aktif: null, lokal: !ENDPOINT, jk: "L", H: null, input: null, tersimpan: false };
 
   /* ---------- Pilihan ---------- */
-  $("p-cabor").innerHTML = PG.CABOR.map((c) => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
+  const CABOR_OPT = PG.CABOR.map((c) => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
+  $("p-cabor").innerHTML = CABOR_OPT; $("kl-cabor").innerHTML = CABOR_OPT;
   $("p-cabor").value = "bulutangkis";
   $("a-tujuan").innerHTML = Object.entries(PG.TUJUAN).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
   $("a-fase").innerHTML = Object.entries(PG.FASE).map(([k, v]) => `<option value="${k}">${esc(v.n)}</option>`).join("");
   $("a-tgl").value = today();
 
   /* ---------- Langkah ---------- */
-  const PANEL = ["s-masuk", "s-profil", "s-asesmen", "s-hasil"];
+  const PANEL = ["s-masuk", "s-profil", "s-klien", "s-asesmen", "s-hasil"];
+  const praktisi = () => !!st.profil && st.profil.peran && st.profil.peran !== "atlet";
+  const subjek = () => st.aktif || st.profil || {};
   function step(n) {
     PANEL.forEach((id, i) => { $(id).hidden = i !== n; });
     [...$("steps").children].forEach((li, i) => li.classList.toggle("on", i <= n));
@@ -95,19 +98,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!j.ok) { MK.toast(j.pesan || "Kode salah"); return; }
       st.token = j.token;
       try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
-      setelahMasuk(j.profil, j.riwayat || []);
+      setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
     } catch (er) { MK.toast("Layanan tidak bisa dihubungi. Coba lagi."); } finally { busy(b, false); }
   });
   function masukLokal() {
     const a = lokalDb.akun(st.email);
-    setelahMasuk(a.profil, a.riwayat || []);
+    setelahMasuk(a.profil, a.riwayat || [], a.klien || []);
   }
-  function setelahMasuk(profil, riwayat) {
-    st.profil = profil; st.riwayat = riwayat;
+  function setelahMasuk(profil, riwayat, klien) {
+    st.profil = profil; st.riwayat = riwayat; st.klien = klien || []; st.riwayatSendiri = riwayat;
     $("u-status").innerHTML = `Masuk sebagai <strong>${esc(st.email)}</strong>${st.lokal ? " (mode lokal)" : ""}.`;
     $("u-keluar").hidden = false;
     renderRiwayat();
-    if (profil) { isiProfil(profil); isiAsesmenDariRiwayat(); step(2); }
+    if (profil) { isiProfil(profil); lanjutSetelahProfil(); }
     else step(1);
   }
   $("u-keluar").addEventListener("click", () => {
@@ -123,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     st.token = s.token; st.email = s.email;
     try {
       const j = await api({ aksi: "kons-riwayat", token: s.token });
-      if (j.ok) setelahMasuk(j.profil, j.riwayat || []);
+      if (j.ok) setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
     } catch (e) { /* tetap di langkah masuk */ }
   })();
 
@@ -149,15 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (PG.CABOR_MAP[p.cabor]) $("p-cabor").value = p.cabor;
     $("p-level").value = p.level || $("p-level").value;
     $("p-cabor-lain").value = p.caborLain || "";
+    $("p-peran").value = p.peran || "atlet"; $("p-profesi").value = p.profesi || ""; aturPeran();
     document.querySelectorAll("[data-only-p]").forEach((el) => { el.closest("label").hidden = st.jk !== "P"; });
     renderSkinfold();
   }
   const normWa = (v) => { let d = String(v).replace(/[^\d]/g, ""); if (d.startsWith("0")) d = "62" + d.slice(1); else if (d.startsWith("8")) d = "62" + d; return d; };
   $("s-profil").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const p = { nama: $("p-nama").value.trim(), jk: st.jk, tglLahir: $("p-lahir").value, wa: normWa($("p-wa").value), asal: $("p-asal").value.trim(), cabor: $("p-cabor").value, level: $("p-level").value, caborLain: $("p-cabor-lain").value.trim() };
+    const p = { nama: $("p-nama").value.trim(), jk: st.jk, tglLahir: $("p-lahir").value, wa: normWa($("p-wa").value), asal: $("p-asal").value.trim(), cabor: $("p-cabor").value, level: $("p-level").value, caborLain: $("p-cabor-lain").value.trim(), peran: $("p-peran").value, profesi: $("p-profesi").value.trim() };
     const usia = PG.usiaDari(p.tglLahir);
-    const err = p.nama.length < 3 ? "Isi nama lengkap." : !p.tglLahir || usia == null || usia < 8 || usia > 90 ? "Isi tanggal lahir yang benar." : !/^\d{9,16}$/.test(p.wa) ? "Nomor WhatsApp belum benar." : p.asal.length < 3 ? "Isi asal (kota dan instansi/klub)." : "";
+    const prak = p.peran !== "atlet";
+    const err = p.nama.length < 3 ? "Isi nama lengkap." : prak && p.profesi.length < 3 ? "Isi profesi dan lisensi/instansi." : (!prak || p.tglLahir) && (!p.tglLahir || usia == null || usia < 8 || usia > 90) ? "Isi tanggal lahir yang benar." : !/^\d{9,16}$/.test(p.wa) ? "Nomor WhatsApp belum benar." : p.asal.length < 3 ? "Isi asal (kota dan instansi/klub)." : "";
     $("p-err").textContent = err;
     if (err) return;
     const b = $("b-profil");
@@ -170,11 +175,79 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!j.ok) { $("p-err").textContent = j.pesan || "Gagal menyimpan."; if (j.ulang) sesiHabis(); return; }
         st.profil = j.profil;
       }
-      isiAsesmenDariRiwayat();
-      step(2);
+      lanjutSetelahProfil();
     } catch (er) { $("p-err").textContent = "Layanan tidak bisa dihubungi. Coba lagi."; } finally { busy(b, false); }
   });
+  function aturPeran() {
+    const prak = $("p-peran").value !== "atlet";
+    $("p-profesi-wrap").hidden = !prak;
+    $("p-lahir-req").hidden = prak;
+    $("p-cabor-lbl").textContent = prak ? "Cabang olahraga utama yang ditangani" : "Cabang olahraga";
+  }
+  $("p-peran").addEventListener("change", aturPeran);
+  function lanjutSetelahProfil() {
+    $("step-klien").hidden = !praktisi();
+    $("a-catatan-wrap").hidden = !praktisi();
+    $("a-desk-lbl").textContent = praktisi() ? "Tujuan program untuk klien" : "Tujuan konsultasi";
+    if (praktisi()) { st.aktif = null; renderKlien(); renderRiwayat(); step(2); }
+    else { st.aktif = null; st.riwayat = st.riwayatSendiri || st.riwayat; isiAsesmenDariRiwayat(); step(3); }
+  }
   function sesiHabis() { MK.toast("Sesi berakhir, silakan masuk lagi"); $("f-otp").hidden = true; $("f-email").hidden = false; step(0); }
+
+  /* ---------- Klien milik pelatih / ahli gizi ---------- */
+  function terakhir(k) { const r = (k.riwayat || [])[k.riwayat.length - 1]; return r ? { tgl: (r.input || {}).tanggal || String(r.waktu).slice(0, 10), bb: (r.input || {}).bb, pct: (r.ringkas || {}).pct, kkal: (r.ringkas || {}).energi } : null; }
+  function renderKlien() {
+    const L = st.klien;
+    $("kl-daftar").innerHTML = L.length ? tbl(["Klien", "Cabang", "#Usia", "Terakhir", "#BB", "#Lemak", "#Asesmen", ""], L.map((k, i) => {
+      const t = terakhir(k), c = PG.CABOR_MAP[k.cabor];
+      return [`<strong>${esc(k.nama)}</strong>${k.caborLain ? `<br><span class="note">${esc(k.caborLain)}</span>` : ""}`, esc(c ? c.n : k.cabor), PG.usiaDari(k.tglLahir) ?? "–", t ? esc(t.tgl) : "–", t && t.bb ? f1(t.bb) : "–", t && t.pct != null ? f1(t.pct) + "%" : "–", (k.riwayat || []).length,
+        `<button type="button" class="btn btn-primary pg-sm" data-pilih="${i}">Asesmen</button> <button type="button" class="dl-link" data-ubah="${i}">Ubah</button>`];
+    })) : '<p class="note">Belum ada klien. Tambahkan klien pertama Anda di bawah.</p>';
+    $("kl-form-wrap").open = !L.length;
+  }
+  $("kl-daftar").addEventListener("click", (e) => {
+    const a = e.target.closest("[data-pilih]"), u = e.target.closest("[data-ubah]");
+    if (a) pilihKlien(st.klien[Number(a.dataset.pilih)]);
+    if (u) {
+      const k = st.klien[Number(u.dataset.ubah)];
+      $("kl-id").value = k.id; $("kl-nama").value = k.nama; $("kl-jk").value = k.jk; $("kl-lahir").value = k.tglLahir;
+      if (PG.CABOR_MAP[k.cabor]) $("kl-cabor").value = k.cabor;
+      $("kl-kelas").value = k.caborLain || ""; $("kl-level").value = k.level || $("kl-level").value; $("kl-email").value = k.email || ""; $("kl-wa").value = k.wa ? "0" + String(k.wa).replace(/^62/, "") : ""; $("kl-catatan").value = k.catatan || "";
+      $("kl-setuju").checked = true; $("kl-form-judul").textContent = "Ubah data " + k.nama; $("kl-form-wrap").open = true; $("kl-nama").focus();
+    }
+  });
+  function pilihKlien(k) {
+    st.aktif = k; st.riwayat = k.riwayat || [];
+    renderRiwayat();
+    isiAsesmenDariRiwayat();
+    step(3);
+  }
+  $("kl-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const k = { id: $("kl-id").value, nama: $("kl-nama").value.trim(), jk: $("kl-jk").value, tglLahir: $("kl-lahir").value, cabor: $("kl-cabor").value, caborLain: $("kl-kelas").value.trim(), level: $("kl-level").value, email: $("kl-email").value.trim().toLowerCase(), wa: $("kl-wa").value ? normWa($("kl-wa").value) : "", catatan: $("kl-catatan").value.trim() };
+    const u = PG.usiaDari(k.tglLahir);
+    const err = k.nama.length < 2 ? "Isi nama klien." : !k.tglLahir || u == null || u < 6 || u > 90 ? "Isi tanggal lahir klien yang benar." : k.email && !emailValid(k.email) ? "Email klien belum benar." : !$("kl-setuju").checked ? "Centang persetujuan klien." : "";
+    $("kl-err").textContent = err;
+    if (err) return;
+    const b = $("b-klien");
+    busy(b, true, "Menyimpan…");
+    try {
+      if (st.lokal) {
+        const a = lokalDb.akun(st.email); a.klien = a.klien || [];
+        const ada = a.klien.find((x) => x.id === k.id);
+        if (ada) Object.assign(ada, k); else a.klien.push({ ...k, id: "K" + Date.now(), riwayat: [] });
+        lokalDb.simpanAkun(st.email, a); st.klien = a.klien;
+      } else {
+        const j = await api({ aksi: "kons-klien", token: st.token, klien: k });
+        if (!j.ok) { $("kl-err").textContent = j.pesan || "Gagal menyimpan."; if (j.ulang) sesiHabis(); return; }
+        st.klien = j.klienPraktisi || st.klien;
+      }
+      $("kl-form").reset(); $("kl-id").value = ""; $("kl-form-judul").textContent = "+ Tambah klien";
+      renderKlien();
+      renderRiwayat();
+      MK.toast("Klien tersimpan");
+    } catch (er) { $("kl-err").textContent = "Layanan tidak bisa dihubungi. Coba lagi."; } finally { busy(b, false); }
+  });
 
   /* ---------- 3. Asesmen ---------- */
   const SK_LABEL = { dada: "Dada", perut: "Perut", paha: "Paha", trisep: "Trisep", suprailiaka: "Suprailiaka", midaksila: "Midaksila", subskapula: "Subskapula", bisep: "Bisep" };
@@ -242,14 +315,20 @@ document.addEventListener("DOMContentLoaded", () => {
     kebugaran: [[0, "hipertrofi", 60, 7], [2, "circuit", 45, 7], [4, "lit", 45, 5], [5, "hipertrofi", 60, 7]]
   };
   $("a-template").addEventListener("click", () => {
-    const g = (PG.CABOR_MAP[(st.profil || {}).cabor] || PG.CABOR_MAP.kebugaran).grup;
+    const g = (PG.CABOR_MAP[subjek().cabor] || PG.CABOR_MAP.kebugaran).grup;
     jadwal = TEMPLATE[g].map(([hari, jenis, durasi, rpe]) => ({ hari, jenis, durasi, rpe }));
     renderJadwal();
   });
 
   function isiAsesmenDariRiwayat() {
     const last = st.riwayat.length ? st.riwayat[st.riwayat.length - 1].input || {} : null;
-    const g = (PG.CABOR_MAP[(st.profil || {}).cabor] || PG.CABOR_MAP.kebugaran).grup;
+    const g = (PG.CABOR_MAP[subjek().cabor] || PG.CABOR_MAP.kebugaran).grup;
+    st.jk = subjek().jk === "P" ? "P" : "L";
+    document.querySelectorAll("[data-only-p]").forEach((el) => { el.closest("label").hidden = st.jk !== "P"; });
+    const u = $("a-untuk");
+    u.hidden = !st.aktif;
+    if (st.aktif) u.innerHTML = `Asesmen untuk <strong>${esc(st.aktif.nama)}</strong> (${esc((PG.CABOR_MAP[st.aktif.cabor] || {}).n || st.aktif.cabor)}, ${PG.usiaDari(st.aktif.tglLahir)} tahun). <button type="button" class="dl-link" id="a-ganti">Ganti klien</button>`;
+    $("a-desk").value = ""; $("a-catatan").value = ""; $("a-count").textContent = "0";
     if (last) {
       $("a-prefill").textContent = `Diisi otomatis dari konsultasi terakhir (${last.tanggal || "-"}). Perbarui BB, komposisi tubuh, dan jadwal minggu ini.`;
       $("a-bb").value = last.bb || ""; $("a-tb").value = last.tb || "";
@@ -273,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("a-desk").addEventListener("input", () => { $("a-count").textContent = $("a-desk").value.trim().length; });
 
   function bacaInput() {
-    const p = st.profil || {};
+    const p = subjek();
     return {
       tanggal: $("a-tgl").value || today(), jk: p.jk || st.jk, tglLahir: p.tglLahir, usia: PG.usiaDari(p.tglLahir, $("a-tgl").value),
       cabor: p.cabor, bb: Number($("a-bb").value), tb: Number($("a-tb").value), metodeKomposisi: $("a-metode").value, skinfold: bacaSkinfold(),
@@ -284,7 +363,9 @@ document.addEventListener("DOMContentLoaded", () => {
       jadwal: jadwal.filter((s) => s.durasi > 0).map((s) => ({ hari: s.hari, jenis: s.jenis, durasi: Number(s.durasi) || 0, rpe: Number(s.rpe) || 0 })),
       keringat: { pre: num("k-pre"), post: num("k-post"), minum: num("k-minum"), urin: num("k-urin"), durasi: num("k-dur") },
       reds: [...$("a-reds").querySelectorAll("input:checked")].filter((x) => !x.closest("label").hidden).map((x) => x.value),
-      tujuanKonsultasi: $("a-desk").value.trim()
+      tujuanKonsultasi: $("a-desk").value.trim(),
+      catatanPraktisi: praktisi() ? $("a-catatan").value.trim() : "",
+      klienId: st.aktif ? st.aktif.id : ""
     };
   }
   function num(id) { const v = parseFloat($(id).value); return isFinite(v) ? v : null; }
@@ -304,9 +385,10 @@ document.addEventListener("DOMContentLoaded", () => {
     msg($("h-msg"), "");
     $("b-simpan").disabled = false;
     $("b-simpan").textContent = st.lokal ? "Simpan di perangkat ini" : "Simpan & kirim ke email";
-    step(3);
+    step(4);
   });
-  $("b-ubah").addEventListener("click", () => step(2));
+  $("b-ubah").addEventListener("click", () => step(3));
+  document.addEventListener("click", (e) => { if (e.target.id === "a-ganti") { st.aktif = null; renderKlien(); step(2); } });
   $("b-cetak").addEventListener("click", () => {
     document.body.classList.add("cetak-program");
     window.print();
@@ -320,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return seri;
   }
   function renderHasil() {
-    const H = st.H, inp = st.input, p = st.profil || {};
+    const H = st.H, inp = st.input, p = subjek();
     const seri = riwayatSeri().concat(st.tersimpan ? [] : [{ tanggal: inp.tanggal, bb: inp.bb, pct: H.kom.estimasi ? null : H.kom.pct, ffm: H.kom.estimasi ? null : H.kom.ffm }]);
     const prog = PG.progres(seri.filter((s) => s.bb));
     const bahas = PG.pembahasan(H, prog);
@@ -339,7 +421,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hid = H.hidrasi;
     const html = `
       <div class="pg-head">
-        <div><span class="eyebrow">Program gizi personal</span><h2>${esc(p.nama || "")}</h2>
+        <div><span class="eyebrow">Program gizi personal</span><h2>${esc(p.nama || "")}</h2>${st.aktif ? `<p class="note" style="margin:0">Disusun oleh ${esc(st.profil.nama)}${st.profil.profesi ? " · " + esc(st.profil.profesi) : ""}</p>` : ""}
         <p class="note">${esc(H.cabor.n)}${p.caborLain ? " · " + esc(p.caborLain) : ""} · ${H.usia} tahun · ${H.jk === "L" ? "laki-laki" : "perempuan"} · ${esc(PG.TUJUAN[H.tujuan])} · fase ${esc(H.fase.n.toLowerCase())} · ${esc(inp.tanggal)}</p></div>
       </div>
       ${H.peringatan.map((t) => `<div class="callout warn">${esc(t)}</div>`).join("")}
@@ -370,6 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ${H.suplemen.length ? `<h3>Suplemen berbasis bukti (bila diperlukan)</h3>${tbl(["Suplemen", "Dosis untuk Anda", "Waktu", "Rujukan"], H.suplemen.map((s) => [esc(s.n), esc(s.dosis), esc(s.waktu), esc(s.ref)]))}<p class="note">Pilih produk bersertifikat uji pihak ketiga (antidoping). Uji coba saat latihan, bukan saat lomba.</p>` : ""}
       ${H.lomba ? `<h3>Kompetisi (${H.lomba.hariKe} hari lagi)</h3><p>Makan 1–4 jam sebelum tanding: ${f0(H.lomba.pre[0])}–${f0(H.lomba.pre[1])} g KH, rendah serat dan lemak.${H.lomba.loading ? ` Lomba &gt; 90 menit: carbo loading ${f0(H.lomba.loading[0])}–${f0(H.lomba.loading[1])} g KH/hari (10–12 g/kg) selama 36–48 jam sebelum start.` : ""}</p>` : ""}
 
+      ${inp.catatanPraktisi ? `<h3>Catatan dari ${esc(st.profil.nama)}</h3><p>${esc(inp.catatanPraktisi)}</p>` : ""}
       <h3>Pembahasan</h3>
       ${bahas.map((b) => `<div class="pg-bahas"><h4>${esc(b.judul)}</h4><p>${esc(b.isi)}</p></div>`).join("")}
 
@@ -388,6 +471,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const H = st.H;
     const L = [];
     L.push({ judul: "Ringkasan", baris: [`Energi rata-rata ${f0(H.rata.E)} kkal/hari (${f0(H.hariRingan.E)}–${f0(H.hariBerat.E)}). KH ${f1(Math.min(...H.hari.map((d) => d.cgkg)))}–${f1(Math.max(...H.hari.map((d) => d.cgkg)))} g/kg/hari. Protein ${f0(H.rata.P)} g/hari (${f1(H.pro.gkg)} g/kg). Lemak rata-rata ${f0(H.rata.F)} g/hari. EA ${f1(H.rata.ea)} kkal/kg FFM.`, `Komposisi: ${f1(H.kom.pct)}% lemak, FFM ${f1(H.kom.ffm)} kg (${H.kom.metode}).`] });
+    if (st.aktif) L.unshift({ judul: "Klien", baris: [`${st.aktif.nama} · ${H.cabor.n}${st.aktif.caborLain ? " · " + st.aktif.caborLain : ""} · ${H.usia} tahun · ${H.jk === "L" ? "laki-laki" : "perempuan"}`, `Disusun oleh ${st.profil.nama}${st.profil.profesi ? " (" + st.profil.profesi + ")" : ""}`] });
+    if (st.input.catatanPraktisi) L.push({ judul: "Catatan praktisi", baris: [st.input.catatanPraktisi] });
     if (H.peringatan.length) L.push({ judul: "Perhatian", baris: H.peringatan });
     L.push({ judul: "Program per hari", baris: H.hari.map((d) => `${d.nama}: ${d.sesi.length ? d.sesi.map((s) => `${s.nama} ${s.dur} menit RPE ${s.rpe}`).join(" + ") : "istirahat"} | beban ${f0(d.au)} AU (${d.kat.n.toLowerCase()}) | ${f0(d.E)} kkal | KH ${f0(d.C)} g (${f1(d.cgkg)} g/kg) | protein ${f0(d.P)} g | lemak ${f0(d.F)} g`) });
     const jenis = [...new Set(H.hari.flatMap((d) => d.sesi.map((s) => s.jenis)))];
@@ -410,15 +495,24 @@ document.addEventListener("DOMContentLoaded", () => {
       if (st.lokal) {
         const a = lokalDb.akun(st.email);
         a.profil = a.profil || st.profil;
-        a.riwayat = (a.riwayat || []).concat([{ id: "lokal-" + Date.now(), waktu: new Date().toISOString(), input: st.input, ringkas: ringkas() }]);
+        const entri = { id: "lokal-" + Date.now(), waktu: new Date().toISOString(), input: st.input, ringkas: ringkas() };
+        if (st.aktif) {
+          a.klien = a.klien || [];
+          const k = a.klien.find((x) => x.id === st.aktif.id);
+          k.riwayat = (k.riwayat || []).concat([entri]);
+          st.klien = a.klien; st.aktif = k; st.riwayat = k.riwayat;
+        } else {
+          a.riwayat = (a.riwayat || []).concat([entri]);
+          st.riwayat = a.riwayat;
+        }
         lokalDb.simpanAkun(st.email, a);
-        st.riwayat = a.riwayat;
         msg($("h-msg"), "Tersimpan di perangkat ini. Cetak laporan atau kirim ke " + S.email + " untuk konsultasi.", true);
       } else {
-        const j = await api({ aksi: "kons-simpan", token: st.token, input: st.input, ringkas: ringkas(), laporan: laporanTeks() });
+        const j = await api({ aksi: "kons-simpan", token: st.token, klienId: st.aktif ? st.aktif.id : "", input: st.input, ringkas: ringkas(), laporan: laporanTeks() });
         if (!j.ok) { msg($("h-msg"), j.pesan || "Gagal menyimpan."); if (j.ulang) sesiHabis(); return; }
         st.riwayat = j.riwayat || st.riwayat;
-        msg($("h-msg"), `Tersimpan (ID ${j.id}). Salinan program dikirim ke ${st.email}, dan Dr. Mury menerima pemberitahuan untuk meninjau.`, true);
+        if (st.aktif) { if (j.klienPraktisi) st.klien = j.klienPraktisi; const k = st.klien.find((x) => x.id === st.aktif.id); if (k) { k.riwayat = st.riwayat; st.aktif = k; } }
+        msg($("h-msg"), `Tersimpan (ID ${j.id}). Salinan program dikirim ke ${st.email}${st.aktif ? " (untuk diteruskan ke klien)" : ""}, dan Dr. Mury menerima pemberitahuan untuk meninjau.`, true);
       }
       st.tersimpan = true;
       b.textContent = "Tersimpan";
@@ -445,9 +539,11 @@ document.addEventListener("DOMContentLoaded", () => {
     </svg><p class="note" style="margin:0">Tren berat badan (kg)</p>`;
   }
   function renderRiwayat() {
+    $("u-klien").innerHTML = praktisi() ? `<p class="note" style="margin:10px 0 0">${esc(st.profil.profesi || "")} · ${st.klien.length} klien${st.aktif ? ` · aktif: <strong>${esc(st.aktif.nama)}</strong>` : ""}</p>` : "";
+    if (praktisi() && !st.aktif) { $("u-riwayat").innerHTML = ""; return; }
     const seri = riwayatSeri();
     if (!seri.length) { $("u-riwayat").innerHTML = '<p class="note">Belum ada konsultasi tersimpan.</p>'; return; }
-    $("u-riwayat").innerHTML = `<h4 style="margin:14px 0 6px">Riwayat konsultasi</h4>${grafik(seri)}
+    $("u-riwayat").innerHTML = `<h4 style="margin:14px 0 6px">Riwayat ${st.aktif ? esc(st.aktif.nama) : "konsultasi"}</h4>${grafik(seri)}
       ${tbl(["Tanggal", "#BB", "#Lemak", "#kkal"], st.riwayat.slice().reverse().slice(0, 8).map((r) => [esc((r.input || {}).tanggal || String(r.waktu).slice(0, 10)), f1((r.input || {}).bb || 0), (r.ringkas || {}).pct != null ? f1(r.ringkas.pct) + "%" : "–", (r.ringkas || {}).energi ? f0(r.ringkas.energi) : "–"]))}`;
   }
 });

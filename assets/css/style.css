@@ -850,3 +850,4 @@ section[id] { scroll-margin-top: 72px; }
   body.cetak-program main > *:not(#program), body.cetak-program #program > .wrap:first-child, body.cetak-program .pg-side, body.cetak-program .site-header, body.cetak-program #site-footer { display: none !important; }
   body.cetak-program #program { background: none; border: 0; padding: 0; }
 }
+.pg-sm { padding: 7px 12px; font-size: .8rem; box-shadow: none; }

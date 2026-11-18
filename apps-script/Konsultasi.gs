@@ -22,8 +22,9 @@ const KONS = {
   MAX_SIMPAN_HARI: 10       // batas simpan per klien per hari
 };
 
-const KOLOM_KLIEN = ['Email', 'Nama lengkap', 'Jenis kelamin', 'Tanggal lahir', 'Asal', 'WhatsApp', 'Cabang olahraga', 'Level', 'Terdaftar', 'Terakhir masuk', 'Jumlah konsultasi', 'Folder klien'];
-const KOLOM_KONS = ['ID', 'Waktu', 'Email', 'Nama', 'Cabang olahraga', 'Tujuan', 'Fase', 'BB (kg)', 'TB (cm)', '% lemak', 'FFM (kg)', 'Energi rata-rata (kkal)', 'KH rata-rata (g)', 'Protein (g)', 'Lemak (g)', 'EA (kkal/kg FFM)', 'Laju keringat (L/jam)', 'Tujuan konsultasi', 'Laporan', 'Data (JSON)'];
+const KOLOM_KLIEN = ['Email', 'Nama lengkap', 'Jenis kelamin', 'Tanggal lahir', 'Asal', 'WhatsApp', 'Cabang olahraga', 'Level', 'Terdaftar', 'Terakhir masuk', 'Jumlah konsultasi', 'Folder klien', 'Peran', 'Profesi & lisensi'];
+const KOLOM_KONS = ['ID', 'Waktu', 'Email', 'Nama', 'Cabang olahraga', 'Tujuan', 'Fase', 'BB (kg)', 'TB (cm)', '% lemak', 'FFM (kg)', 'Energi rata-rata (kkal)', 'KH rata-rata (g)', 'Protein (g)', 'Lemak (g)', 'EA (kkal/kg FFM)', 'Laju keringat (L/jam)', 'Tujuan konsultasi', 'Laporan', 'Data (JSON)', 'ID klien praktisi', 'Nama klien praktisi'];
+const KOLOM_KP = ['ID klien', 'Email praktisi', 'Nama klien', 'Jenis kelamin', 'Tanggal lahir', 'Cabang olahraga', 'Nomor/kelas/posisi', 'Level', 'Email klien', 'WhatsApp klien', 'Catatan', 'Dibuat', 'Diperbarui', 'Jumlah konsultasi', 'Folder'];
 
 function konsultasi_(d) {
   switch (d.aksi) {
@@ -32,6 +33,7 @@ function konsultasi_(d) {
     case 'kons-profil': return konsProfil_(d);
     case 'kons-simpan': return konsSimpan_(d);
     case 'kons-riwayat': return konsRiwayat_(d);
+    case 'kons-klien': return konsKlien_(d);
     default: return { ok: false, pesan: 'Permintaan tidak dikenali.' };
   }
 }
@@ -40,6 +42,7 @@ function konsultasi_(d) {
 function siapkanKonsultasi() {
   tab_('Klien', KOLOM_KLIEN);
   tab_('Konsultasi', KOLOM_KONS);
+  tab_('Klien Praktisi', KOLOM_KP);
   folderKlienInduk_();
   const uji = DocumentApp.create('uji-izin-program-gizi');
   DriveApp.getFileById(uji.getId()).setTrashed(true);
@@ -109,7 +112,7 @@ function konsMasuk_(d) {
   }
   const profil = cariKlien_(email);
   if (profil) setSel_('Klien', profil.baris, 'Terakhir masuk', waktu_());
-  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, profil: profil ? profil.data : null, riwayat: riwayat_(email) };
+  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, profil: profil ? profil.data : null, riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
 }
 
 function sesi_(d) {
@@ -121,7 +124,7 @@ function konsRiwayat_(d) {
   const email = sesi_(d);
   if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
   const p = cariKlien_(email);
-  return { ok: true, profil: p ? p.data : null, riwayat: riwayat_(email) };
+  return { ok: true, profil: p ? p.data : null, riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
 }
 
 /* ---------- Profil ---------- */
@@ -134,10 +137,12 @@ function konsProfil_(d) {
   const p = d.profil || {};
   const data = {
     nama: bersih_(p.nama, 80), jk: p.jk === 'P' ? 'P' : 'L', tglLahir: bersih_(p.tglLahir, 10), asal: bersih_(p.asal, 120),
-    wa: String(p.wa || '').replace(/\D/g, '').slice(0, 16), cabor: bersih_(p.cabor, 40), caborLain: bersih_(p.caborLain, 60), level: bersih_(p.level, 40)
+    wa: String(p.wa || '').replace(/\D/g, '').slice(0, 16), cabor: bersih_(p.cabor, 40), caborLain: bersih_(p.caborLain, 60), level: bersih_(p.level, 40),
+    peran: ['atlet', 'pelatih', 'ahligizi'].indexOf(p.peran) >= 0 ? p.peran : 'atlet', profesi: bersih_(p.profesi, 120)
   };
   if (data.nama.length < 3) return { ok: false, pesan: 'Isi nama lengkap.' };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(data.tglLahir)) return { ok: false, pesan: 'Isi tanggal lahir.' };
+  if (data.peran === 'atlet' && !/^\d{4}-\d{2}-\d{2}$/.test(data.tglLahir)) return { ok: false, pesan: 'Isi tanggal lahir.' };
+  if (data.peran !== 'atlet' && data.profesi.length < 3) return { ok: false, pesan: 'Isi profesi dan lisensi/instansi.' };
   if (data.asal.length < 3) return { ok: false, pesan: 'Isi asal (kota dan instansi/klub).' };
   if (!/^\d{9,16}$/.test(data.wa)) return { ok: false, pesan: 'Nomor WhatsApp belum benar.' };
   const lock = LockService.getScriptLock();
@@ -146,7 +151,7 @@ function konsProfil_(d) {
     const ada = cariKlien_(email);
     const folder = ada && ada.data.folder ? ada.data.folder : folderKlien_(email, data.nama).getUrl();
     const baris = [aman_(email), aman_(data.nama), data.jk, data.tglLahir, aman_(data.asal), "'" + data.wa, aman_(data.cabor + (data.caborLain ? ' – ' + data.caborLain : '')), aman_(data.level),
-      ada ? ada.data.terdaftar : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, folder];
+      ada ? ada.data.terdaftar : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, folder, data.peran, aman_(data.profesi)];
     const sh = tab_('Klien', KOLOM_KLIEN);
     if (ada) sh.getRange(ada.baris, 1, 1, baris.length).setValues([baris]);
     else sh.appendRow(baris);
@@ -177,14 +182,21 @@ function konsSimpan_(d) {
 
   const id = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().slice(0, 4);
   const tanggal = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyy-MM-dd');
-  const nama = klien.data.nama;
+  const klienId = bersih_(d.klienId, 40);
+  let kp = null;
+  if (klienId) {
+    kp = cariKP_(email, klienId);
+    if (!kp) return { ok: false, pesan: 'Klien tidak ditemukan.' };
+  }
+  const nama = kp ? kp.data.nama : klien.data.nama;
+  const oleh = kp ? klien.data.nama + (klien.data.profesi ? ' (' + klien.data.profesi + ')' : '') : '';
 
-  // Laporan Google Doc di folder klien.
-  const folder = folderKlien_(email, nama);
+  // Laporan Google Doc di folder klien (praktisi: subfolder klien di dalam folder praktisi).
+  const folder = kp ? folderKP_(email, klien.data.nama, klienId, nama) : folderKlien_(email, nama);
   const doc = DocumentApp.create('Program Gizi – ' + nama + ' – ' + tanggal);
   const body = doc.getBody();
   body.appendParagraph('Program Gizi Olahraga Personal').setHeading(DocumentApp.ParagraphHeading.TITLE);
-  body.appendParagraph(nama + ' · ' + email + ' · ' + tanggal + ' · ID ' + id);
+  body.appendParagraph(nama + ' · ' + tanggal + ' · ID ' + id + (oleh ? ' · disusun oleh ' + oleh + ' (' + email + ')' : ' · ' + email));
   if (input.tujuanKonsultasi) {
     body.appendParagraph('Tujuan konsultasi').setHeading(DocumentApp.ParagraphHeading.HEADING2);
     body.appendParagraph(bersih_(input.tujuanKonsultasi, 1500));
@@ -203,27 +215,32 @@ function konsSimpan_(d) {
   try {
     tab_('Konsultasi', KOLOM_KONS).appendRow([
       id, waktu_(), aman_(email), aman_(nama), aman_(r.cabor), aman_(r.tujuan), aman_(r.fase), num_(input.bb), num_(input.tb), num_(r.pct), num_(r.ffm),
-      num_(r.energi), num_(r.kh), num_(r.protein), num_(r.lemak), num_(r.ea), num_(r.sr), aman_(bersih_(input.tujuanKonsultasi, 1000)), file.getUrl(), aman_(json)
+      num_(r.energi), num_(r.kh), num_(r.protein), num_(r.lemak), num_(r.ea), num_(r.sr), aman_(bersih_(input.tujuanKonsultasi, 1000)), file.getUrl(), aman_(json), klienId, kp ? aman_(nama) : ''
     ]);
     const k2 = cariKlien_(email);
     setSel_('Klien', k2.baris, 'Jumlah konsultasi', Number(k2.data.jumlah || 0) + 1);
+    if (kp) {
+      const sh = ss_().getSheetByName('Klien Praktisi');
+      sh.getRange(kp.baris, KOLOM_KP.indexOf('Jumlah konsultasi') + 1).setValue(Number(kp.data.jumlah || 0) + 1);
+      sh.getRange(kp.baris, KOLOM_KP.indexOf('Diperbarui') + 1).setValue(waktu_());
+    }
     c.put(kk, String(n + 1), 86400);
   } finally {
     lock.releaseLock();
   }
 
-  const html = laporanHtml_(nama, tanggal, input.tujuanKonsultasi, laporan);
+  const html = laporanHtml_(nama + (oleh ? ' · disusun oleh ' + oleh : ''), tanggal, input.tujuanKonsultasi, laporan);
   try {
     if (KONS.KIRIM_SALINAN_KLIEN && MailApp.getRemainingDailyQuota() > 5) {
-      MailApp.sendEmail({ to: email, subject: 'Program Gizi Olahraga Anda – ' + tanggal, name: 'Program Gizi murykuswari.com', htmlBody: html, replyTo: KONS.EMAIL_PEMILIK });
+      MailApp.sendEmail({ to: email, subject: (kp ? 'Program Gizi untuk ' + nama + ' – ' : 'Program Gizi Olahraga Anda – ') + tanggal, name: 'Program Gizi murykuswari.com', htmlBody: html, replyTo: KONS.EMAIL_PEMILIK });
     }
     if (KONS.KABARI_PEMILIK && MailApp.getRemainingDailyQuota() > 5) {
-      MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, subject: 'Konsultasi baru: ' + nama + ' (' + (r.cabor || '-') + ')', name: 'Program Gizi murykuswari.com', replyTo: email,
+      MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, subject: 'Konsultasi baru: ' + nama + (kp ? ' oleh ' + klien.data.nama : '') + ' (' + (r.cabor || '-') + ')', name: 'Program Gizi murykuswari.com', replyTo: email,
         htmlBody: '<p><b>' + esc_(nama) + '</b> (' + esc_(email) + ', WA ' + esc_(klien.data.wa) + ', ' + esc_(klien.data.asal) + ')</p><p>Laporan: <a href="' + file.getUrl() + '">' + esc_(doc.getName()) + '</a></p>' + html });
     }
   } catch (err) { console.error(err); }
 
-  return { ok: true, id: id, tanggal: tanggal, riwayat: riwayat_(email) };
+  return { ok: true, id: id, tanggal: tanggal, riwayat: riwayat_(email, klienId), klienPraktisi: kp ? daftarKP_(email) : undefined };
 }
 
 /* ---------- Sheet & Drive ---------- */
@@ -239,7 +256,7 @@ function tab_(nama, kolom) {
     if (nama === 'Klien' && first.getName() !== 'Konsultasi' && !ss.getSheetByName('Klien')) { first.setName('Klien'); sh = first; }
     else sh = ss.insertSheet(nama);
   }
-  if (sh.getLastRow() === 0 || sh.getRange(1, 1).getValue() !== kolom[0]) {
+  if (sh.getLastRow() === 0 || sh.getRange(1, 1).getValue() !== kolom[0] || sh.getRange(1, kolom.length).getValue() !== kolom[kolom.length - 1]) {
     if (sh.getLastRow() === 0) sh.appendRow(kolom); else sh.getRange(1, 1, 1, kolom.length).setValues([kolom]);
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, kolom.length).setFontWeight('bold').setBackground('#e1eff9');
@@ -257,7 +274,7 @@ function cariKlien_(email) {
       const r = v[i];
       const tgl = r[3] instanceof Date ? Utilities.formatDate(r[3], 'Asia/Jakarta', 'yyyy-MM-dd') : String(r[3]);
       const cab = String(r[6]).replace(/^'/, '').split(' – ');
-      return { baris: i + 2, data: { email: email, nama: String(r[1]).replace(/^'/, ''), jk: r[2], tglLahir: tgl, asal: String(r[4]).replace(/^'/, ''), wa: String(r[5]).replace(/\D/g, ''), cabor: cab[0], caborLain: cab[1] || '', level: String(r[7]).replace(/^'/, ''), terdaftar: r[8], jumlah: r[10], folder: r[11] } };
+      return { baris: i + 2, data: { email: email, nama: String(r[1]).replace(/^'/, ''), jk: r[2], tglLahir: tgl, asal: String(r[4]).replace(/^'/, ''), wa: String(r[5]).replace(/\D/g, ''), cabor: cab[0], caborLain: cab[1] || '', level: String(r[7]).replace(/^'/, ''), terdaftar: r[8], jumlah: r[10], folder: r[11], peran: String(r[12] || 'atlet'), profesi: String(r[13] || '').replace(/^'/, '') } };
     }
   }
   return null;
@@ -268,19 +285,26 @@ function setSel_(tab, baris, kolomNama, nilai) {
   ss_().getSheetByName(tab).getRange(baris, kol).setValue(nilai);
 }
 
-function riwayat_(email) {
+function riwayat_(email, klienId) {
+  return riwayatPer_(email)[klienId || ''] || [];
+}
+
+/** Baca tab Konsultasi sekali, kelompokkan per klien praktisi ('' = akun sendiri). */
+function riwayatPer_(email) {
   const sh = tab_('Konsultasi', KOLOM_KONS);
   const n = sh.getLastRow();
-  if (n < 2) return [];
+  const out = {};
+  if (n < 2) return out;
   const v = sh.getRange(2, 1, n - 1, KOLOM_KONS.length).getValues();
-  const out = [];
   v.forEach(function (r) {
     if (String(r[2]).replace(/^'/, '').toLowerCase() !== email) return;
+    const kid = String(r[20] || '');
     let data = {};
     try { data = JSON.parse(String(r[19]).replace(/^'/, '')); } catch (e) { /* abaikan baris rusak */ }
-    out.push({ id: r[0], waktu: String(r[1]), input: data.input || {}, ringkas: data.ringkas || {} });
+    (out[kid] = out[kid] || []).push({ id: r[0], waktu: String(r[1]), input: data.input || {}, ringkas: data.ringkas || {} });
   });
-  return out.slice(-30);
+  Object.keys(out).forEach(function (k) { out[k] = out[k].slice(-30); });
+  return out;
 }
 
 function folderKlienInduk_() {
@@ -313,4 +337,82 @@ function laporanHtml_(nama, tanggal, tujuan, laporan) {
   });
   h += '<p style="color:#6a7f96;font-size:13px">Hasil ini adalah estimasi berbasis rumus dan literatur, bukan diagnosis. Balas email ini untuk berdiskusi dengan Assoc. Prof. Dr. Mury Kuswari. Masuk lagi di murykuswari.com/program.html untuk melanjutkan program.</p></div>';
   return h;
+}
+
+/* ---------- Klien milik pelatih / ahli gizi ---------- */
+
+function konsKlien_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const praktisi = cariKlien_(email);
+  if (!praktisi || praktisi.data.peran === 'atlet') return { ok: false, pesan: 'Fitur ini untuk akun pelatih atau ahli gizi.' };
+  const k = d.klien || {};
+  const data = {
+    nama: bersih_(k.nama, 80), jk: k.jk === 'P' ? 'P' : 'L', tglLahir: bersih_(k.tglLahir, 10), cabor: bersih_(k.cabor, 40), caborLain: bersih_(k.caborLain, 60),
+    level: bersih_(k.level, 40), email: bersih_(k.email, 120).toLowerCase(), wa: String(k.wa || '').replace(/\D/g, '').slice(0, 16), catatan: bersih_(k.catatan, 500)
+  };
+  if (data.nama.length < 2) return { ok: false, pesan: 'Isi nama klien.' };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data.tglLahir)) return { ok: false, pesan: 'Isi tanggal lahir klien.' };
+  if (data.email && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(data.email)) return { ok: false, pesan: 'Email klien belum benar.' };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = tab_('Klien Praktisi', KOLOM_KP);
+    const ada = k.id ? cariKP_(email, bersih_(k.id, 40)) : null;
+    if (!ada && daftarKP_(email).length >= 200) return { ok: false, pesan: 'Batas 200 klien per akun tercapai.' };
+    const id = ada ? ada.data.id : 'K' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + Utilities.getUuid().slice(0, 3);
+    const baris = [id, aman_(email), aman_(data.nama), data.jk, data.tglLahir, aman_(data.cabor), aman_(data.caborLain), aman_(data.level), aman_(data.email), data.wa ? "'" + data.wa : '', aman_(data.catatan),
+      ada ? ada.data.dibuat : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, ada ? ada.data.folder : ''];
+    if (ada) sh.getRange(ada.baris, 1, 1, baris.length).setValues([baris]); else sh.appendRow(baris);
+    return { ok: true, id: id, klienPraktisi: daftarKP_(email) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function barisKP_(r) {
+  const tgl = r[4] instanceof Date ? Utilities.formatDate(r[4], 'Asia/Jakarta', 'yyyy-MM-dd') : String(r[4]);
+  const t = function (v) { return String(v == null ? '' : v).replace(/^'/, ''); };
+  return { id: t(r[0]), nama: t(r[2]), jk: t(r[3]) === 'P' ? 'P' : 'L', tglLahir: tgl, cabor: t(r[5]), caborLain: t(r[6]), level: t(r[7]), email: t(r[8]), wa: t(r[9]).replace(/\D/g, ''), catatan: t(r[10]), dibuat: r[11], diperbarui: String(r[12]), jumlah: r[13], folder: t(r[14]) };
+}
+
+function cariKP_(email, id) {
+  const sh = tab_('Klien Praktisi', KOLOM_KP);
+  const n = sh.getLastRow();
+  if (n < 2) return null;
+  const v = sh.getRange(2, 1, n - 1, KOLOM_KP.length).getValues();
+  for (let i = 0; i < v.length; i++) {
+    if (String(v[i][0]) === id && String(v[i][1]).replace(/^'/, '').toLowerCase() === email) return { baris: i + 2, data: barisKP_(v[i]) };
+  }
+  return null;
+}
+
+function daftarKP_(email) {
+  const sh = tab_('Klien Praktisi', KOLOM_KP);
+  const n = sh.getLastRow();
+  if (n < 2) return [];
+  const v = sh.getRange(2, 1, n - 1, KOLOM_KP.length).getValues();
+  const out = [];
+  let per = null;
+  v.forEach(function (r) {
+    if (String(r[1]).replace(/^'/, '').toLowerCase() !== email) return;
+    if (!per) per = riwayatPer_(email);
+    const k = barisKP_(r);
+    k.riwayat = per[k.id] || [];
+    out.push(k);
+  });
+  return out;
+}
+
+function folderKP_(email, namaPraktisi, id, namaKlien) {
+  const induk = folderKlien_(email, namaPraktisi);
+  const props = PropertiesService.getScriptProperties();
+  const key = 'kpfolder:' + id;
+  const fid = props.getProperty(key);
+  if (fid) { try { return DriveApp.getFolderById(fid); } catch (e) { /* dibuat ulang */ } }
+  const f = induk.createFolder('Klien – ' + String(namaKlien).slice(0, 60) + ' (' + id + ')');
+  props.setProperty(key, f.getId());
+  const kp = cariKP_(email, id);
+  if (kp) ss_().getSheetByName('Klien Praktisi').getRange(kp.baris, KOLOM_KP.indexOf('Folder') + 1).setValue(f.getUrl());
+  return f;
 }
