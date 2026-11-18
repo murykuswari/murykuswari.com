@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     st.token = j.token; st.email = j.email || st.email;
     try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
     if (j.ingat) { try { localStorage.setItem(INGAT_KEY, JSON.stringify({ token: j.ingat.token, sampai: j.ingat.sampai, email: st.email })); } catch (er) { /* abaikan */ } }
-    st.foto = j.foto || ""; st.admin = !!j.admin; st.bayar = j.pembayaran || [];
+    st.foto = j.foto || ""; st.admin = !!j.admin; st.bayar = j.pembayaran || []; st.minta = j.permintaan || [];
     setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
     cekKembaliDariBayar();
   }
@@ -756,39 +756,72 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function rrect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
 
-  /* ---------- Konsultasi lanjutan berbayar (Midtrans) ---------- */
+  /* ---------- Tanya Dr. Mury: ajukan dulu, bayar hanya bila diputuskan berbayar ---------- */
   const rp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
   const STATUS_BAYAR = { lunas: ["Lunas", "b-normal"], menunggu: ["Menunggu pembayaran", "b-under"], kedaluwarsa: ["Kedaluwarsa", "b-over"], gagal: ["Gagal", "b-obese"], dikembalikan: ["Dikembalikan", "b-over"] };
+  const TOPIK_DEF = ["Program gizi & makro", "Berat badan & komposisi tubuh", "Suplemen", "Hidrasi", "Persiapan kompetisi", "Pemulihan & cedera", "Lainnya"];
+  const statusMinta = (m) => ({
+    baru: ["Menunggu ditinjau", "b-under"],
+    "menunggu-bayar": ["Menunggu pembayaran", "b-over"],
+    siap: m.keputusan === "berbayar" ? ["Lunas, siap dijawab", "b-normal"] : ["Diterima (gratis), sedang dijawab", "b-normal"],
+    ditolak: ["Tidak dilanjutkan", "b-obese"],
+    dijawab: ["Dijawab", "b-normal"]
+  }[m.status] || [m.status, "b-under"]);
+  const br = (t) => esc(t).replace(/\n/g, "<br>");
   async function muatPaket() {
     if (st.lokal || !ENDPOINT) return;
     try { const j = await api({ aksi: "kons-paket" }); if (j.ok) { st.paket = j; renderLanjut(); } } catch (e) { /* paket opsional */ }
   }
+  function kartuMinta(m) {
+    const s = statusMinta(m);
+    let isi = "";
+    if (m.status === "menunggu-bayar") isi = `<p class="pg-minta-info">Biaya: <strong>${esc(m.paket)} – ${rp(m.harga)}</strong></p>${m.catatan ? `<p class="note">${br(m.catatan)}</p>` : ""}${m.tautan ? `<a class="btn btn-primary pg-sm" href="${esc(m.tautan)}">Bayar ${rp(m.harga)}</a>` : ""}<small class="note"> Tautan bayar juga dikirim ke email Anda (berlaku 24 jam).</small>`;
+    else if (m.status === "ditolak") isi = m.catatan ? `<p class="pg-minta-info"><strong>Alasan & saran:</strong><br>${br(m.catatan)}</p>` : "";
+    else if (m.status === "siap") isi = m.catatan ? `<p class="note">${br(m.catatan)}</p>` : "";
+    else if (m.status === "dijawab") isi = `<div class="pg-jawab"><strong>Jawaban Dr. Mury</strong> <small class="note">${esc(String(m.dijawab).slice(0, 16))}</small><p>${br(m.jawaban)}</p></div>`;
+    return `<div class="pg-minta"><div class="pg-minta-top"><span><strong>${esc(m.topik)}</strong><br><small class="note">${esc(String(m.dibuat).slice(0, 16))} · ${esc(m.id)}</small></span><span class="badge ${s[1]}">${s[0]}</span></div>
+      <details${m.status === "dijawab" ? "" : " open"}><summary class="note">Pertanyaan Anda</summary><p class="pg-minta-q">${br(m.pertanyaan)}</p></details>${isi}</div>`;
+  }
   function renderLanjut() {
     const box = $("u-lanjut");
     if (!box) return;
-    if (!st.profil || !st.paket) { box.hidden = true; return; }
+    if (!st.profil || st.lokal || !ENDPOINT) { box.hidden = true; return; }
     box.hidden = false;
-    const P = st.paket, untuk = st.aktif ? ` untuk <strong>${esc(st.aktif.nama)}</strong>` : "";
+    const draf = $("t-isi") ? { topik: $("t-topik").value, isi: $("t-isi").value } : null;
+    const P = st.paket || {}, kid = st.aktif ? st.aktif.id : "";
+    const untuk = st.aktif ? ` tentang <strong>${esc(st.aktif.nama)}</strong>` : "";
+    const minta = (st.minta || []).filter((m) => (m.klienId || "") === kid).slice().reverse();
     const riw = (st.bayar || []).slice().reverse();
-    box.innerHTML = `<h4>Konsultasi lanjutan dengan Dr. Mury${untuk}</h4>
-      ${P.aktif ? "" : `<p class="note">Pembayaran online segera dibuka. Sementara itu hubungi <a href="mailto:${esc(S.email)}">${esc(S.email)}</a>.</p>`}
-      ${(P.paket || []).map((p) => `<div class="pg-paket"><div><strong>${esc(p.nama)}</strong><span>${esc(p.deskripsi)}</span></div><div class="pg-paket-aksi"><b>${rp(p.harga)}</b>${P.aktif ? `<button type="button" class="btn btn-primary pg-sm" data-bayar="${esc(p.id)}">Bayar</button>` : ""}</div></div>`).join("")}
-      ${P.aktif ? '<p class="note">Bayar lewat QRIS, transfer virtual account, atau e-wallet (Midtrans). Pembayaran diverifikasi otomatis; Anda menerima email konfirmasi dan jadwal sesi.</p>' : ""}
+    box.innerHTML = `<h4>Tanya Dr. Mury${untuk}</h4>
+      <p class="note">Ceritakan pertanyaan atau masalah Anda. <strong>Belum perlu membayar.</strong> Dr. Mury meninjau pertanyaan, profil, dan riwayat program Anda dulu, lalu memutuskan: dijawab gratis, berbayar (biaya diberitahukan sebelum Anda membayar), atau diberi saran lain.</p>
+      <form id="t-form" class="pg-tanya" novalidate>
+        <div class="field"><label for="t-topik">Topik</label><select id="t-topik">${(P.topik || TOPIK_DEF).map((t) => `<option>${esc(t)}</option>`).join("")}</select></div>
+        <div class="field"><label for="t-isi">Pertanyaan atau masalah</label><textarea id="t-isi" rows="5" maxlength="3000" placeholder="Mis. berat badan turun 2 kg dalam 2 minggu menjelang kejuaraan dan mudah lelah saat latihan sore. Apa yang perlu diubah dari program makan saya?"></textarea></div>
+        <button class="btn btn-primary pg-sm" type="submit" id="t-kirim">Kirim pertanyaan</button>
+      </form>
+      ${minta.length ? `<h4 style="margin-top:14px">Permintaan saya</h4>${minta.map(kartuMinta).join("")}` : ""}
+      ${(P.paket || []).length ? `<details class="pg-tarif"><summary class="note">Tarif konsultasi lanjutan (bila diputuskan berbayar)</summary>${P.paket.map((p) => `<div class="pg-paket"><div><strong>${esc(p.nama)}</strong><span>${esc(p.deskripsi)}</span></div><div class="pg-paket-aksi"><b>${rp(p.harga)}</b></div></div>`).join("")}<p class="note">Dr. Mury dapat memilih salah satu paket atau menentukan biaya lain sesuai masalah Anda.</p></details>` : ""}
       ${riw.length ? `<h4 style="margin-top:14px">Riwayat pembayaran</h4>${riw.map((b) => { const s = STATUS_BAYAR[b.status] || [b.status, "b-under"]; return `<div class="pg-bayar"><span>${esc(b.paket)}<br><small class="note">${esc(b.orderId)} · ${rp(b.jumlah)}</small></span><span class="badge ${s[1]}">${s[0]}</span>${b.status === "menunggu" ? `<button type="button" class="dl-link" data-cek="${esc(b.orderId)}">Cek</button>` : ""}</div>`; }).join("")}` : ""}
       ${riw.some((b) => b.status === "lunas") && P.jadwal ? `<a class="btn btn-ghost pg-sm" href="${esc(P.jadwal)}" target="_blank" rel="noopener">Pilih jadwal sesi</a>` : ""}`;
+    if (draf) { $("t-topik").value = draf.topik; $("t-isi").value = draf.isi; }
   }
-  document.addEventListener("click", async (e) => {
-    const b = e.target.closest("[data-bayar]"), c = e.target.closest("[data-cek]");
-    if (b) {
-      const catatan = window.prompt("Catatan untuk Dr. Mury (opsional), mis. waktu yang Anda inginkan:", "") ;
-      if (catatan === null) return;
-      b.disabled = true; b.textContent = "Membuat tagihan…";
-      try {
-        const j = await api({ aksi: "kons-bayar", token: st.token, paket: b.dataset.bayar, klienId: st.aktif ? st.aktif.id : "", catatan });
-        if (!j.ok) { MK.toast(j.pesan || "Gagal membuat tagihan"); if (j.ulang) sesiHabis(); return; }
-        location.href = j.redirect;
-      } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { b.disabled = false; b.textContent = "Bayar"; }
-    }
+  document.addEventListener("submit", async (e) => {
+    if (e.target.id !== "t-form") return;
+    e.preventDefault();
+    const isi = $("t-isi").value.trim(), b = $("t-kirim");
+    if (isi.length < 20) { MK.toast("Tuliskan pertanyaan Anda (minimal 20 karakter)"); $("t-isi").focus(); return; }
+    b.disabled = true; b.textContent = "Mengirim…";
+    try {
+      const j = await api({ aksi: "kons-tanya", token: st.token, topik: $("t-topik").value, pertanyaan: isi, klienId: st.aktif ? st.aktif.id : "" });
+      if (!j.ok) { MK.toast(j.pesan || "Gagal mengirim"); if (j.ulang) sesiHabis(); return; }
+      st.minta = j.permintaan || st.minta;
+      $("t-isi").value = "";
+      renderLanjut();
+      MK.toast("Pertanyaan terkirim. Anda akan menerima email setelah ditinjau.");
+    } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { const b2 = $("t-kirim"); if (b2) { b2.disabled = false; b2.textContent = "Kirim pertanyaan"; } }
+  });
+  document.addEventListener("click", (e) => {
+    const c = e.target.closest("[data-cek]");
     if (c) cekStatus(c.dataset.cek);
   });
   async function cekStatus(orderId) {
@@ -796,6 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const j = await api({ aksi: "kons-status", token: st.token, orderId });
       if (!j.ok) { MK.toast(j.pesan || "Gagal mengecek"); return null; }
       st.bayar = j.pembayaran || st.bayar;
+      st.minta = j.permintaan || st.minta;
       if (j.jadwal && st.paket) st.paket.jadwal = j.jadwal;
       renderLanjut();
       return j.status;
@@ -808,7 +842,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const info = $("bayar-info");
     info.hidden = false; info.className = "callout"; info.textContent = "Memverifikasi pembayaran " + orderId + "…";
     const st1 = await cekStatus(orderId);
-    const pesan = { lunas: ["good", "Pembayaran terverifikasi. Terima kasih! Konfirmasi dan langkah penjadwalan sudah dikirim ke email Anda."], menunggu: ["warn", "Pembayaran belum kami terima. Bila Anda sudah membayar, status akan diperbarui otomatis dalam beberapa menit; klik \"Cek\" di riwayat pembayaran."], kedaluwarsa: ["bad", "Tagihan kedaluwarsa. Silakan buat pembayaran baru."], gagal: ["bad", "Pembayaran gagal atau dibatalkan. Silakan coba lagi."] }[st1] || ["warn", "Status pembayaran belum dapat dipastikan. Coba klik \"Cek\" beberapa saat lagi."];
+    const dariMinta = (st.minta || []).some((m) => m.orderId === orderId);
+    const pesan = { lunas: ["good", dariMinta ? "Pembayaran terverifikasi. Status: Lunas, siap dijawab. Jawaban Dr. Mury akan dikirim ke email Anda dan tampil di bagian Tanya Dr. Mury." : "Pembayaran terverifikasi. Terima kasih! Konfirmasi dan langkah penjadwalan sudah dikirim ke email Anda."], menunggu: ["warn", "Pembayaran belum kami terima. Bila Anda sudah membayar, status akan diperbarui otomatis dalam beberapa menit; klik \"Cek\" di riwayat pembayaran."], kedaluwarsa: ["bad", "Tagihan kedaluwarsa. Balas email tagihan atau hubungi Dr. Mury untuk tagihan baru."], gagal: ["bad", "Pembayaran gagal atau dibatalkan. Silakan coba lagi."] }[st1] || ["warn", "Status pembayaran belum dapat dipastikan. Coba klik \"Cek\" beberapa saat lagi."];
     info.className = "callout " + pesan[0]; info.textContent = pesan[1];
   }
 });

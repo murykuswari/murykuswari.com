@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ENDPOINT = S.programEndpoint || S.otpEndpoint || "";
   const SESI_KEY = "mk-program-sesi", INGAT_KEY = "mk-ingat";
   const WARNA = ["#0070b8", "#f05828", "#06d6a0", "#ffd166", "#ef476f", "#118ab2", "#8338ec", "#3a86ff", "#fb5607", "#2a9d8f", "#e76f51", "#9b5de5"];
-  const st = { token: "", email: "", peserta: [], bayar: [], foto: {}, charts: {} };
+  const st = { token: "", email: "", peserta: [], bayar: [], minta: [], paket: [], bayarAktif: false, foto: {}, charts: {} };
   const bacaIngat = () => { try { const t = JSON.parse(localStorage.getItem(INGAT_KEY) || "null"); return t && t.sampai > Date.now() ? t : null; } catch (e) { return null; } };
 
   async function api(payload) {
@@ -78,11 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const j = await api({ aksi: "kons-admin", token: st.token });
       if (!j.ok) { if (!diam) pesan(j.pesan || "Gagal memuat."); if (j.ulang) { $("d-masuk").hidden = false; $("d-app").hidden = true; } return false; }
       st.bayar = j.pembayaran || [];
+      st.minta = j.permintaan || []; st.paket = j.paket || []; st.bayarAktif = !!j.bayarAktif;
       st.peserta = (j.peserta || []).map(olah);
       $("d-masuk").hidden = true; $("d-app").hidden = false;
       $("d-who").textContent = st.email;
       $("d-upd").textContent = "· diperbarui " + (j.dibuat || "");
-      isiFilter(); renderKpi(); renderCharts(); renderBayar(); renderGrid();
+      isiFilter(); renderKpi(); renderCharts(); renderMinta(); renderBayar(); renderGrid();
       return true;
     } catch (er) { if (!diam) pesan("Layanan tidak bisa dihubungi."); return false; }
   }
@@ -298,6 +299,124 @@ document.addEventListener("DOMContentLoaded", () => {
     a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
     a.download = `peserta-konsultasi-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
+  });
+
+
+  /* ---------- Permintaan konsultasi (ajukan dulu, diputuskan pengelola) ---------- */
+  const rp = (n) => "Rp" + f0(n);
+  const br = (t) => esc(t).replace(/\n/g, "<br>");
+  const LABEL_M = { baru: ["Baru", "db-wait"], "menunggu-bayar": ["Menunggu pembayaran", ""], siap: ["Siap dijawab", "db-ready"], dijawab: ["Dijawab", "db-paid"], ditolak: ["Ditolak", "db-risk"] };
+  const chipM = (m) => { const l = LABEL_M[m.status] || [m.status, ""]; return `<span class="db-chip ${l[1]}">${l[0]}${m.status === "siap" ? (m.keputusan === "berbayar" ? " · lunas" : " · gratis") : ""}</span>`; };
+  const pesertaDari = (m) => st.peserta.find((p) => p.kunci === (m.klienId ? "kp:" + m.klienId : "a:" + m.email));
+  $("m-filter").addEventListener("input", renderMinta);
+  function renderMinta() {
+    const f = $("m-filter").value;
+    const urut = { baru: 0, siap: 1, "menunggu-bayar": 2, dijawab: 3, ditolak: 4 };
+    const L = st.minta.filter((m) => (f === "aksi" ? m.status === "baru" || m.status === "siap" : !f || m.status === f))
+      .sort((a, b) => (f === "aksi" ? urut[a.status] - urut[b.status] : 0) || String(b.dibuat).localeCompare(String(a.dibuat)));
+    const nBaru = st.minta.filter((m) => m.status === "baru").length, nSiap = st.minta.filter((m) => m.status === "siap").length;
+    const n = $("d-minta-n"); n.hidden = !(nBaru + nSiap); n.textContent = `${nBaru} baru · ${nSiap} siap dijawab`;
+    $("d-minta").innerHTML = L.length ? `<div class="db-minta-list">${L.slice(0, 60).map((m) => `
+      <div class="db-minta ${esc(m.status)}">
+        <div><strong>${esc(m.nama)}</strong> <small class="note">${esc(m.email)} · ${esc(String(m.dibuat).slice(0, 16))}</small><br>
+          <span class="db-chips" style="margin-top:4px">${chipM(m)}<span class="db-chip">${esc(m.topik)}</span>${m.harga ? `<span class="db-chip">${rp(m.harga)}</span>` : ""}</span>
+          <p>${esc(m.pertanyaan.length > 220 ? m.pertanyaan.slice(0, 220) + "…" : m.pertanyaan)}</p></div>
+        <button type="button" class="btn ${m.status === "baru" || m.status === "siap" ? "btn-primary" : "btn-ghost"} pg-sm" data-m="${esc(m.id)}">${m.status === "baru" ? "Tinjau" : m.status === "siap" ? "Jawab" : "Buka"}</button>
+      </div>`).join("")}</div>` : `<p class="note">${st.minta.length ? "Tidak ada permintaan pada saringan ini." : "Belum ada permintaan. Klien mengajukan pertanyaan dari murykuswari.com/konsultasi tanpa membayar dulu."}</p>`;
+  }
+  $("d-minta").addEventListener("click", (e) => { const b = e.target.closest("[data-m]"); if (b) bukaMinta(b.dataset.m); });
+
+  function bukaMinta(id) {
+    const m = st.minta.find((x) => x.id === id);
+    if (!m) return;
+    const p = pesertaDari(m), lr = p ? p.lr : {}, last = p ? p.last : null;
+    const lain = st.minta.filter((x) => x.email === m.email && x.id !== m.id).length;
+    const profil = p ? `
+      <div class="db-info">
+        <span class="note"><strong>${esc(p.peranLabel)}</strong> · ${esc(p.caborN)}${p.usia != null ? " · " + p.usia + " th" : ""}${p.jk ? " · " + (p.jk === "P" ? "P" : "L") : ""}${p.level ? " · " + esc(p.level) : ""}${p.asal ? " · " + esc(p.asal) : ""}${p.wa ? " · WA " + esc(p.wa) : ""}</span>
+        <button type="button" class="btn btn-ghost pg-sm" data-profil="${esc(p.kunci)}">Profil & riwayat lengkap</button>
+      </div>
+      <div class="pg-tiles" style="margin:10px 0">
+        <div class="pg-tile"><b>${last && last.bb ? f1(last.bb) + " kg" : "–"}</b><span>BB</span></div>
+        <div class="pg-tile c2"><b>${lr.pct != null ? f1(lr.pct) + "%" : "–"}</b><span>Lemak</span></div>
+        <div class="pg-tile c3"><b>${lr.energi ? f0(lr.energi) : "–"}</b><span>kkal/hari</span></div>
+        <div class="pg-tile c4"><b>${lr.ea != null ? f1(lr.ea) : "–"}</b><span>EA</span></div>
+      </div>
+      ${p.risiko ? '<div class="callout bad">Perlu perhatian: ketersediaan energi rendah atau tanda REDs pada asesmen terakhir.</div>' : ""}
+      ${p.R.length ? `<p class="note">${p.R.length} asesmen tersimpan, terakhir ${esc(p.tglTerakhir)}${last && last.tujuanKonsultasi ? ` · tujuan: “${esc(last.tujuanKonsultasi)}”` : ""}${last && last.laporan ? ` · <a href="${esc(last.laporan)}" target="_blank" rel="noopener">laporan terakhir</a>` : ""}</p>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tanggal</th><th>Tujuan</th><th class="n">BB</th><th class="n">Lemak</th><th class="n">kkal</th><th class="n">KH/P/L</th><th class="n">EA</th></tr></thead><tbody>
+        ${p.R.slice(-4).reverse().map((r) => { const g = r.ringkas || {}; return `<tr><td>${esc(r.tanggal)}</td><td>${esc((PG.TUJUAN[r.tujuan] || "").split(" (")[0])}</td><td class="n">${r.bb ? f1(r.bb) : "–"}</td><td class="n">${g.pct != null ? f1(g.pct) + "%" : "–"}</td><td class="n">${g.energi ? f0(g.energi) : "–"}</td><td class="n">${g.kh ? `${f0(g.kh)}/${f0(g.protein)}/${f0(g.lemak)}` : "–"}</td><td class="n">${g.ea != null ? f1(g.ea) : "–"}</td></tr>`; }).join("")}
+      </tbody></table></div>` : '<p class="note">Belum ada asesmen tersimpan untuk klien ini.</p>'}` : '<p class="note">Profil klien belum ditemukan di data peserta.</p>';
+    let aksi = "";
+    if (m.status === "baru" || m.status === "menunggu-bayar") {
+      aksi = `${m.status === "menunggu-bayar" ? `<div class="callout warn">Tagihan terkirim: <strong>${esc(m.paket)} – ${rp(m.harga)}</strong> (order ${esc(m.orderId)}). Menunggu pembayaran klien; status berubah otomatis menjadi “Lunas, siap dijawab”. Keputusan baru di bawah akan menggantikan tagihan ini.</div>` : ""}
+      <div class="db-putus-opsi">
+        <div><h4>Gratis</h4><p class="note">Langsung bisa dijawab. Klien diberi tahu lewat email.</p>
+          <div class="field"><label for="pm-g-cat">Catatan untuk klien (opsional)</label><textarea id="pm-g-cat" rows="2"></textarea></div>
+          <button type="button" class="btn btn-primary pg-sm" data-putus="gratis">Terima gratis</button></div>
+        <div><h4>Berbayar</h4>${st.bayarAktif ? "" : '<p class="callout warn">Pembayaran online belum aktif (MIDTRANS_SERVER_KEY belum diisi).</p>'}
+          <div class="field"><label for="pm-paket">Paket</label><select id="pm-paket">${st.paket.map((x) => `<option value="${esc(x.id)}">${esc(x.nama)} – ${rp(x.harga)}</option>`).join("")}<option value="kustom">Tentukan harga sendiri</option></select></div>
+          <div class="field" id="pm-harga-w" hidden><label for="pm-harga">Harga (Rp)</label><input id="pm-harga" type="number" min="10000" step="5000" inputmode="numeric" placeholder="mis. 150000"></div>
+          <div class="field"><label for="pm-b-cat">Catatan untuk klien</label><textarea id="pm-b-cat" rows="2" placeholder="mis. perlu telaah program 4 minggu dan video call 30 menit"></textarea></div>
+          <button type="button" class="btn btn-primary pg-sm" data-putus="berbayar">Kirim tagihan</button></div>
+        <div><h4>Tolak</h4><p class="note">Klien menerima alasan atau saran Anda.</p>
+          <div class="field"><label for="pm-t-cat">Alasan / saran</label><textarea id="pm-t-cat" rows="3" placeholder="mis. keluhan ini perlu pemeriksaan dokter terlebih dahulu"></textarea></div>
+          <button type="button" class="btn btn-ghost pg-sm" data-putus="tolak">Tolak & kirim alasan</button></div>
+      </div>`;
+    } else if (m.status === "siap" || m.status === "dijawab") {
+      aksi = `<p class="note">${m.keputusan === "berbayar" ? `Berbayar · ${esc(m.paket)} · ${rp(m.harga)} · lunas (order ${esc(m.orderId)})` : "Gratis"}${m.catatan ? " · catatan: " + esc(m.catatan) : ""}${m.status === "dijawab" ? " · dijawab " + esc(String(m.dijawab).slice(0, 16)) : ""}</p>
+      <div class="field"><label for="pm-jawab">${m.status === "dijawab" ? "Jawaban (bisa diperbarui; klien menerima email lagi)" : "Jawaban untuk klien"}</label><textarea id="pm-jawab" rows="10">${esc(m.jawaban)}</textarea></div>
+      <button type="button" class="btn btn-primary pg-sm" data-jawab>${m.status === "dijawab" ? "Perbarui jawaban" : "Kirim jawaban"}</button>
+      <p class="note">Jawaban tersimpan di tab Permintaan, dikirim ke ${esc(m.email)}, dan tampil di halaman konsultasi klien.</p>`;
+    } else if (m.status === "ditolak") {
+      aksi = `<div class="callout">Ditolak. Alasan/saran yang dikirim: ${br(m.catatan)}</div>`;
+    }
+    $("d-detail").innerHTML = `
+      <button type="button" class="db-x" id="dm-tutup" aria-label="Tutup">×</button>
+      <div class="db-dbody">
+        <span class="db-chips">${chipM(m)}<span class="db-chip">${esc(m.topik)}</span><span class="db-chip">${esc(m.id)}</span></span>
+        <h2 id="dm-nama" style="margin:8px 0 2px">${esc(m.nama)}</h2>
+        <p class="note">${esc(m.email)} · diajukan ${esc(String(m.dibuat).slice(0, 16))}${lain ? ` · ${lain} permintaan lain dari akun ini` : ""}</p>
+        <div class="db-q">${br(m.pertanyaan)}</div>
+        <h3>Profil & riwayat program</h3>
+        ${profil}
+        <h3>Keputusan</h3>
+        <div class="db-putus" data-id="${esc(m.id)}">${aksi}<p class="dl-msg" id="pm-msg" role="alert" hidden></p></div>
+      </div>`;
+    $("d-modal").hidden = false;
+    document.body.style.overflow = "hidden";
+    $("dm-tutup").onclick = tutup;
+    const sel = $("pm-paket");
+    if (sel) sel.addEventListener("input", () => { $("pm-harga-w").hidden = sel.value !== "kustom"; });
+  }
+  $("d-detail").addEventListener("click", async (e) => {
+    const pr = e.target.closest("[data-profil]");
+    if (pr) { bukaDetail(pr.dataset.profil); return; }
+    const bp = e.target.closest("[data-putus]"), bj = e.target.closest("[data-jawab]");
+    if (!bp && !bj) return;
+    const id = e.target.closest(".db-putus").dataset.id, msg = $("pm-msg");
+    let payload;
+    if (bp) {
+      const k = bp.dataset.putus;
+      payload = { aksi: "kons-putus", token: st.token, id, keputusan: k };
+      if (k === "gratis") payload.catatan = $("pm-g-cat").value;
+      if (k === "tolak") { payload.catatan = $("pm-t-cat").value; if (payload.catatan.trim().length < 5) { msg.hidden = false; msg.textContent = "Tuliskan alasan atau saran untuk klien."; return; } }
+      if (k === "berbayar") { payload.paket = $("pm-paket").value; payload.harga = $("pm-harga").value; payload.catatan = $("pm-b-cat").value; }
+    } else {
+      payload = { aksi: "kons-jawab", token: st.token, id, jawaban: $("pm-jawab").value };
+      if (payload.jawaban.trim().length < 10) { msg.hidden = false; msg.textContent = "Jawaban terlalu pendek."; return; }
+    }
+    const btn = bp || bj, label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Memproses…";
+    try {
+      const j = await api(payload);
+      if (!j.ok) { msg.hidden = false; msg.textContent = j.pesan || "Gagal."; if (j.ulang) { tutup(); $("d-masuk").hidden = false; $("d-app").hidden = true; } return; }
+      st.minta = j.permintaan || st.minta;
+      if (j.pembayaran) { st.bayar = j.pembayaran; st.peserta = st.peserta.map(olah); renderBayar(); renderKpi(); }
+      renderMinta();
+      bukaMinta(id);
+      MK.toast(bp ? { gratis: "Diterima gratis. Klien sudah diberi tahu.", berbayar: "Tagihan terkirim ke email klien.", tolak: "Alasan terkirim ke klien." }[bp.dataset.putus] : "Jawaban terkirim ke klien.");
+    } catch (er) { msg.hidden = false; msg.textContent = "Layanan tidak bisa dihubungi."; } finally { if (document.body.contains(btn)) { btn.disabled = false; btn.textContent = label; } }
   });
 
   /* ---------- Pembayaran ---------- */

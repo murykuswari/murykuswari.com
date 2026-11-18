@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026o">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026p">
 </head>
 <body>
   <header id="site-header"></header>
@@ -64,6 +64,22 @@
             <div class="card db-ch"><h3>Jenis kelamin</h3><div class="db-cv"><canvas id="ch-jk"></canvas></div></div>
           </div>
 
+          <div class="card db-ch" id="d-minta-wrap" style="margin-bottom:18px">
+            <div class="db-minta-bar">
+              <h3 style="margin:0">Permintaan konsultasi <span class="db-chip db-wait" id="d-minta-n" hidden></span></h3>
+              <select id="m-filter" aria-label="Saring permintaan">
+                <option value="aksi">Perlu tindakan</option>
+                <option value="">Semua</option>
+                <option value="baru">Baru (belum ditinjau)</option>
+                <option value="menunggu-bayar">Menunggu pembayaran</option>
+                <option value="siap">Siap dijawab</option>
+                <option value="dijawab">Dijawab</option>
+                <option value="ditolak">Ditolak</option>
+              </select>
+            </div>
+            <div id="d-minta"></div>
+          </div>
+
           <div class="card db-ch" id="d-bayar-wrap" style="margin-bottom:18px">
             <h3>Pembayaran konsultasi lanjutan</h3>
             <div id="d-bayar"></div>
@@ -92,6 +108,6 @@
   <script src="assets/js/main.js?v=2026m"></script>
   <script src="assets/vendor/chart.umd.4.4.1.js"></script>
   <script src="assets/js/program-engine.js?v=2"></script>
-  <script src="assets/js/dashboard.js?v=3"></script>
+  <script src="assets/js/dashboard.js?v=4"></script>
 </body>
 </html>
