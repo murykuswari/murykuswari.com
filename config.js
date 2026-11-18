@@ -35,7 +35,7 @@ window.SITE = {
 
   // URL layanan Program Gizi Personal (bagian #program di gizi.html). Kosongkan untuk memakai otpEndpoint,
   // karena Konsultasi.gs dipasang di proyek Apps Script yang sama. Panduan: docs/panduan-program-gizi.md
-  programEndpoint: "",
+  programEndpoint: "https://script.google.com/macros/s/AKfycbyKDG8NtTPbpKb9R6t_wguvMCmbUcwVEnJKpO_q2a-N7qgOQ39iMKisPWeNrCHglXRw/exec",
 
   // Statistik Google Scholar (perbarui berkala, mis. tiap semester).
   scholarStats: { sitasi: 1112, hIndex: 17, i10: 30, karya: 122, diperbarui: "November 2026" }
