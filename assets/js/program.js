@@ -1,5 +1,5 @@
 /*
- * Bagian Program Gizi Olahraga Personal (gizi.html#program).
+ * Halaman Konsultasi Gizi Olahraga Personal (/konsultasi/).
  * Masuk dengan OTP email lewat Google Apps Script (SITE.programEndpoint atau SITE.otpEndpoint),
  * menghitung program dengan PG (program-engine.js), lalu menyimpan asesmen + laporan ke Drive pemilik.
  * Bila layanan belum aktif, halaman tetap jalan dalam "mode lokal" (data hanya di perangkat ini).
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const f0 = (x) => fx(Math.round(x));
   const f1 = (x) => fx(x, 1);
   const ENDPOINT = S.programEndpoint || S.otpEndpoint || "";
-  const SESI_KEY = "mk-program-sesi", LOKAL_KEY = "mk-program-lokal";
+  const SESI_KEY = "mk-program-sesi", LOKAL_KEY = "mk-program-lokal", INGAT_KEY = "mk-ingat";
   const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
   const st = { token: "", email: "", profil: null, riwayat: [], klien: [], aktif: null, foto: "", fotoKlien: {}, lokal: !ENDPOINT, jk: "L", H: null, input: null, tersimpan: false };
@@ -94,14 +94,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const b = $("b-masuk");
     busy(b, true, "Memeriksa…");
     try {
-      const j = await api({ aksi: "kons-masuk", email: st.email, otp });
+      const j = await api({ aksi: "kons-masuk", email: st.email, otp, ingat: $("m-ingat").checked });
       if (!j.ok) { MK.toast(j.pesan || "Kode salah"); return; }
-      st.token = j.token;
-      try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
-      st.foto = j.foto || ""; st.admin = !!j.admin;
-      setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
+      terimaMasuk(j);
     } catch (er) { MK.toast("Layanan tidak bisa dihubungi. Coba lagi."); } finally { busy(b, false); }
   });
+  // Menyimpan sesi (6 jam, per tab) dan token "ingat perangkat" (30 hari, di perangkat ini).
+  function terimaMasuk(j) {
+    st.token = j.token; st.email = j.email || st.email;
+    try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
+    if (j.ingat) { try { localStorage.setItem(INGAT_KEY, JSON.stringify({ token: j.ingat.token, sampai: j.ingat.sampai, email: st.email })); } catch (er) { /* abaikan */ } }
+    st.foto = j.foto || ""; st.admin = !!j.admin; st.bayar = j.pembayaran || [];
+    setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
+    cekKembaliDariBayar();
+  }
+  const bacaIngat = () => { try { const t = JSON.parse(localStorage.getItem(INGAT_KEY) || "null"); return t && t.sampai > Date.now() ? t : null; } catch (e) { return null; } };
   function masukLokal() {
     const a = lokalDb.akun(st.email);
     st.foto = a.foto || ""; (a.klien || []).forEach((k) => { if (k.foto) st.fotoKlien[k.id] = k.foto; });
@@ -115,20 +122,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (profil) { isiProfil(profil); lanjutSetelahProfil(); }
     else step(1);
   }
-  $("u-keluar").addEventListener("click", () => {
-    try { sessionStorage.removeItem(SESI_KEY); } catch (e) { /* abaikan */ }
-    location.reload();
+  $("u-keluar").addEventListener("click", async () => {
+    const t = bacaIngat();
+    try { if (!st.lokal) await api({ aksi: "kons-keluar", token: st.token, ingat: t ? t.token : "" }); } catch (e) { /* tetap keluar */ }
+    try { sessionStorage.removeItem(SESI_KEY); localStorage.removeItem(INGAT_KEY); } catch (e) { /* abaikan */ }
+    location.href = location.pathname;
   });
   // Lanjutkan sesi yang masih berlaku.
   (async () => {
     if (st.lokal) return;
+    muatPaket();
     let s = null;
     try { s = JSON.parse(sessionStorage.getItem(SESI_KEY) || "null"); } catch (e) { /* abaikan */ }
-    if (!s || s.sampai < Date.now()) return;
-    st.token = s.token; st.email = s.email;
     try {
-      const j = await api({ aksi: "kons-riwayat", token: s.token });
-      if (j.ok) { st.foto = j.foto || ""; st.admin = !!j.admin; setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi); }
+      if (s && s.sampai > Date.now()) {
+        st.token = s.token; st.email = s.email;
+        const j = await api({ aksi: "kons-riwayat", token: s.token });
+        if (j.ok) { j.token = s.token; j.email = s.email; j.jam = (s.sampai - Date.now()) / 3600e3; terimaMasuk(j); return; }
+      }
+      const t = bacaIngat();
+      if (t) {
+        const j = await api({ aksi: "kons-lanjut", ingat: t.token });
+        if (j.ok) { terimaMasuk(j); MK.toast("Selamat datang kembali"); }
+        else { try { localStorage.removeItem(INGAT_KEY); } catch (e) { /* abaikan */ } }
+      }
     } catch (e) { /* tetap di langkah masuk */ }
   })();
 
@@ -543,6 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function renderRiwayat() {
     renderKartu();
+    renderLanjut();
     $("u-klien").innerHTML = praktisi() ? `<p class="note" style="margin:10px 0 0">${esc(st.profil.profesi || "")} · ${st.klien.length} klien${st.aktif ? ` · aktif: <strong>${esc(st.aktif.nama)}</strong>` : ""}</p>` : "";
     if (praktisi() && !st.aktif) { $("u-riwayat").innerHTML = ""; return; }
     const seri = riwayatSeri();
@@ -737,4 +755,60 @@ document.addEventListener("DOMContentLoaded", () => {
     a.href = cv.toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove();
   }
   function rrect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+
+  /* ---------- Konsultasi lanjutan berbayar (Midtrans) ---------- */
+  const rp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
+  const STATUS_BAYAR = { lunas: ["Lunas", "b-normal"], menunggu: ["Menunggu pembayaran", "b-under"], kedaluwarsa: ["Kedaluwarsa", "b-over"], gagal: ["Gagal", "b-obese"], dikembalikan: ["Dikembalikan", "b-over"] };
+  async function muatPaket() {
+    if (st.lokal || !ENDPOINT) return;
+    try { const j = await api({ aksi: "kons-paket" }); if (j.ok) { st.paket = j; renderLanjut(); } } catch (e) { /* paket opsional */ }
+  }
+  function renderLanjut() {
+    const box = $("u-lanjut");
+    if (!box) return;
+    if (!st.profil || !st.paket) { box.hidden = true; return; }
+    box.hidden = false;
+    const P = st.paket, untuk = st.aktif ? ` untuk <strong>${esc(st.aktif.nama)}</strong>` : "";
+    const riw = (st.bayar || []).slice().reverse();
+    box.innerHTML = `<h4>Konsultasi lanjutan dengan Dr. Mury${untuk}</h4>
+      ${P.aktif ? "" : `<p class="note">Pembayaran online segera dibuka. Sementara itu hubungi <a href="mailto:${esc(S.email)}">${esc(S.email)}</a>.</p>`}
+      ${(P.paket || []).map((p) => `<div class="pg-paket"><div><strong>${esc(p.nama)}</strong><span>${esc(p.deskripsi)}</span></div><div class="pg-paket-aksi"><b>${rp(p.harga)}</b>${P.aktif ? `<button type="button" class="btn btn-primary pg-sm" data-bayar="${esc(p.id)}">Bayar</button>` : ""}</div></div>`).join("")}
+      ${P.aktif ? '<p class="note">Bayar lewat QRIS, transfer virtual account, atau e-wallet (Midtrans). Pembayaran diverifikasi otomatis; Anda menerima email konfirmasi dan jadwal sesi.</p>' : ""}
+      ${riw.length ? `<h4 style="margin-top:14px">Riwayat pembayaran</h4>${riw.map((b) => { const s = STATUS_BAYAR[b.status] || [b.status, "b-under"]; return `<div class="pg-bayar"><span>${esc(b.paket)}<br><small class="note">${esc(b.orderId)} · ${rp(b.jumlah)}</small></span><span class="badge ${s[1]}">${s[0]}</span>${b.status === "menunggu" ? `<button type="button" class="dl-link" data-cek="${esc(b.orderId)}">Cek</button>` : ""}</div>`; }).join("")}` : ""}
+      ${riw.some((b) => b.status === "lunas") && P.jadwal ? `<a class="btn btn-ghost pg-sm" href="${esc(P.jadwal)}" target="_blank" rel="noopener">Pilih jadwal sesi</a>` : ""}`;
+  }
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-bayar]"), c = e.target.closest("[data-cek]");
+    if (b) {
+      const catatan = window.prompt("Catatan untuk Dr. Mury (opsional), mis. waktu yang Anda inginkan:", "") ;
+      if (catatan === null) return;
+      b.disabled = true; b.textContent = "Membuat tagihan…";
+      try {
+        const j = await api({ aksi: "kons-bayar", token: st.token, paket: b.dataset.bayar, klienId: st.aktif ? st.aktif.id : "", catatan });
+        if (!j.ok) { MK.toast(j.pesan || "Gagal membuat tagihan"); if (j.ulang) sesiHabis(); return; }
+        location.href = j.redirect;
+      } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { b.disabled = false; b.textContent = "Bayar"; }
+    }
+    if (c) cekStatus(c.dataset.cek);
+  });
+  async function cekStatus(orderId) {
+    try {
+      const j = await api({ aksi: "kons-status", token: st.token, orderId });
+      if (!j.ok) { MK.toast(j.pesan || "Gagal mengecek"); return null; }
+      st.bayar = j.pembayaran || st.bayar;
+      if (j.jadwal && st.paket) st.paket.jadwal = j.jadwal;
+      renderLanjut();
+      return j.status;
+    } catch (e) { MK.toast("Layanan tidak bisa dihubungi"); return null; }
+  }
+  async function cekKembaliDariBayar() {
+    const q = new URLSearchParams(location.search), orderId = q.get("bayar") || q.get("order_id");
+    if (!orderId) return;
+    history.replaceState(null, "", location.pathname);
+    const info = $("bayar-info");
+    info.hidden = false; info.className = "callout"; info.textContent = "Memverifikasi pembayaran " + orderId + "…";
+    const st1 = await cekStatus(orderId);
+    const pesan = { lunas: ["good", "Pembayaran terverifikasi. Terima kasih! Konfirmasi dan langkah penjadwalan sudah dikirim ke email Anda."], menunggu: ["warn", "Pembayaran belum kami terima. Bila Anda sudah membayar, status akan diperbarui otomatis dalam beberapa menit; klik \"Cek\" di riwayat pembayaran."], kedaluwarsa: ["bad", "Tagihan kedaluwarsa. Silakan buat pembayaran baru."], gagal: ["bad", "Pembayaran gagal atau dibatalkan. Silakan coba lagi."] }[st1] || ["warn", "Status pembayaran belum dapat dipastikan. Coba klik \"Cek\" beberapa saat lagi."];
+    info.className = "callout " + pesan[0]; info.textContent = pesan[1];
+  }
 });

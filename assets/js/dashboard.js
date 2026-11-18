@@ -9,9 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const fx = (x, d = 0) => Number(x).toLocaleString("id-ID", { minimumFractionDigits: d, maximumFractionDigits: d });
   const f1 = (x) => fx(x, 1), f0 = (x) => fx(Math.round(x));
   const ENDPOINT = S.programEndpoint || S.otpEndpoint || "";
-  const SESI_KEY = "mk-program-sesi";
+  const SESI_KEY = "mk-program-sesi", INGAT_KEY = "mk-ingat";
   const WARNA = ["#0070b8", "#f05828", "#06d6a0", "#ffd166", "#ef476f", "#118ab2", "#8338ec", "#3a86ff", "#fb5607", "#2a9d8f", "#e76f51", "#9b5de5"];
-  const st = { token: "", email: "", peserta: [], foto: {}, charts: {} };
+  const st = { token: "", email: "", peserta: [], bayar: [], foto: {}, charts: {} };
+  const bacaIngat = () => { try { const t = JSON.parse(localStorage.getItem(INGAT_KEY) || "null"); return t && t.sampai > Date.now() ? t : null; } catch (e) { return null; } };
 
   async function api(payload) {
     const r = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), redirect: "follow" });
@@ -38,32 +39,52 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     $("d-b-masuk").disabled = true;
     try {
-      const j = await api({ aksi: "kons-masuk", email: st.email, otp: $("d-otp").value.trim() });
+      const j = await api({ aksi: "kons-masuk", email: st.email, otp: $("d-otp").value.trim(), ingat: $("d-ingat").checked });
       if (!j.ok) { pesan(j.pesan || "Kode salah."); return; }
       if (!j.admin) { pesan("Akun ini bukan pengelola. Dashboard hanya untuk email pengelola."); return; }
-      st.token = j.token;
-      try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
+      simpanSesi(j);
       muat();
     } catch (er) { pesan("Layanan tidak bisa dihubungi."); } finally { $("d-b-masuk").disabled = false; }
   });
-  $("d-keluar").addEventListener("click", () => { try { sessionStorage.removeItem(SESI_KEY); } catch (e) { /* abaikan */ } location.reload(); });
+  function simpanSesi(j) {
+    st.token = j.token; st.email = j.email || st.email;
+    try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
+    if (j.ingat) { try { localStorage.setItem(INGAT_KEY, JSON.stringify({ token: j.ingat.token, sampai: j.ingat.sampai, email: st.email })); } catch (er) { /* abaikan */ } }
+  }
+  $("d-keluar").addEventListener("click", async () => {
+    const t = bacaIngat();
+    try { await api({ aksi: "kons-keluar", token: st.token, ingat: t ? t.token : "" }); } catch (e) { /* tetap keluar */ }
+    try { sessionStorage.removeItem(SESI_KEY); localStorage.removeItem(INGAT_KEY); } catch (e) { /* abaikan */ }
+    location.reload();
+  });
   $("d-refresh").addEventListener("click", () => muat());
   (async () => {
     let s = null;
     try { s = JSON.parse(sessionStorage.getItem(SESI_KEY) || "null"); } catch (e) { /* abaikan */ }
-    if (s && s.sampai > Date.now() && ENDPOINT) { st.token = s.token; st.email = s.email; muat(true); }
+    if (!ENDPOINT) return;
+    if (s && s.sampai > Date.now()) { st.token = s.token; st.email = s.email; if (await muat(true)) return; }
+    const t = bacaIngat();
+    if (t) {
+      try {
+        const j = await api({ aksi: "kons-lanjut", ingat: t.token });
+        if (j.ok && j.admin) { simpanSesi(j); muat(); }
+        else if (!j.ok) { try { localStorage.removeItem(INGAT_KEY); } catch (e) { /* abaikan */ } }
+      } catch (e) { /* tetap di halaman masuk */ }
+    }
   })();
 
   async function muat(diam) {
     try {
       const j = await api({ aksi: "kons-admin", token: st.token });
-      if (!j.ok) { if (!diam) pesan(j.pesan || "Gagal memuat."); if (j.ulang) { $("d-masuk").hidden = false; $("d-app").hidden = true; } return; }
+      if (!j.ok) { if (!diam) pesan(j.pesan || "Gagal memuat."); if (j.ulang) { $("d-masuk").hidden = false; $("d-app").hidden = true; } return false; }
+      st.bayar = j.pembayaran || [];
       st.peserta = (j.peserta || []).map(olah);
       $("d-masuk").hidden = true; $("d-app").hidden = false;
       $("d-who").textContent = st.email;
       $("d-upd").textContent = "· diperbarui " + (j.dibuat || "");
-      isiFilter(); renderKpi(); renderCharts(); renderGrid();
-    } catch (er) { if (!diam) pesan("Layanan tidak bisa dihubungi."); }
+      isiFilter(); renderKpi(); renderCharts(); renderBayar(); renderGrid();
+      return true;
+    } catch (er) { if (!diam) pesan("Layanan tidak bisa dihubungi."); return false; }
   }
 
   /* ---------- Olah data ---------- */
@@ -77,7 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const risiko = !!last && ((lr.ea != null && lr.ea < 30) || (last.reds || []).length >= 2);
     const peranLabel = p.jenis === "klien-praktisi" ? "Klien praktisi" : p.peran === "pelatih" ? "Pelatih" : p.peran === "ahligizi" ? "Ahli gizi" : "Atlet";
     const kunci = p.jenis === "klien-praktisi" ? "kp:" + p.id : "a:" + p.email;
-    return { ...p, R, last, lr, usia, caborN, risiko, peranLabel, kunci, tglTerakhir: last ? last.tanggal : "" };
+    const lunas = st.bayar.filter((b) => b.status === "lunas" && b.email === p.email && (p.jenis === "klien-praktisi" ? b.klienId === p.id : !b.klienId));
+    return { ...p, R, last, lr, usia, caborN, risiko, peranLabel, kunci, lunas, tglTerakhir: last ? last.tanggal : "" };
   }
   function isiFilter() {
     const cab = [...new Set(st.peserta.map((p) => p.caborN))].sort();
@@ -98,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ["30 hari terakhir", semuaK.filter((r) => new Date(r.tanggal).getTime() >= t30).length, "Asesmen baru", "k3"],
       ["Praktisi", P.filter((p) => p.peranLabel === "Pelatih" || p.peranLabel === "Ahli gizi").length, "Pelatih & ahli gizi", "k4"],
       ["Berisiko", P.filter((p) => p.risiko).length, "EA < 30 atau ≥ 2 tanda REDs", "k5"],
-      ["Bulan ini", semuaK.filter((r) => String(r.tanggal).slice(0, 7) === bulanIni).length, "Konsultasi bulan berjalan", "k6"]
+      ["Pendapatan (Rp)", st.bayar.filter((b) => b.status === "lunas").reduce((a, b) => a + b.jumlah, 0), `${st.bayar.filter((b) => b.status === "lunas").length} pembayaran lunas · ${semuaK.filter((r) => String(r.tanggal).slice(0, 7) === bulanIni).length} konsultasi bulan ini`, "k6"]
     ];
     $("d-kpi").innerHTML = k.map(([l, v, s, c]) => `<div class="db-k ${c}"><span>${l}</span><b data-n="${v}">0</b><small>${s}</small></div>`).join("");
     // Angka naik bertahap agar terasa dinamis.
@@ -175,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("d-grid").innerHTML = L.map((p, i) => `
       <button type="button" class="db-card" data-k="${esc(p.kunci)}" style="--ac:${WARNA[i % WARNA.length]}">
         <span class="db-card-top">${avatar(p, "pg-av-md")}<span class="db-card-nm"><strong>${esc(p.nama)}</strong><small>${esc(p.caborN)}${p.usia != null ? " · " + p.usia + " th" : ""}</small></span></span>
-        <span class="db-chips"><span class="db-chip">${esc(p.peranLabel)}</span>${p.level ? `<span class="db-chip">${esc(p.level.split(" (")[0])}</span>` : ""}${p.risiko ? '<span class="db-chip db-risk">Berisiko</span>' : ""}</span>
+        <span class="db-chips"><span class="db-chip">${esc(p.peranLabel)}</span>${p.level ? `<span class="db-chip">${esc(p.level.split(" (")[0])}</span>` : ""}${p.risiko ? '<span class="db-chip db-risk">Berisiko</span>' : ""}${p.lunas.length ? '<span class="db-chip db-paid">Konsultasi lanjutan</span>' : ""}</span>
         <span class="db-mini"><span><b>${p.last && p.last.bb ? f1(p.last.bb) : "–"}</b>BB kg</span><span><b>${p.lr.pct != null ? f1(p.lr.pct) + "%" : "–"}</b>Lemak</span><span><b>${p.R.length}</b>Konsul</span></span>
         <small class="note">${p.tglTerakhir ? "Terakhir " + esc(p.tglTerakhir) : "Belum ada asesmen"}${p.jenis === "klien-praktisi" ? " · via " + esc(p.praktisiNama) : ""}</small>
       </button>`).join("") || '<p class="note">Tidak ada peserta yang cocok.</p>';
@@ -277,4 +299,11 @@ document.addEventListener("DOMContentLoaded", () => {
     a.download = `peserta-konsultasi-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
   });
+
+  /* ---------- Pembayaran ---------- */
+  function renderBayar() {
+    const L = st.bayar.slice().sort((a, b) => String(b.dibuat).localeCompare(String(a.dibuat)));
+    const chip = { lunas: "db-paid", menunggu: "", kedaluwarsa: "db-risk", gagal: "db-risk", dikembalikan: "db-risk" };
+    $("d-bayar").innerHTML = L.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dibuat</th><th>Nama</th><th>Paket</th><th class="n">Jumlah</th><th>Status</th><th>Metode</th><th>Order ID</th></tr></thead><tbody>${L.slice(0, 50).map((b) => `<tr><td>${esc(String(b.dibuat).slice(0, 16))}</td><td>${esc(b.nama)}<br><small class="note">${esc(b.email)}</small></td><td>${esc(b.paket)}</td><td class="n">Rp${f0(b.jumlah)}</td><td><span class="db-chip ${chip[b.status] || ""}">${esc(b.status)}</span></td><td>${esc(b.metode || "–")}</td><td><small>${esc(b.orderId)}</small></td></tr>`).join("")}</tbody></table></div>` : '<p class="note">Belum ada pembayaran. Pembayaran online aktif setelah kunci Midtrans dipasang (docs/skema-pembayaran.md).</p>';
+  }
 });

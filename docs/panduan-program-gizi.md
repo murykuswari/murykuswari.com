@@ -1,6 +1,6 @@
 # Panduan Program Gizi Personal
 
-Bagian **Program Gizi Personal** di `gizi.html#program` (`program.html` lama dialihkan ke sana) menghitung program gizi olahraga personal dan menyimpan setiap konsultasi ke Google Drive pemilik. Penyimpanan dijalankan oleh `apps-script/Konsultasi.gs`, yang dipasang di proyek Apps Script yang sama dengan layanan unduhan ber-OTP (`Kode.gs`), sehingga URL layanannya sama.
+Halaman **Konsultasi Gizi Personal** di `murykuswari.com/konsultasi` (`program.html` dan `gizi.html#program` dialihkan ke sana) menghitung program gizi olahraga personal dan menyimpan setiap konsultasi ke Google Drive pemilik. Penyimpanan dijalankan oleh `apps-script/Konsultasi.gs`, yang dipasang di proyek Apps Script yang sama dengan layanan unduhan ber-OTP (`Kode.gs`), sehingga URL layanannya sama.
 
 ## Alur pengguna
 
@@ -21,6 +21,25 @@ Di profil, pengguna memilih peran: **atlet/individu**, **pelatih**, atau **ahli 
 - Praktisi dapat menulis **catatan praktisi** yang ikut masuk ke laporan.
 - Laporan bertuliskan "disusun oleh <nama praktisi> (<profesi>)" dan dikirim ke email praktisi untuk diteruskan ke klien. Pemilik website tetap menerima pemberitahuan.
 - Batas 200 klien per akun praktisi.
+
+## Masuk tanpa kode setiap kali
+
+Saat memasukkan kode, centang **"Ingat perangkat ini"** (tercentang secara bawaan). Perangkat itu lalu langsung masuk selama 30 hari (`KONS.INGAT_HARI`), di halaman konsultasi maupun di dashboard. Tombol **Keluar** mencabut ingatan perangkat di server. Jangan mencentangnya di komputer umum.
+
+## Konsultasi lanjutan berbayar
+
+Lihat `docs/skema-pembayaran.md` (Midtrans, validasi otomatis).
+
+## Memperbarui layanan (setelah Konsultasi.gs atau Kode.gs berubah)
+
+Proyek Apps Script: **Layanan Konsultasi murykuswari.com** (scriptId di `apps-script/.clasp.json`). Dari folder `apps-script` di komputer yang sudah `clasp login`:
+
+```
+clasp push
+clasp deploy -i AKfycbyKDG8NtTPbpKb9R6t_wguvMCmbUcwVEnJKpO_q2a-N7qgOQ39iMKisPWeNrCHglXRw -d "pembaruan"
+```
+
+`-i` memperbarui deployment yang sama, sehingga URL di `config.js` tidak berubah. Bila ada izin baru (mis. akses jaringan untuk Midtrans), buka editor dan jalankan `siapkanKonsultasi` sekali untuk menyetujuinya.
 
 ## Foto profil dan kartu untuk media sosial
 

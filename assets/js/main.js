@@ -30,10 +30,11 @@
     ["berita.html", "Berita"],
     ["unduhan.html", "Unduhan"],
     ["gizi.html", "Kalkulator"],
-    ["gizi.html#program", "Konsultasi"]
+    ["konsultasi/", "Konsultasi"]
   ];
 
   function currentPage() {
+    if (/^\/konsultasi\/?/.test(location.pathname)) return "konsultasi/";
     const p = location.pathname.split("/").pop() || "index.html";
     return p === "" ? "index.html" : p;
   }
@@ -108,7 +109,7 @@
               <li><a href="berita.html">Berita &amp; Liputan Media</a></li>
               <li><a href="unduhan.html">Unduhan Modul</a></li>
               <li><a href="gizi.html">Kalkulator Gizi Olahraga</a></li>
-              <li><a href="gizi.html#program">Program Gizi Personal</a></li>
+              <li><a href="konsultasi/">Konsultasi Gizi Personal</a></li>
               <li><a href="${S.cv}" download>Unduh CV / Profil</a></li>
             </ul>
           </div>

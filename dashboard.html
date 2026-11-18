@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026n">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026o">
 </head>
 <body>
   <header id="site-header"></header>
@@ -36,6 +36,7 @@
           <form id="d-f-otp" novalidate hidden>
             <p>Kode dikirim ke <strong id="d-to"></strong>.</p>
             <div class="field"><label for="d-otp">Kode 6 digit</label><input id="d-otp" class="dl-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+            <label class="dl-cek"><input type="checkbox" id="d-ingat" checked> <span>Ingat perangkat ini selama 30 hari. Berikutnya dashboard langsung terbuka tanpa kode.</span></label>
             <button class="btn btn-primary" type="submit" id="d-b-masuk">Masuk</button>
           </form>
           <p class="dl-msg" id="d-msg" role="alert" hidden></p>
@@ -63,6 +64,11 @@
             <div class="card db-ch"><h3>Jenis kelamin</h3><div class="db-cv"><canvas id="ch-jk"></canvas></div></div>
           </div>
 
+          <div class="card db-ch" id="d-bayar-wrap" style="margin-bottom:18px">
+            <h3>Pembayaran konsultasi lanjutan</h3>
+            <div id="d-bayar"></div>
+          </div>
+
           <div class="db-filter card">
             <input id="f-cari" type="search" placeholder="Cari nama, email, asal, praktisi…" aria-label="Cari peserta">
             <select id="f-jenis" aria-label="Jenis peserta"><option value="">Semua peserta</option><option value="atlet">Atlet / individu</option><option value="praktisi">Pelatih & ahli gizi</option><option value="klien-praktisi">Klien dari praktisi</option></select>
@@ -83,9 +89,9 @@
   <footer id="site-footer"></footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/main.js?v=2026l"></script>
+  <script src="assets/js/main.js?v=2026m"></script>
   <script src="assets/vendor/chart.umd.4.4.1.js"></script>
   <script src="assets/js/program-engine.js?v=2"></script>
-  <script src="assets/js/dashboard.js?v=2"></script>
+  <script src="assets/js/dashboard.js?v=3"></script>
 </body>
 </html>
