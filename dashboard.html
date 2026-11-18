@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Konsultasi Gizi | murykuswari.com</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#003a63">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026n">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="db-hero">
+      <div class="wrap">
+        <span class="eyebrow" style="color:#ffd166">Khusus pengelola</span>
+        <h1>Dashboard Konsultasi Gizi Olahraga</h1>
+        <p>Profil, perkembangan, dan program setiap atlet serta klien yang berkonsultasi, dalam satu layar.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:20px">
+      <div class="wrap">
+        <!-- Masuk -->
+        <div class="card db-login" id="d-masuk">
+          <h2>Masuk sebagai pengelola</h2>
+          <p class="note-intro">Gunakan email pengelola. Kode 6 digit dikirim ke email tersebut.</p>
+          <form id="d-f-email" novalidate>
+            <div class="field"><label for="d-email">Email</label><input id="d-email" type="email" required autocomplete="email" inputmode="email"></div>
+            <button class="btn btn-primary" type="submit" id="d-b-kirim">Kirim kode masuk</button>
+          </form>
+          <form id="d-f-otp" novalidate hidden>
+            <p>Kode dikirim ke <strong id="d-to"></strong>.</p>
+            <div class="field"><label for="d-otp">Kode 6 digit</label><input id="d-otp" class="dl-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+            <button class="btn btn-primary" type="submit" id="d-b-masuk">Masuk</button>
+          </form>
+          <p class="dl-msg" id="d-msg" role="alert" hidden></p>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="d-app" hidden>
+          <div class="db-bar">
+            <div><strong id="d-who"></strong> <span class="note" id="d-upd"></span></div>
+            <div class="db-bar-act">
+              <button type="button" class="btn btn-ghost pg-sm" id="d-csv">Unduh CSV</button>
+              <button type="button" class="btn btn-ghost pg-sm" id="d-refresh">Muat ulang</button>
+              <button type="button" class="dl-link" id="d-keluar">Keluar</button>
+            </div>
+          </div>
+          <div class="db-kpi" id="d-kpi"></div>
+
+          <div class="db-charts">
+            <div class="card db-ch db-ch-wide"><h3>Konsultasi per bulan</h3><div class="db-cv"><canvas id="ch-bulan"></canvas></div></div>
+            <div class="card db-ch"><h3>Cabang olahraga</h3><div class="db-cv"><canvas id="ch-cabor"></canvas></div></div>
+            <div class="card db-ch"><h3>Tujuan</h3><div class="db-cv"><canvas id="ch-tujuan"></canvas></div></div>
+            <div class="card db-ch"><h3>Level atlet</h3><div class="db-cv"><canvas id="ch-level"></canvas></div></div>
+            <div class="card db-ch"><h3>Kategori lemak tubuh</h3><div class="db-cv"><canvas id="ch-lemak"></canvas></div></div>
+            <div class="card db-ch"><h3>Ketersediaan energi</h3><div class="db-cv"><canvas id="ch-ea"></canvas></div></div>
+            <div class="card db-ch"><h3>Jenis kelamin</h3><div class="db-cv"><canvas id="ch-jk"></canvas></div></div>
+          </div>
+
+          <div class="db-filter card">
+            <input id="f-cari" type="search" placeholder="Cari nama, email, asal, praktisi…" aria-label="Cari peserta">
+            <select id="f-jenis" aria-label="Jenis peserta"><option value="">Semua peserta</option><option value="atlet">Atlet / individu</option><option value="praktisi">Pelatih & ahli gizi</option><option value="klien-praktisi">Klien dari praktisi</option></select>
+            <select id="f-cabor" aria-label="Cabang olahraga"><option value="">Semua cabang</option></select>
+            <select id="f-tujuan" aria-label="Tujuan"><option value="">Semua tujuan</option></select>
+            <select id="f-urut" aria-label="Urutkan"><option value="baru">Konsultasi terbaru</option><option value="nama">Nama A–Z</option><option value="banyak">Konsultasi terbanyak</option><option value="risiko">Berisiko dulu</option></select>
+          </div>
+          <p class="note" id="d-jumlah"></p>
+          <div class="db-grid" id="d-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="db-modal" id="d-modal" hidden role="dialog" aria-modal="true" aria-labelledby="dm-nama">
+      <div class="db-modal-in" id="d-detail"></div>
+    </div>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="assets/js/main.js?v=2026l"></script>
+  <script src="assets/vendor/chart.umd.4.4.1.js"></script>
+  <script src="assets/js/program-engine.js?v=2"></script>
+  <script src="assets/js/dashboard.js?v=2"></script>
+</body>
+</html>

@@ -16,15 +16,16 @@ const KONS = {
   FOLDER_ID: '1NUQ1tXIEDL2dp88tGNTggseucZZPkZ-N',   // Claude 2026 / Konsultasi Gizi Olahraga – murykuswari.com
   SHEET_ID: '19XM6Gwdka7yYLBXsicHootqRMoQqj707Ti6hapAAanA', // Database Konsultasi Gizi Olahraga
   EMAIL_PEMILIK: 'mury@esaunggul.ac.id',
+  ADMIN: ['mury@esaunggul.ac.id'], // email yang boleh membuka dashboard.html
   SESI_JAM: 6,              // masa berlaku sesi masuk (maksimal 6 jam, batas CacheService)
   KIRIM_SALINAN_KLIEN: true, // kirim ringkasan hasil ke email klien setelah disimpan
   KABARI_PEMILIK: true,      // kirim pemberitahuan ke pemilik untuk setiap konsultasi baru
   MAX_SIMPAN_HARI: 10       // batas simpan per klien per hari
 };
 
-const KOLOM_KLIEN = ['Email', 'Nama lengkap', 'Jenis kelamin', 'Tanggal lahir', 'Asal', 'WhatsApp', 'Cabang olahraga', 'Level', 'Terdaftar', 'Terakhir masuk', 'Jumlah konsultasi', 'Folder klien', 'Peran', 'Profesi & lisensi'];
+const KOLOM_KLIEN = ['Email', 'Nama lengkap', 'Jenis kelamin', 'Tanggal lahir', 'Asal', 'WhatsApp', 'Cabang olahraga', 'Level', 'Terdaftar', 'Terakhir masuk', 'Jumlah konsultasi', 'Folder klien', 'Peran', 'Profesi & lisensi', 'Foto'];
 const KOLOM_KONS = ['ID', 'Waktu', 'Email', 'Nama', 'Cabang olahraga', 'Tujuan', 'Fase', 'BB (kg)', 'TB (cm)', '% lemak', 'FFM (kg)', 'Energi rata-rata (kkal)', 'KH rata-rata (g)', 'Protein (g)', 'Lemak (g)', 'EA (kkal/kg FFM)', 'Laju keringat (L/jam)', 'Tujuan konsultasi', 'Laporan', 'Data (JSON)', 'ID klien praktisi', 'Nama klien praktisi'];
-const KOLOM_KP = ['ID klien', 'Email praktisi', 'Nama klien', 'Jenis kelamin', 'Tanggal lahir', 'Cabang olahraga', 'Nomor/kelas/posisi', 'Level', 'Email klien', 'WhatsApp klien', 'Catatan', 'Dibuat', 'Diperbarui', 'Jumlah konsultasi', 'Folder'];
+const KOLOM_KP = ['ID klien', 'Email praktisi', 'Nama klien', 'Jenis kelamin', 'Tanggal lahir', 'Cabang olahraga', 'Nomor/kelas/posisi', 'Level', 'Email klien', 'WhatsApp klien', 'Catatan', 'Dibuat', 'Diperbarui', 'Jumlah konsultasi', 'Folder', 'Foto'];
 
 function konsultasi_(d) {
   switch (d.aksi) {
@@ -34,6 +35,9 @@ function konsultasi_(d) {
     case 'kons-simpan': return konsSimpan_(d);
     case 'kons-riwayat': return konsRiwayat_(d);
     case 'kons-klien': return konsKlien_(d);
+    case 'kons-foto': return konsFoto_(d);
+    case 'kons-foto-ambil': return konsFotoAmbil_(d);
+    case 'kons-admin': return konsAdmin_(d);
     default: return { ok: false, pesan: 'Permintaan tidak dikenali.' };
   }
 }
@@ -112,7 +116,7 @@ function konsMasuk_(d) {
   }
   const profil = cariKlien_(email);
   if (profil) setSel_('Klien', profil.baris, 'Terakhir masuk', waktu_());
-  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, profil: profil ? profil.data : null, riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
+  return { ok: true, token: token, jam: KONS.SESI_JAM, email: email, admin: isAdmin_(email), profil: profil ? profil.data : null, foto: profil ? fotoBase64_(profil.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
 }
 
 function sesi_(d) {
@@ -124,7 +128,7 @@ function konsRiwayat_(d) {
   const email = sesi_(d);
   if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
   const p = cariKlien_(email);
-  return { ok: true, profil: p ? p.data : null, riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
+  return { ok: true, admin: isAdmin_(email), profil: p ? p.data : null, foto: p ? fotoBase64_(p.data.foto) : '', riwayat: riwayat_(email), klienPraktisi: daftarKP_(email) };
 }
 
 /* ---------- Profil ---------- */
@@ -151,7 +155,7 @@ function konsProfil_(d) {
     const ada = cariKlien_(email);
     const folder = ada && ada.data.folder ? ada.data.folder : folderKlien_(email, data.nama).getUrl();
     const baris = [aman_(email), aman_(data.nama), data.jk, data.tglLahir, aman_(data.asal), "'" + data.wa, aman_(data.cabor + (data.caborLain ? ' – ' + data.caborLain : '')), aman_(data.level),
-      ada ? ada.data.terdaftar : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, folder, data.peran, aman_(data.profesi)];
+      ada ? ada.data.terdaftar : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, folder, data.peran, aman_(data.profesi), ada ? ada.data.foto : ''];
     const sh = tab_('Klien', KOLOM_KLIEN);
     if (ada) sh.getRange(ada.baris, 1, 1, baris.length).setValues([baris]);
     else sh.appendRow(baris);
@@ -274,7 +278,7 @@ function cariKlien_(email) {
       const r = v[i];
       const tgl = r[3] instanceof Date ? Utilities.formatDate(r[3], 'Asia/Jakarta', 'yyyy-MM-dd') : String(r[3]);
       const cab = String(r[6]).replace(/^'/, '').split(' – ');
-      return { baris: i + 2, data: { email: email, nama: String(r[1]).replace(/^'/, ''), jk: r[2], tglLahir: tgl, asal: String(r[4]).replace(/^'/, ''), wa: String(r[5]).replace(/\D/g, ''), cabor: cab[0], caborLain: cab[1] || '', level: String(r[7]).replace(/^'/, ''), terdaftar: r[8], jumlah: r[10], folder: r[11], peran: String(r[12] || 'atlet'), profesi: String(r[13] || '').replace(/^'/, '') } };
+      return { baris: i + 2, data: { email: email, nama: String(r[1]).replace(/^'/, ''), jk: r[2], tglLahir: tgl, asal: String(r[4]).replace(/^'/, ''), wa: String(r[5]).replace(/\D/g, ''), cabor: cab[0], caborLain: cab[1] || '', level: String(r[7]).replace(/^'/, ''), terdaftar: r[8], jumlah: r[10], folder: r[11], peran: String(r[12] || 'atlet'), profesi: String(r[13] || '').replace(/^'/, ''), foto: String(r[14] || '') } };
     }
   }
   return null;
@@ -301,7 +305,7 @@ function riwayatPer_(email) {
     const kid = String(r[20] || '');
     let data = {};
     try { data = JSON.parse(String(r[19]).replace(/^'/, '')); } catch (e) { /* abaikan baris rusak */ }
-    (out[kid] = out[kid] || []).push({ id: r[0], waktu: String(r[1]), input: data.input || {}, ringkas: data.ringkas || {} });
+    (out[kid] = out[kid] || []).push({ id: r[0], waktu: String(r[1]), input: data.input || {}, ringkas: data.ringkas || {}, laporan: String(r[18] || '') });
   });
   Object.keys(out).forEach(function (k) { out[k] = out[k].slice(-30); });
   return out;
@@ -362,7 +366,7 @@ function konsKlien_(d) {
     if (!ada && daftarKP_(email).length >= 200) return { ok: false, pesan: 'Batas 200 klien per akun tercapai.' };
     const id = ada ? ada.data.id : 'K' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + Utilities.getUuid().slice(0, 3);
     const baris = [id, aman_(email), aman_(data.nama), data.jk, data.tglLahir, aman_(data.cabor), aman_(data.caborLain), aman_(data.level), aman_(data.email), data.wa ? "'" + data.wa : '', aman_(data.catatan),
-      ada ? ada.data.dibuat : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, ada ? ada.data.folder : ''];
+      ada ? ada.data.dibuat : waktu_(), waktu_(), ada ? ada.data.jumlah : 0, ada ? ada.data.folder : '', ada ? ada.data.foto : ''];
     if (ada) sh.getRange(ada.baris, 1, 1, baris.length).setValues([baris]); else sh.appendRow(baris);
     return { ok: true, id: id, klienPraktisi: daftarKP_(email) };
   } finally {
@@ -373,7 +377,7 @@ function konsKlien_(d) {
 function barisKP_(r) {
   const tgl = r[4] instanceof Date ? Utilities.formatDate(r[4], 'Asia/Jakarta', 'yyyy-MM-dd') : String(r[4]);
   const t = function (v) { return String(v == null ? '' : v).replace(/^'/, ''); };
-  return { id: t(r[0]), nama: t(r[2]), jk: t(r[3]) === 'P' ? 'P' : 'L', tglLahir: tgl, cabor: t(r[5]), caborLain: t(r[6]), level: t(r[7]), email: t(r[8]), wa: t(r[9]).replace(/\D/g, ''), catatan: t(r[10]), dibuat: r[11], diperbarui: String(r[12]), jumlah: r[13], folder: t(r[14]) };
+  return { id: t(r[0]), nama: t(r[2]), jk: t(r[3]) === 'P' ? 'P' : 'L', tglLahir: tgl, cabor: t(r[5]), caborLain: t(r[6]), level: t(r[7]), email: t(r[8]), wa: t(r[9]).replace(/\D/g, ''), catatan: t(r[10]), dibuat: r[11], diperbarui: String(r[12]), jumlah: r[13], folder: t(r[14]), foto: t(r[15]) };
 }
 
 function cariKP_(email, id) {
@@ -415,4 +419,118 @@ function folderKP_(email, namaPraktisi, id, namaKlien) {
   const kp = cariKP_(email, id);
   if (kp) ss_().getSheetByName('Klien Praktisi').getRange(kp.baris, KOLOM_KP.indexOf('Folder') + 1).setValue(f.getUrl());
   return f;
+}
+
+/* ---------- Foto profil ---------- */
+
+function isAdmin_(email) { return KONS.ADMIN.map(function (e) { return e.toLowerCase(); }).indexOf(email) >= 0; }
+
+function fotoBase64_(id) {
+  if (!id) return '';
+  try { return 'data:image/jpeg;base64,' + Utilities.base64Encode(DriveApp.getFileById(id).getBlob().getBytes()); } catch (e) { return ''; }
+}
+
+/** Simpan foto (JPEG persegi, sudah diperkecil di browser) ke folder klien; ganti foto lama. */
+function konsFoto_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(d.foto || ''));
+  if (!m) return { ok: false, pesan: 'Format foto tidak dikenali.' };
+  if (m[1].length > 400000) return { ok: false, pesan: 'Foto terlalu besar.' };
+  const akun = cariKlien_(email);
+  if (!akun) return { ok: false, pesan: 'Lengkapi profil terlebih dahulu.' };
+  const klienId = bersih_(d.klienId, 40);
+  let kp = null, folder;
+  if (klienId) {
+    kp = cariKP_(email, klienId);
+    if (!kp) return { ok: false, pesan: 'Klien tidak ditemukan.' };
+    folder = folderKP_(email, akun.data.nama, klienId, kp.data.nama);
+  } else {
+    folder = folderKlien_(email, akun.data.nama);
+  }
+  const blob = Utilities.newBlob(Utilities.base64Decode(m[1]), 'image/jpeg', 'foto-profil.jpg');
+  const lama = kp ? kp.data.foto : akun.data.foto;
+  if (lama) { try { DriveApp.getFileById(lama).setTrashed(true); } catch (e) { /* sudah tidak ada */ } }
+  const file = folder.createFile(blob);
+  if (kp) ss_().getSheetByName('Klien Praktisi').getRange(kp.baris, KOLOM_KP.indexOf('Foto') + 1).setValue(file.getId());
+  else setSel_('Klien', akun.baris, 'Foto', file.getId());
+  return { ok: true };
+}
+
+/** Ambil foto: milik sendiri, klien praktisi milik sendiri, atau (admin) foto siapa pun. */
+function konsFotoAmbil_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const klienId = bersih_(d.klienId, 40);
+  const target = bersih_(d.email, 120).toLowerCase();
+  if (klienId) {
+    const pemilik = isAdmin_(email) && target ? target : email;
+    const kp = cariKP_(pemilik, klienId);
+    return { ok: true, foto: kp ? fotoBase64_(kp.data.foto) : '' };
+  }
+  if (target && target !== email && !isAdmin_(email)) return { ok: false, pesan: 'Tidak diizinkan.' };
+  const k = cariKlien_(target || email);
+  return { ok: true, foto: k ? fotoBase64_(k.data.foto) : '' };
+}
+
+/* ---------- Dashboard pengelola ---------- */
+
+function konsAdmin_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  if (!isAdmin_(email)) return { ok: false, pesan: 'Dashboard hanya untuk pengelola.' };
+  const ringkasR = function (list) {
+    return list.map(function (r) {
+      const i = r.input || {};
+      return { id: r.id, tanggal: i.tanggal || String(r.waktu).slice(0, 10), bb: i.bb, tb: i.tb, tujuan: i.tujuan, fase: i.fase, tujuanKonsultasi: String(i.tujuanKonsultasi || '').slice(0, 600), catatanPraktisi: String(i.catatanPraktisi || '').slice(0, 600), reds: i.reds || [], ringkas: r.ringkas || {}, laporan: r.laporan };
+    });
+  };
+  // Klien (akun sendiri).
+  const out = [];
+  const shK = tab_('Klien', KOLOM_KLIEN);
+  const nK = shK.getLastRow();
+  const vK = nK > 1 ? shK.getRange(2, 1, nK - 1, KOLOM_KLIEN.length).getValues() : [];
+  const semua = semuaRiwayat_();
+  vK.forEach(function (r) {
+    const em = String(r[0]).replace(/^'/, '').toLowerCase();
+    if (!em) return;
+    const k = cariKlienDariBaris_(em, r);
+    out.push({ jenis: 'akun', email: em, nama: k.nama, jk: k.jk, tglLahir: k.tglLahir, asal: k.asal, wa: k.wa, cabor: k.cabor, caborLain: k.caborLain, level: k.level, peran: k.peran, profesi: k.profesi, terdaftar: String(r[8]), terakhir: String(r[9]), adaFoto: !!k.foto, folder: k.folder,
+      riwayat: ringkasR((semua[em] || {})[''] || []) });
+  });
+  // Klien milik praktisi.
+  const shP = tab_('Klien Praktisi', KOLOM_KP);
+  const nP = shP.getLastRow();
+  const vP = nP > 1 ? shP.getRange(2, 1, nP - 1, KOLOM_KP.length).getValues() : [];
+  vP.forEach(function (r) {
+    const k = barisKP_(r);
+    const pem = String(r[1]).replace(/^'/, '').toLowerCase();
+    const prak = out.filter(function (x) { return x.email === pem; })[0];
+    out.push({ jenis: 'klien-praktisi', id: k.id, praktisiEmail: pem, praktisiNama: prak ? prak.nama : pem, email: k.email, nama: k.nama, jk: k.jk, tglLahir: k.tglLahir, wa: k.wa, cabor: k.cabor, caborLain: k.caborLain, level: k.level, catatan: k.catatan, terdaftar: String(k.dibuat), adaFoto: !!k.foto, folder: k.folder,
+      riwayat: ringkasR((semua[pem] || {})[k.id] || []) });
+  });
+  return { ok: true, peserta: out, dibuat: waktu_() };
+}
+
+function cariKlienDariBaris_(email, r) {
+  const tgl = r[3] instanceof Date ? Utilities.formatDate(r[3], 'Asia/Jakarta', 'yyyy-MM-dd') : String(r[3]);
+  const cab = String(r[6]).replace(/^'/, '').split(' – ');
+  return { nama: String(r[1]).replace(/^'/, ''), jk: r[2], tglLahir: tgl, asal: String(r[4]).replace(/^'/, ''), wa: String(r[5]).replace(/\D/g, ''), cabor: cab[0], caborLain: cab[1] || '', level: String(r[7]).replace(/^'/, ''), folder: r[11], peran: String(r[12] || 'atlet'), profesi: String(r[13] || '').replace(/^'/, ''), foto: String(r[14] || '') };
+}
+
+/** Semua konsultasi, dikelompokkan email → klienId → daftar (sekali baca). */
+function semuaRiwayat_() {
+  const sh = tab_('Konsultasi', KOLOM_KONS);
+  const n = sh.getLastRow();
+  const out = {};
+  if (n < 2) return out;
+  sh.getRange(2, 1, n - 1, KOLOM_KONS.length).getValues().forEach(function (r) {
+    const em = String(r[2]).replace(/^'/, '').toLowerCase();
+    const kid = String(r[20] || '');
+    let data = {};
+    try { data = JSON.parse(String(r[19]).replace(/^'/, '')); } catch (e) { /* abaikan */ }
+    out[em] = out[em] || {};
+    (out[em][kid] = out[em][kid] || []).push({ id: r[0], waktu: String(r[1]), input: data.input || {}, ringkas: data.ringkas || {}, laporan: String(r[18] || '') });
+  });
+  return out;
 }

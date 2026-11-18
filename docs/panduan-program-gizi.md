@@ -22,6 +22,24 @@ Di profil, pengguna memilih peran: **atlet/individu**, **pelatih**, atau **ahli 
 - Laporan bertuliskan "disusun oleh <nama praktisi> (<profesi>)" dan dikirim ke email praktisi untuk diteruskan ke klien. Pemilik website tetap menerima pemberitahuan.
 - Batas 200 klien per akun praktisi.
 
+## Foto profil dan kartu untuk media sosial
+
+- Setelah masuk, member melihat **kartu profil** berwarna: foto, cabang, usia, BB, % lemak, FFM, jumlah konsultasi, dan grafik perkembangan BB serta % lemak.
+- **Unggah foto**: foto dipotong persegi dan diperkecil di browser (480×480 JPEG, ±10–50 kB) lalu disimpan sebagai `foto-profil.jpg` di folder klien. Pelatih/ahli gizi dapat mengunggah foto untuk setiap kliennya.
+- **Unduh kartu profil (PNG)**: gambar 1080×1350 (rasio Instagram 4:5) yang siap diposting. Centang "Sembunyikan angka tubuh" bila tidak ingin BB dan % lemak tampil.
+
+## Dashboard pengelola
+
+`dashboard.html` (tidak terindeks mesin pencari, tidak ada di menu) hanya bisa dibuka oleh email di `KONS.ADMIN` pada `Konsultasi.gs`. Isinya:
+
+- Angka ringkas: peserta, konsultasi, 30 hari terakhir, praktisi, peserta berisiko (EA < 30 atau ≥ 2 tanda REDs), konsultasi bulan ini.
+- Grafik interaktif: konsultasi per bulan, cabang olahraga, tujuan, level, kategori lemak tubuh, ketersediaan energi, jenis kelamin.
+- Kartu setiap peserta (dengan foto) yang bisa dicari, difilter, dan diurutkan.
+- Detail peserta: kontak (email, WhatsApp, folder Drive), grafik BB/% lemak/FFM dan energi-makro per konsultasi, tujuan konsultasi, catatan praktisi, serta tautan setiap laporan.
+- Unduh CSV daftar peserta.
+
+Untuk menambah pengelola lain, tambahkan emailnya ke `ADMIN` lalu buat versi deployment baru.
+
 ## Tempat data di Drive
 
 ```

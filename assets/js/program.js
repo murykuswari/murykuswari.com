@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const SESI_KEY = "mk-program-sesi", LOKAL_KEY = "mk-program-lokal";
   const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
-  const st = { token: "", email: "", profil: null, riwayat: [], klien: [], aktif: null, lokal: !ENDPOINT, jk: "L", H: null, input: null, tersimpan: false };
+  const st = { token: "", email: "", profil: null, riwayat: [], klien: [], aktif: null, foto: "", fotoKlien: {}, lokal: !ENDPOINT, jk: "L", H: null, input: null, tersimpan: false };
 
   /* ---------- Pilihan ---------- */
   const CABOR_OPT = PG.CABOR.map((c) => `<option value="${c.k}">${esc(c.n)}</option>`).join("");
@@ -98,16 +98,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!j.ok) { MK.toast(j.pesan || "Kode salah"); return; }
       st.token = j.token;
       try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
+      st.foto = j.foto || ""; st.admin = !!j.admin;
       setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
     } catch (er) { MK.toast("Layanan tidak bisa dihubungi. Coba lagi."); } finally { busy(b, false); }
   });
   function masukLokal() {
     const a = lokalDb.akun(st.email);
+    st.foto = a.foto || ""; (a.klien || []).forEach((k) => { if (k.foto) st.fotoKlien[k.id] = k.foto; });
     setelahMasuk(a.profil, a.riwayat || [], a.klien || []);
   }
   function setelahMasuk(profil, riwayat, klien) {
     st.profil = profil; st.riwayat = riwayat; st.klien = klien || []; st.riwayatSendiri = riwayat;
-    $("u-status").innerHTML = `Masuk sebagai <strong>${esc(st.email)}</strong>${st.lokal ? " (mode lokal)" : ""}.`;
+    $("u-status").innerHTML = `Masuk sebagai <strong>${esc(st.email)}</strong>${st.lokal ? " (mode lokal)" : ""}.${st.admin ? ' <a href="dashboard.html">Buka dashboard pengelola →</a>' : ""}`;
     $("u-keluar").hidden = false;
     renderRiwayat();
     if (profil) { isiProfil(profil); lanjutSetelahProfil(); }
@@ -126,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     st.token = s.token; st.email = s.email;
     try {
       const j = await api({ aksi: "kons-riwayat", token: s.token });
-      if (j.ok) setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
+      if (j.ok) { st.foto = j.foto || ""; st.admin = !!j.admin; setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi); }
     } catch (e) { /* tetap di langkah masuk */ }
   })();
 
@@ -200,10 +202,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const L = st.klien;
     $("kl-daftar").innerHTML = L.length ? tbl(["Klien", "Cabang", "#Usia", "Terakhir", "#BB", "#Lemak", "#Asesmen", ""], L.map((k, i) => {
       const t = terakhir(k), c = PG.CABOR_MAP[k.cabor];
-      return [`<strong>${esc(k.nama)}</strong>${k.caborLain ? `<br><span class="note">${esc(k.caborLain)}</span>` : ""}`, esc(c ? c.n : k.cabor), PG.usiaDari(k.tglLahir) ?? "–", t ? esc(t.tgl) : "–", t && t.bb ? f1(t.bb) : "–", t && t.pct != null ? f1(t.pct) + "%" : "–", (k.riwayat || []).length,
+      return [`<span class="pg-av-row">${avatarHtml(st.fotoKlien[k.id], k.nama, "pg-av-sm")}<span><strong>${esc(k.nama)}</strong>${k.caborLain ? `<br><span class="note">${esc(k.caborLain)}</span>` : ""}</span></span>`, esc(c ? c.n : k.cabor), PG.usiaDari(k.tglLahir) ?? "–", t ? esc(t.tgl) : "–", t && t.bb ? f1(t.bb) : "–", t && t.pct != null ? f1(t.pct) + "%" : "–", (k.riwayat || []).length,
         `<button type="button" class="btn btn-primary pg-sm" data-pilih="${i}">Asesmen</button> <button type="button" class="dl-link" data-ubah="${i}">Ubah</button>`];
     })) : '<p class="note">Belum ada klien. Tambahkan klien pertama Anda di bawah.</p>';
     $("kl-form-wrap").open = !L.length;
+    muatFotoKlien();
   }
   $("kl-daftar").addEventListener("click", (e) => {
     const a = e.target.closest("[data-pilih]"), u = e.target.closest("[data-ubah]");
@@ -539,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </svg><p class="note" style="margin:0">Tren berat badan (kg)</p>`;
   }
   function renderRiwayat() {
+    renderKartu();
     $("u-klien").innerHTML = praktisi() ? `<p class="note" style="margin:10px 0 0">${esc(st.profil.profesi || "")} · ${st.klien.length} klien${st.aktif ? ` · aktif: <strong>${esc(st.aktif.nama)}</strong>` : ""}</p>` : "";
     if (praktisi() && !st.aktif) { $("u-riwayat").innerHTML = ""; return; }
     const seri = riwayatSeri();
@@ -546,4 +550,191 @@ document.addEventListener("DOMContentLoaded", () => {
     $("u-riwayat").innerHTML = `<h4 style="margin:14px 0 6px">Riwayat ${st.aktif ? esc(st.aktif.nama) : "konsultasi"}</h4>${grafik(seri)}
       ${tbl(["Tanggal", "#BB", "#Lemak", "#kkal"], st.riwayat.slice().reverse().slice(0, 8).map((r) => [esc((r.input || {}).tanggal || String(r.waktu).slice(0, 10)), f1((r.input || {}).bb || 0), (r.ringkas || {}).pct != null ? f1(r.ringkas.pct) + "%" : "–", (r.ringkas || {}).energi ? f0(r.ringkas.energi) : "–"]))}`;
   }
+
+  /* ---------- Foto & kartu profil ---------- */
+  const inisial = (n) => String(n || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  function avatarHtml(src, nama, cls) {
+    return src ? `<img class="pg-av ${cls || ""}" src="${src}" alt="Foto ${esc(nama)}">` : `<span class="pg-av pg-av-ini ${cls || ""}" aria-hidden="true">${esc(inisial(nama))}</span>`;
+  }
+  let memuatFoto = false;
+  async function muatFotoKlien() {
+    if (st.lokal || memuatFoto || !praktisi()) return;
+    const perlu = st.klien.filter((k) => k.foto && st.fotoKlien[k.id] == null);
+    if (!perlu.length) return;
+    memuatFoto = true;
+    try {
+      for (const k of perlu) {
+        st.fotoKlien[k.id] = "";
+        const j = await api({ aksi: "kons-foto-ambil", token: st.token, klienId: k.id });
+        if (j.ok && j.foto) st.fotoKlien[k.id] = j.foto;
+      }
+    } catch (e) { /* foto opsional */ }
+    memuatFoto = false;
+    renderKlien(); renderKartu();
+  }
+  function fotoSubjek() { return st.aktif ? st.fotoKlien[st.aktif.id] || "" : st.foto; }
+
+  function statSubjek() {
+    const R = st.riwayat || [];
+    const last = R[R.length - 1];
+    const first = R[0];
+    const v = (r, f) => (r ? f(r) : null);
+    return {
+      n: R.length,
+      bb: v(last, (r) => Number((r.input || {}).bb) || null),
+      pct: v(last, (r) => (r.ringkas || {}).pct),
+      ffm: v(last, (r) => (r.ringkas || {}).ffm),
+      kkal: v(last, (r) => (r.ringkas || {}).energi),
+      dBB: last && first && R.length > 1 ? Number(last.input.bb) - Number(first.input.bb) : null,
+      seri: R.map((r) => ({ t: (r.input || {}).tanggal || String(r.waktu).slice(0, 10), bb: Number((r.input || {}).bb) || null, pct: (r.ringkas || {}).pct, ffm: (r.ringkas || {}).ffm }))
+    };
+  }
+  let chartKartu = null;
+  function renderKartu() {
+    const box = $("kartu");
+    if (!st.profil) { box.hidden = true; return; }
+    box.hidden = false;
+    const prakTanpaKlien = praktisi() && !st.aktif;
+    const subj = subjek();
+    const c = PG.CABOR_MAP[subj.cabor];
+    const usia = PG.usiaDari(subj.tglLahir);
+    const S = statSubjek();
+    const tiles = prakTanpaKlien
+      ? [["Klien", st.klien.length, "c1"], ["Asesmen", st.klien.reduce((a, k) => a + (k.riwayat || []).length, 0), "c2"], ["Cabang", new Set(st.klien.map((k) => k.cabor)).size, "c3"], ["Aktif bulan ini", st.klien.filter((k) => (k.riwayat || []).some((r) => String((r.input || {}).tanggal || "").slice(0, 7) === today().slice(0, 7))).length, "c4"]]
+      : [["BB", S.bb ? f1(S.bb) + " kg" : "–", "c1"], ["Lemak", S.pct != null ? f1(S.pct) + "%" : "–", "c2"], ["FFM", S.ffm != null ? f1(S.ffm) + " kg" : "–", "c3"], ["Konsultasi", S.n, "c4"]];
+    box.innerHTML = `
+      <div class="pg-kartu-in">
+        <div class="pg-kartu-foto">${avatarHtml(fotoSubjek(), subj.nama, "pg-av-lg")}
+          <button type="button" class="pg-foto-btn" id="k-foto" aria-label="Ganti foto">${fotoSubjek() ? "Ganti foto" : "Unggah foto"}</button></div>
+        <div class="pg-kartu-teks">
+          <span class="pg-kartu-eyebrow">${prakTanpaKlien ? (st.profil.peran === "pelatih" ? "Pelatih" : "Ahli gizi") : st.aktif ? "Klien" : "Member"} · Program Gizi Olahraga</span>
+          <h2>${esc(subj.nama || "")}</h2>
+          <p>${prakTanpaKlien ? esc(st.profil.profesi || "") : `${esc(c ? c.n : subj.cabor || "")}${subj.caborLain ? " · " + esc(subj.caborLain) : ""}${usia != null ? " · " + usia + " tahun" : ""}${subj.level ? " · " + esc(subj.level) : ""}`}</p>
+          <div class="pg-tiles">${tiles.map(([l, v, cl]) => `<div class="pg-tile ${cl}"><b>${v}</b><span>${l}</span></div>`).join("")}</div>
+          ${!prakTanpaKlien && S.dBB != null ? `<p class="pg-kartu-delta">Sejak konsultasi pertama: BB ${S.dBB >= 0 ? "+" : "−"}${f1(Math.abs(S.dBB))} kg</p>` : ""}
+        </div>
+        ${!prakTanpaKlien && S.seri.filter((x) => x.bb).length >= 2 ? `<div class="pg-kartu-chart"><canvas id="k-chart" aria-label="Grafik perkembangan berat badan dan persen lemak"></canvas></div>` : ""}
+      </div>
+      ${!prakTanpaKlien ? `<div class="pg-kartu-aksi"><label class="pg-cek-inline"><input type="checkbox" id="k-privat"> Sembunyikan angka tubuh di kartu</label><button type="button" class="btn btn-ghost pg-sm" id="k-unduh">Unduh kartu profil (PNG)</button></div>` : ""}`;
+    $("k-foto").onclick = () => $("foto-input").click();
+    const u = $("k-unduh"); if (u) u.onclick = unduhKartu;
+    const cv = $("k-chart");
+    if (chartKartu) { chartKartu.destroy(); chartKartu = null; }
+    if (cv && window.Chart) {
+      const pts = S.seri.filter((x) => x.bb);
+      chartKartu = new window.Chart(cv, {
+        type: "line",
+        data: { labels: pts.map((x) => x.t.slice(5)), datasets: [
+          { label: "BB (kg)", data: pts.map((x) => x.bb), borderColor: "#ffd166", backgroundColor: "rgba(255,209,102,.25)", fill: true, tension: .35, yAxisID: "y", pointRadius: 4, pointBackgroundColor: "#ffd166" },
+          { label: "Lemak (%)", data: pts.map((x) => x.pct ?? null), borderColor: "#06d6a0", backgroundColor: "#06d6a0", tension: .35, yAxisID: "y1", pointRadius: 4, spanGaps: true }
+        ] },
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 900 }, interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#fff", boxWidth: 12, font: { family: "Outfit" } } } },
+          scales: { x: { ticks: { color: "rgba(255,255,255,.85)" }, grid: { color: "rgba(255,255,255,.12)" } },
+            y: { position: "left", ticks: { color: "#ffd166" }, grid: { color: "rgba(255,255,255,.12)" } },
+            y1: { position: "right", ticks: { color: "#06d6a0" }, grid: { display: false } } } }
+      });
+    }
+  }
+
+  $("foto-input").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    if (!/^image\//.test(f.type)) { MK.toast("Pilih berkas gambar"); return; }
+    if (f.size > 15 * 1024 * 1024) { MK.toast("Foto maksimal 15 MB"); return; }
+    let data;
+    try { data = await perkecilFoto(f, 480); } catch (er) { MK.toast("Foto tidak bisa dibaca"); return; }
+    const klienId = st.aktif ? st.aktif.id : "";
+    try {
+      if (st.lokal) {
+        const a = lokalDb.akun(st.email);
+        if (klienId) { const k = (a.klien || []).find((x) => x.id === klienId); if (k) k.foto = data; } else a.foto = data;
+        lokalDb.simpanAkun(st.email, a);
+      } else {
+        MK.toast("Mengunggah foto…");
+        const j = await api({ aksi: "kons-foto", token: st.token, klienId, foto: data });
+        if (!j.ok) { MK.toast(j.pesan || "Gagal mengunggah"); if (j.ulang) sesiHabis(); return; }
+      }
+      if (klienId) { st.fotoKlien[klienId] = data; const k = st.klien.find((x) => x.id === klienId); if (k) k.foto = "ada"; } else st.foto = data;
+      MK.toast("Foto tersimpan");
+      renderKartu(); if (praktisi()) renderKlien();
+    } catch (er) { MK.toast("Layanan tidak bisa dihubungi. Coba lagi."); }
+  });
+  function perkecilFoto(file, sisi) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(img.naturalWidth, img.naturalHeight);
+        const cv = document.createElement("canvas"); cv.width = cv.height = sisi;
+        const ctx = cv.getContext("2d");
+        ctx.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, sisi, sisi);
+        URL.revokeObjectURL(url);
+        res(cv.toDataURL("image/jpeg", 0.82));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      img.src = url;
+    });
+  }
+
+  // Kartu 1080×1350 (rasio Instagram 4:5) untuk diunduh dan diposting.
+  async function unduhKartu() {
+    try { await document.fonts.ready; } catch (e) { /* lanjut dengan font cadangan */ }
+    const W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const x = cv.getContext("2d");
+    const font = (w, s) => `${w} ${s}px Outfit, "Segoe UI", sans-serif`;
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#003a63"); g.addColorStop(.55, "#0070b8"); g.addColorStop(1, "#f05828");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    [["#ffd166", 900, 160, 260, .35], ["#06d6a0", 120, 1180, 220, .3], ["#ef476f", 980, 1040, 160, .3], ["#ffffff", 140, 220, 120, .12]].forEach(([c, cx, cy, r, a]) => { x.globalAlpha = a; x.fillStyle = c; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); });
+    x.globalAlpha = 1;
+    x.fillStyle = "rgba(255,255,255,.85)"; x.font = font(700, 30); x.textAlign = "center";
+    x.fillText("PROGRAM GIZI OLAHRAGA", W / 2, 110);
+    const subj = subjek(), S = statSubjek(), privat = $("k-privat") && $("k-privat").checked;
+    const cx = W / 2, cy = 330, r = 170;
+    x.save(); x.beginPath(); x.arc(cx, cy, r + 14, 0, 7); x.fillStyle = "#fff"; x.fill(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.clip();
+    const src = fotoSubjek();
+    if (src) { const im = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }); if (im) x.drawImage(im, cx - r, cy - r, 2 * r, 2 * r); }
+    else { const gg = x.createLinearGradient(cx - r, cy - r, cx + r, cy + r); gg.addColorStop(0, "#ffd166"); gg.addColorStop(1, "#ef476f"); x.fillStyle = gg; x.fillRect(cx - r, cy - r, 2 * r, 2 * r); x.fillStyle = "#fff"; x.font = font(800, 120); x.textBaseline = "middle"; x.fillText(inisial(subj.nama), cx, cy + 6); x.textBaseline = "alphabetic"; }
+    x.restore();
+    x.fillStyle = "#fff"; x.font = font(800, 68);
+    let nama = subj.nama || ""; while (x.measureText(nama).width > W - 120 && nama.length > 4) nama = nama.slice(0, -2) + "…";
+    x.fillText(nama, W / 2, 610);
+    const c = PG.CABOR_MAP[subj.cabor], usia = PG.usiaDari(subj.tglLahir);
+    x.font = font(500, 34); x.fillStyle = "rgba(255,255,255,.92)";
+    x.fillText([c ? c.n : subj.cabor, subj.caborLain, usia != null ? usia + " tahun" : ""].filter(Boolean).join(" · "), W / 2, 662);
+    const tiles = privat ? [["Konsultasi", String(S.n)], ["Cabang", c ? c.n.split(" ")[0] : "-"]] : [["BB", S.bb ? f1(S.bb) + " kg" : "–"], ["Lemak", S.pct != null ? f1(S.pct) + "%" : "–"], ["FFM", S.ffm != null ? f1(S.ffm) + " kg" : "–"], ["Konsultasi", String(S.n)]];
+    const warna = ["#ffd166", "#06d6a0", "#118ab2", "#ef476f"];
+    const tw = (W - 120 - (tiles.length - 1) * 24) / tiles.length;
+    tiles.forEach(([l, v], i) => {
+      const tx = 60 + i * (tw + 24), ty = 720;
+      x.fillStyle = "rgba(255,255,255,.14)"; rrect(x, tx, ty, tw, 150, 28); x.fill();
+      x.fillStyle = warna[i % 4]; rrect(x, tx, ty, 12, 150, 6); x.fill();
+      x.fillStyle = "#fff"; x.textAlign = "center"; x.font = font(800, tiles.length > 2 ? 46 : 58); x.fillText(v, tx + tw / 2 + 6, ty + 78);
+      x.font = font(600, 26); x.fillStyle = "rgba(255,255,255,.85)"; x.fillText(l.toUpperCase(), tx + tw / 2 + 6, ty + 122);
+    });
+    const pts = S.seri.filter((p) => p.bb);
+    if (!privat && pts.length >= 2) {
+      const gx = 90, gy = 940, gw = W - 180, gh = 230;
+      x.fillStyle = "rgba(0,0,0,.18)"; rrect(x, 60, 910, W - 120, 300, 28); x.fill();
+      const lo = Math.min(...pts.map((p) => p.bb)) - 1, hi = Math.max(...pts.map((p) => p.bb)) + 1;
+      const px = (i) => gx + (i * gw) / (pts.length - 1), py = (v) => gy + gh - ((v - lo) / (hi - lo)) * (gh - 40);
+      x.strokeStyle = "#ffd166"; x.lineWidth = 7; x.lineJoin = "round"; x.beginPath();
+      pts.forEach((p, i) => (i ? x.lineTo(px(i), py(p.bb)) : x.moveTo(px(i), py(p.bb)))); x.stroke();
+      pts.forEach((p, i) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(px(i), py(p.bb), 11, 0, 7); x.fill(); x.fillStyle = "#ffd166"; x.beginPath(); x.arc(px(i), py(p.bb), 6, 0, 7); x.fill(); });
+      x.fillStyle = "#fff"; x.font = font(700, 26); x.textAlign = "left"; x.fillText("Perkembangan berat badan", gx, 900 + 50);
+      x.textAlign = "center"; x.font = font(500, 22); x.fillStyle = "rgba(255,255,255,.8)";
+      [0, pts.length - 1].forEach((i) => x.fillText(pts[i].t, px(i), gy + gh + 30));
+    } else {
+      x.fillStyle = "rgba(255,255,255,.9)"; x.font = font(600, 38); x.textAlign = "center";
+      x.fillText("Berlatih cerdas, makan tepat, juara!", W / 2, 1050);
+    }
+    x.textAlign = "center"; x.fillStyle = "#fff"; x.font = font(700, 30); x.fillText("murykuswari.com", W / 2, 1275);
+    x.font = font(500, 22); x.fillStyle = "rgba(255,255,255,.85)"; x.fillText("Program Gizi Olahraga · Assoc. Prof. Dr. Mury Kuswari", W / 2, 1312);
+    const a = document.createElement("a");
+    a.download = `kartu-profil-${String(subj.nama || "member").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
+    a.href = cv.toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove();
+  }
+  function rrect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
 });
