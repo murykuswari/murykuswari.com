@@ -1,5 +1,5 @@
 /*
- * Halaman Program Gizi Olahraga Personal (program.html).
+ * Bagian Program Gizi Olahraga Personal (gizi.html#program).
  * Masuk dengan OTP email lewat Google Apps Script (SITE.programEndpoint atau SITE.otpEndpoint),
  * menghitung program dengan PG (program-engine.js), lalu menyimpan asesmen + laporan ke Drive pemilik.
  * Bila layanan belum aktif, halaman tetap jalan dalam "mode lokal" (data hanya di perangkat ini).
@@ -307,7 +307,11 @@ document.addEventListener("DOMContentLoaded", () => {
     step(3);
   });
   $("b-ubah").addEventListener("click", () => step(2));
-  $("b-cetak").addEventListener("click", () => window.print());
+  $("b-cetak").addEventListener("click", () => {
+    document.body.classList.add("cetak-program");
+    window.print();
+    setTimeout(() => document.body.classList.remove("cetak-program"), 500);
+  });
 
   /* ---------- 4. Hasil ---------- */
   const tbl = (head, rows, foot) => `<div class="tbl-wrap"><table class="tbl"><thead><tr>${head.map((h) => `<th${h[0] === "#" ? ' class="n"' : ""}>${h.replace(/^#/, "")}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td${head[i] && head[i][0] === "#" ? ' class="n"' : ""}>${c}</td>`).join("")}</tr>`).join("")}</tbody>${foot ? `<tfoot><tr>${foot.map((c, i) => `<td${head[i] && head[i][0] === "#" ? ' class="n"' : ""}>${c}</td>`).join("")}</tr></tfoot>` : ""}</table></div>`;

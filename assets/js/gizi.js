@@ -121,7 +121,7 @@
     sel.value = SPORT.sepakbola.kel;
   });
 
-  const tabs = document.querySelectorAll(".calc-tab");
+  const tabs = document.querySelectorAll('.calc-tab[role="tab"]');
   function openTab(tab) {
     tabs.forEach((t) => {
       const on = t === tab;

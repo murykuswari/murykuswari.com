@@ -33,7 +33,7 @@ window.SITE = {
   // Panduan: docs/panduan-unduhan-otp.md. Jika kosong, formulir unduhan dinonaktifkan.
   otpEndpoint: "https://script.google.com/macros/s/AKfycbz2dqqXvIyjTKSYWazlR5ZQ91pD-_a0oq9X1qPkrcuJyvgw9bUFfzy0rxAZGiGzcMxFwA/exec",
 
-  // URL layanan Program Gizi Personal (program.html). Kosongkan untuk memakai otpEndpoint,
+  // URL layanan Program Gizi Personal (bagian #program di gizi.html). Kosongkan untuk memakai otpEndpoint,
   // karena Konsultasi.gs dipasang di proyek Apps Script yang sama. Panduan: docs/panduan-program-gizi.md
   programEndpoint: "",
 

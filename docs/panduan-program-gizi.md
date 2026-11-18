@@ -1,6 +1,6 @@
 # Panduan Program Gizi Personal
 
-Halaman `program.html` menghitung program gizi olahraga personal dan menyimpan setiap konsultasi ke Google Drive pemilik. Penyimpanan dijalankan oleh `apps-script/Konsultasi.gs`, yang dipasang di proyek Apps Script yang sama dengan layanan unduhan ber-OTP (`Kode.gs`), sehingga URL layanannya sama.
+Bagian **Program Gizi Personal** di `gizi.html#program` (`program.html` lama dialihkan ke sana) menghitung program gizi olahraga personal dan menyimpan setiap konsultasi ke Google Drive pemilik. Penyimpanan dijalankan oleh `apps-script/Konsultasi.gs`, yang dipasang di proyek Apps Script yang sama dengan layanan unduhan ber-OTP (`Kode.gs`), sehingga URL layanannya sama.
 
 ## Alur pengguna
 
@@ -35,7 +35,7 @@ ID folder dan Sheet sudah ditulis di `KONS` pada `Konsultasi.gs`.
 4. Pilih fungsi `siapkanKonsultasi`, klik **Run**, dan setujui izin baru (Google Sheets, Google Docs, Drive). Tab Klien dan Konsultasi serta folder Klien dibuat otomatis.
 5. **Deploy > Manage deployments > Edit (ikon pensil) > Version: New version > Deploy.** URL `/exec` tidak berubah, jadi `config.js` tidak perlu diubah.
 
-Sebelum langkah 5 selesai, `program.html` berjalan dalam **mode lokal**: program tetap dihitung, tetapi data hanya tersimpan di perangkat pengunjung.
+Sebelum langkah 5 selesai, bagian Program Gizi Personal berjalan dalam **mode lokal**: program tetap dihitung, tetapi data hanya tersimpan di perangkat pengunjung.
 
 ## Pengaturan di `Konsultasi.gs`
 

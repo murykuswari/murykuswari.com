@@ -842,3 +842,11 @@ section[id] { scroll-margin-top: 72px; }
   #s-hasil { display: block !important; }
   .pg-card { box-shadow: none; border: 0; padding: 0; }
 }
+
+.calc-link { text-decoration: none; border-style: dashed; border-color: var(--orange); }
+.calc-link:hover { color: var(--ink); background: var(--orange-soft); }
+#program .pg-layout { margin-top: 18px; }
+@media print {
+  body.cetak-program main > *:not(#program), body.cetak-program #program > .wrap:first-child, body.cetak-program .pg-side, body.cetak-program .site-header, body.cetak-program #site-footer { display: none !important; }
+  body.cetak-program #program { background: none; border: 0; padding: 0; }
+}

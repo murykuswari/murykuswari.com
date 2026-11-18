@@ -1,6 +1,6 @@
 /*
  * Mesin perhitungan Program Gizi Olahraga Personal (murykuswari.com).
- * Fungsi murni tanpa DOM, dipakai halaman program.html dan dapat diuji dengan Node.
+ * Fungsi murni tanpa DOM, dipakai bagian #program di gizi.html dan dapat diuji dengan Node.
  * Dasar: "Tinjauan Sistematik Perhitungan dalam Gizi Olahraga dan Kebugaran" (Kuswari, 2026)
  * serta Panduan Pendampingan Gizi pada Atlet (Kemenkes RI 2021). Label bukti: A, B, C.
  */
