@@ -37,6 +37,16 @@ window.SITE = {
   // karena Konsultasi.gs dipasang di proyek Apps Script yang sama. Panduan: docs/panduan-program-gizi.md
   programEndpoint: "https://script.google.com/macros/s/AKfycbyKDG8NtTPbpKb9R6t_wguvMCmbUcwVEnJKpO_q2a-N7qgOQ39iMKisPWeNrCHglXRw/exec",
 
+  // Pembayaran konsultasi lanjutan langsung ke e-wallet Dr. Mury (dikonfirmasi manual di dashboard).
+  // Isi nomor HP terdaftar dan nama pemilik akun. Dompet dengan nomor kosong tidak ditampilkan.
+  // qris: (opsional) path gambar QRIS, mis. "assets/img/qris.jpg" — klien bisa memindai dari aplikasi apa pun.
+  dompet: [
+    { nama: "GoPay", nomor: "", atasNama: "" },
+    { nama: "DANA", nomor: "", atasNama: "" },
+    { nama: "LinkAja", nomor: "", atasNama: "" }
+  ],
+  qris: "",
+
   // Statistik Google Scholar (perbarui berkala, mis. tiap semester).
   scholarStats: { sitasi: 1112, hIndex: 17, i10: 30, karya: 122, diperbarui: "November 2026" }
 };

@@ -1027,3 +1027,40 @@ section[id] { scroll-margin-top: 72px; }
 @media (max-width: 820px) { .pj-head { grid-template-columns: 1fr; } .pj-out { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .pj-line { padding-left: 0; } .pj-line::before, .pj-dot { display: none; } .pj-body { padding: 16px; } .pj-band { padding: 12px 16px; } }
 @media print { .pj-card { box-shadow: none; break-inside: avoid; } .pj-rel { display: none; } }
+
+/* ---------- Bayar ke e-wallet (konsultasi) ---------- */
+.pg-bayar-btn { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.pg-dompet { margin-top: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.pg-dompet-l { margin: 0; font-size: .84rem; color: var(--ink-2); }
+.pg-nominal { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 4px; }
+.pg-nominal strong { font-size: 1.6rem; letter-spacing: -.02em; color: var(--navy); font-variant-numeric: tabular-nums; }
+.pg-nominal strong::after { content: ""; }
+.pg-dompet-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+.pg-dompet-i { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--blue); }
+.pg-dw-gopay { border-top-color: #00aa13; } .pg-dw-dana { border-top-color: #118eea; } .pg-dw-linkaja { border-top-color: #e82529; }
+.pg-dw-ovo { border-top-color: #4c3494; } .pg-dw-shopeepay { border-top-color: #ee4d2d; }
+.pg-dompet-n { font-weight: 800; font-size: .9rem; }
+.pg-dompet-no { font-family: var(--mono); font-size: 1rem; color: var(--ink); }
+.pg-dompet-i small { color: var(--muted); font-size: .76rem; }
+.pg-dompet-i .dl-link { align-self: flex-start; font-size: .78rem; }
+.pg-qris { margin: 8px 0; text-align: center; }
+.pg-qris img { width: 100%; max-width: 240px; border-radius: 12px; background: #fff; padding: 8px; border: 1px solid var(--line); }
+.pg-qris figcaption { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+.pg-konfirmasi { display: grid; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.pg-konfirmasi h5 { margin: 0; font-size: .88rem; }
+.pg-konfirmasi label { display: grid; gap: 4px; font-size: .8rem; color: var(--ink-2); font-weight: 600; }
+.pg-konfirmasi button { justify-self: start; }
+.pg-dompet-ok { font-size: .84rem; margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--blue-soft); color: var(--ink); }
+/* Dashboard: verifikasi pembayaran e-wallet */
+.db-bsum { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.db-bsum div { padding: 10px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.db-bsum strong { display: block; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.db-bsum span { font-size: .74rem; color: var(--muted); }
+.db-bsum .warn { border-color: var(--orange); background: var(--orange-soft); }
+.db-verif { display: grid; gap: 10px; margin-bottom: 14px; }
+.db-vc { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 12px; border-radius: 12px; border: 2px solid var(--orange); background: var(--surface); }
+.db-vc .rp { font-size: 1.35rem; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; }
+.db-vc .rp em { font-style: normal; background: #ffd166; color: #0b1e33; border-radius: 4px; padding: 0 3px; }
+.db-vc-act { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.db-vc-act input { flex: 1 1 200px; }
+@media (max-width: 520px) { .db-vc { grid-template-columns: 1fr; } }

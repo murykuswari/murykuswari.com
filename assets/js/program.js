@@ -758,7 +758,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- Konsultasi lanjutan: klien bertanya, admin memutuskan gratis/berbayar ---------- */
   const rp = (n) => "Rp" + Number(n).toLocaleString("id-ID");
-  const STATUS_BAYAR = { lunas: ["Lunas", "b-normal"], menunggu: ["Menunggu pembayaran", "b-under"], kedaluwarsa: ["Kedaluwarsa", "b-over"], gagal: ["Gagal", "b-obese"], dikembalikan: ["Dikembalikan", "b-over"] };
+  const STATUS_BAYAR = { lunas: ["Lunas", "b-normal"], menunggu: ["Menunggu pembayaran", "b-under"], dicek: ["Menunggu konfirmasi", "b-under"], kedaluwarsa: ["Kedaluwarsa", "b-over"], gagal: ["Gagal", "b-obese"], dikembalikan: ["Dikembalikan", "b-over"] };
   const STATUS_TANYA = { "menunggu-keputusan": ["Ditinjau Dr. Mury", "b-under"], gratis: ["Gratis · menunggu jawaban", "b-normal"], "menunggu-bayar": ["Perlu pembayaran", "b-over"], lunas: ["Lunas · menunggu jawaban", "b-normal"], dijawab: ["Dijawab", "b-normal"], ditolak: ["Tidak dilayani", "b-obese"] };
   async function muatPaket() {
     if (st.lokal || !ENDPOINT) return;
@@ -786,12 +786,94 @@ document.addEventListener("DOMContentLoaded", () => {
           <small class="note">${esc(String(t.dibuat).slice(0, 10))}${t.klienId ? " · " + esc(t.nama) : ""}</small>
           <p class="pg-tq-isi">${esc(t.pertanyaan)}</p>
           ${t.catatan ? `<p class="pg-tq-cat"><b>Catatan Dr. Mury:</b> ${esc(t.catatan)}</p>` : ""}
-          ${t.status === "menunggu-bayar" ? `<div class="pg-paket-aksi"><span><strong>${esc(t.paket)}</strong><br><b>${rp(t.harga)}</b></span>${P.aktif ? `<button type="button" class="btn btn-primary pg-sm" data-bayar-q="${esc(t.id)}">Bayar</button>` : '<small class="note">Instruksi pembayaran dikirim lewat email.</small>'}</div>${bayar && bayar.status === "menunggu" ? `<button type="button" class="dl-link" data-cek="${esc(bayar.orderId)}">Saya sudah bayar, cek status</button>` : ""}` : ""}
+          ${t.status === "menunggu-bayar" ? blokBayar(t, bayar, P) : ""}
           ${t.status === "dijawab" ? `<details class="pg-tq-jwb" open><summary>Jawaban Dr. Mury (${esc(String(t.dijawab).slice(0, 10))})</summary><p>${esc(t.jawaban).replace(/\n/g, "<br>")}</p></details>` : ""}
         </div>`;
       }).join("")}` : ""}
       ${(st.bayar || []).some((x) => x.status === "lunas") && P.jadwal ? `<a class="btn btn-ghost pg-sm" href="${esc(P.jadwal)}" target="_blank" rel="noopener">Pilih jadwal sesi</a>` : ""}`;
   }
+  /* Pembayaran langsung ke e-wallet Dr. Mury (SITE.dompet) dengan kode unik, dikonfirmasi admin. */
+  const DOMPET = (S.dompet || []).filter((d) => d && String(d.nomor || "").trim());
+  const adaDompet = () => DOMPET.length > 0 || !!S.qris;
+  const pilihanDompet = () => DOMPET.map((d) => d.nama).concat(S.qris ? ["QRIS"] : []);
+  function blokBayar(t, bayar, P) {
+    const kepala = `<div class="pg-paket-aksi"><span><strong>${esc(t.paket)}</strong><br><b>${rp(t.harga)}</b></span>`;
+    const ditolak = (st.bayar || []).filter((x) => x.permintaanId === t.id && x.status === "gagal" && x.catatanVerifikasi).slice(-1)[0];
+    const catTolak = ditolak && !bayar ? `<p class="pg-tq-cat"><b>Pembayaran sebelumnya belum dapat dikonfirmasi:</b> ${esc(ditolak.catatanVerifikasi)}</p>` : "";
+    const dompetBill = bayar && String(bayar.metode).indexOf("dompet") === 0;
+    if (dompetBill && bayar.status === "dicek") {
+      return `${kepala}<span class="badge b-under">Menunggu konfirmasi</span></div>
+        <p class="pg-dompet-ok">Terima kasih. Pembayaran <b>${rp(bayar.jumlah)}</b> ke <b>${esc(String(bayar.metode).replace("dompet:", ""))}</b> sedang dicek Dr. Mury (biasanya kurang dari 1×24 jam). Anda akan menerima email begitu dikonfirmasi.</p>`;
+    }
+    if (dompetBill && bayar.status === "menunggu") {
+      const kode = String(bayar.jumlah).slice(-3);
+      return `${kepala}</div>
+        <div class="pg-dompet" data-order="${esc(bayar.orderId)}">
+          <p class="pg-dompet-l">Transfer <b>tepat</b> sebesar</p>
+          <div class="pg-nominal"><strong>${rp(bayar.jumlah)}</strong><button type="button" class="dl-link" data-salin="${bayar.jumlah}">Salin</button></div>
+          <small class="note">Tiga digit terakhir (<b>${kode}</b>) adalah kode unik agar pembayaran Anda langsung dikenali. Mohon jangan dibulatkan.</small>
+          <div class="pg-dompet-list">${DOMPET.map((d) => `<div class="pg-dompet-i pg-dw-${esc(String(d.nama).toLowerCase())}"><span class="pg-dompet-n">${esc(d.nama)}</span><span class="pg-dompet-no">${esc(d.nomor)}</span>${d.atasNama ? `<small>a.n. ${esc(d.atasNama)}</small>` : ""}<button type="button" class="dl-link" data-salin="${esc(String(d.nomor).replace(/\D/g, ""))}">Salin nomor</button></div>`).join("")}</div>
+          ${S.qris ? `<figure class="pg-qris"><img src="${esc(S.qris)}" alt="QRIS pembayaran Dr. Mury Kuswari" loading="lazy"><figcaption>Atau pindai QRIS ini dengan aplikasi e-wallet/m-banking apa pun, lalu masukkan nominal ${rp(bayar.jumlah)}.</figcaption></figure>` : ""}
+          <form class="pg-konfirmasi" novalidate>
+            <h5>Sudah membayar? Kirim konfirmasi</h5>
+            <label>Dibayar ke<select name="dompet">${pilihanDompet().map((n) => `<option>${esc(n)}</option>`).join("")}</select></label>
+            <label>Nama / nomor akun pengirim<input name="pengirim" maxlength="80" placeholder="mis. Budi – 0812xxxx"></label>
+            <label>Bukti pembayaran (tangkapan layar)<input name="bukti" type="file" accept="image/*"></label>
+            <button type="submit" class="btn btn-primary pg-sm">Saya sudah bayar</button>
+          </form>
+        </div>`;
+    }
+    const tombol = [];
+    if (adaDompet()) tombol.push(`<button type="button" class="btn btn-primary pg-sm" data-dompet-q="${esc(t.id)}">Bayar via ${esc(pilihanDompet().filter((n) => n !== "QRIS").join(" / ") || "QRIS")}</button>`);
+    if (P.aktif) tombol.push(`<button type="button" class="btn ${tombol.length ? "btn-ghost" : "btn-primary"} pg-sm" data-bayar-q="${esc(t.id)}">${tombol.length ? "Bayar online (otomatis)" : "Bayar"}</button>`);
+    return `${kepala}<span class="pg-bayar-btn">${tombol.join("") || '<small class="note">Instruksi pembayaran dikirim lewat email.</small>'}</span></div>${catTolak}
+      ${bayar && bayar.status === "menunggu" && !dompetBill ? `<button type="button" class="dl-link" data-cek="${esc(bayar.orderId)}">Saya sudah bayar, cek status</button>` : ""}`;
+  }
+  function perkecilBukti(file, maks) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, maks / Math.max(img.naturalWidth, img.naturalHeight));
+        const cv = document.createElement("canvas"); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(url); res(cv.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      img.src = url;
+    });
+  }
+  document.addEventListener("click", async (e) => {
+    const sl = e.target.closest("[data-salin]");
+    if (sl) {
+      try { await navigator.clipboard.writeText(sl.dataset.salin); MK.toast("Disalin: " + sl.dataset.salin); } catch (er) { MK.toast(sl.dataset.salin); }
+      return;
+    }
+    const b = e.target.closest("[data-dompet-q]");
+    if (!b) return;
+    b.disabled = true; b.textContent = "Menyiapkan…";
+    try {
+      const j = await api({ aksi: "kons-bayar-dompet", token: st.token, permintaanId: b.dataset.dompetQ });
+      if (!j.ok) { MK.toast(j.pesan || "Gagal membuat tagihan"); if (j.ulang) sesiHabis(); return; }
+      st.bayar = j.pembayaran || st.bayar; st.tanya = j.permintaan || st.tanya;
+      renderLanjut();
+    } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { if (b.isConnected) { b.disabled = false; b.textContent = "Bayar"; } }
+  });
+  document.addEventListener("submit", async (e) => {
+    const f = e.target.closest(".pg-konfirmasi");
+    if (!f) return;
+    e.preventDefault();
+    const box = f.closest(".pg-dompet"), file = f.bukti.files[0], pengirim = f.pengirim.value.trim();
+    if (!file && !pengirim) { MK.toast("Unggah bukti pembayaran atau tulis akun pengirim"); return; }
+    const btn = f.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Mengirim…";
+    try {
+      const bukti = file ? await perkecilBukti(file, 1400) : "";
+      const j = await api({ aksi: "kons-konfirmasi", token: st.token, orderId: box.dataset.order, dompet: f.dompet.value, pengirim, bukti });
+      if (!j.ok) { MK.toast(j.pesan || "Gagal mengirim"); if (j.ulang) sesiHabis(); return; }
+      st.bayar = j.pembayaran || st.bayar; st.tanya = j.permintaan || st.tanya;
+      renderLanjut();
+      MK.toast("Konfirmasi terkirim. Dr. Mury akan mengecek pembayaran Anda.");
+    } catch (er) { MK.toast(er.message === "img" ? "Gambar tidak bisa dibaca" : "Layanan tidak bisa dihubungi"); } finally { if (btn.isConnected) { btn.disabled = false; btn.textContent = "Saya sudah bayar"; } }
+  });
   document.addEventListener("submit", async (e) => {
     if (e.target.id !== "tq-form") return;
     e.preventDefault();

@@ -37,7 +37,10 @@ const PAKET = [
   { id: 'paket-4', nama: 'Pendampingan 4 minggu', harga: 750000, deskripsi: '2 sesi video call, evaluasi mingguan via WhatsApp, penyesuaian program tiap 2 minggu.' },
   { id: 'paket-12', nama: 'Pendampingan 12 minggu', harga: 1800000, deskripsi: '6 sesi video call, evaluasi mingguan, periodisasi gizi sampai kompetisi.' }
 ];
-const KOLOM_BAYAR = ['Order ID', 'Dibuat', 'Email', 'Nama', 'Paket', 'Jumlah (Rp)', 'Status', 'Metode', 'Dibayar', 'ID klien praktisi', 'Catatan', 'Status Midtrans', 'Diperbarui', 'ID permintaan'];
+const KOLOM_BAYAR = ['Order ID', 'Dibuat', 'Email', 'Nama', 'Paket', 'Jumlah (Rp)', 'Status', 'Metode', 'Dibayar', 'ID klien praktisi', 'Catatan', 'Status Midtrans', 'Diperbarui', 'ID permintaan', 'Bukti', 'Catatan verifikasi', 'Diverifikasi oleh'];
+// Pembayaran langsung ke e-wallet pemilik (GoPay/DANA/LinkAja). Nomor dompet diatur di config.js (SITE.dompet).
+// Status: menunggu -> dicek (klien mengunggah bukti) -> lunas (admin konfirmasi) | gagal (admin tolak bukti).
+const DOMPET_SAH = ['GoPay', 'DANA', 'LinkAja', 'OVO', 'ShopeePay', 'QRIS', 'Transfer bank'];
 // Permintaan konsultasi lanjutan: admin memutuskan gratis / berbayar / ditolak sebelum menjawab.
 const KOLOM_TANYA = ['ID', 'Dibuat', 'Email', 'Nama', 'ID klien praktisi', 'Topik', 'Pertanyaan', 'Status', 'Jenis', 'Paket', 'Harga (Rp)', 'Catatan admin', 'Order ID', 'Jawaban', 'Dijawab', 'Diperbarui'];
 const TOPIK = ['Performa & persiapan kompetisi', 'Komposisi tubuh (turun lemak / naik otot)', 'Membuat berat badan kelas tanding', 'Menu & pola makan harian', 'Suplemen', 'Cedera, pemulihan, atau keluhan kesehatan', 'Program untuk tim / klien', 'Lainnya'];
@@ -59,12 +62,15 @@ function konsultasi_(d) {
     case 'kons-foto': return konsFoto_(d);
     case 'kons-foto-ambil': return konsFotoAmbil_(d);
     case 'kons-admin': return konsAdmin_(d);
-    case 'kons-paket': return { ok: true, aktif: !!kunciMidtrans_(), paket: PAKET, topik: TOPIK, jadwal: KONS.JADWAL_URL };
+    case 'kons-paket': return { ok: true, aktif: !!kunciMidtrans_(), dompet: true, paket: PAKET, topik: TOPIK, jadwal: KONS.JADWAL_URL };
     case 'kons-tanya': return konsTanya_(d);
     case 'kons-putus': return konsPutus_(d);
     case 'kons-jawab': return konsJawab_(d);
     case 'kons-bayar': return konsBayar_(d);
     case 'kons-status': return konsStatus_(d);
+    case 'kons-bayar-dompet': return konsBayarDompet_(d);
+    case 'kons-konfirmasi': return konsKonfirmasi_(d);
+    case 'kons-verifikasi': return konsVerifikasi_(d);
     default: return { ok: false, pesan: 'Permintaan tidak dikenali.' };
   }
 }
@@ -704,7 +710,7 @@ function terapkanStatus_(orderId, m) {
     const st = petaStatus_(m);
     const lama = String(row.r[6]);
     const sh = ss_().getSheetByName('Pembayaran');
-    sh.getRange(row.baris, 7, 1, 7).setValues([[st, String(m.payment_type || row.r[7] || ''), st === 'lunas' ? (row.r[8] || waktu_()) : row.r[8], row.r[9], row.r[10], String(m.transaction_status || ''), waktu_()]]); // kolom 14 (ID permintaan) tidak diubah
+    sh.getRange(row.baris, 7, 1, 7).setValues([[st, String(m.payment_type || row.r[7] || ''), st === 'lunas' ? (row.r[8] || waktu_()) : row.r[8], row.r[9], row.r[10], m.manual ? row.r[11] : String(m.transaction_status || ''), waktu_()]]); // kolom 14 (ID permintaan) tidak diubah
     baru = st === 'lunas' && lama !== 'lunas';
     row = cariBayar_(orderId);
   } finally { lock.releaseLock(); }
@@ -726,7 +732,7 @@ function kabariLunas_(r) {
   const jadwal = KONS.JADWAL_URL ? '<p>Pilih jadwal sesi Anda di sini: <a href="' + KONS.JADWAL_URL + '">' + KONS.JADWAL_URL + '</a></p>' : '<p>Tim Dr. Mury akan menghubungi Anda melalui email atau WhatsApp dalam 1×24 jam untuk menjadwalkan sesi.</p>';
   try {
     MailApp.sendEmail({ to: email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: 'Pembayaran diterima – ' + paket,
-      htmlBody: '<p>Halo ' + esc_(nama) + ',</p><p>Pembayaran <b>' + esc_(paket) + '</b> sebesar <b>' + rp + '</b> (order ' + esc_(r[0]) + ') sudah kami terima dan terverifikasi otomatis.</p>' + jadwal + '<p>Sambil menunggu, perbarui data asesmen Anda di <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a> agar sesi lebih efektif.</p><p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
+      htmlBody: '<p>Halo ' + esc_(nama) + ',</p><p>Pembayaran <b>' + esc_(paket) + '</b> sebesar <b>' + rp + '</b> (order ' + esc_(r[0]) + ') sudah kami terima dan terverifikasi.</p>' + jadwal + '<p>Sambil menunggu, perbarui data asesmen Anda di <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a> agar sesi lebih efektif.</p><p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
     MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, replyTo: email, name: 'Konsultasi Gizi murykuswari.com', subject: 'LUNAS: ' + paket + ' – ' + nama,
       htmlBody: '<p><b>' + esc_(nama) + '</b> (' + esc_(email) + ') membayar <b>' + esc_(paket) + '</b> ' + rp + '. Order ' + esc_(r[0]) + ', metode ' + esc_(r[7]) + '.</p><p>Catatan klien: ' + esc_(r[10]) + '</p><p>Lihat profil dan riwayatnya di dashboard: https://murykuswari.com/dashboard.html</p>' });
   } catch (e) { console.error(e); }
@@ -738,7 +744,7 @@ function konsStatus_(d) {
   const orderId = bersih_(d.orderId, 40);
   let row = cariBayar_(orderId);
   if (!row || String(row.r[2]).replace(/^'/, '').toLowerCase() !== email) return { ok: false, pesan: 'Pesanan tidak ditemukan.' };
-  if (String(row.r[6]) === 'menunggu' && kunciMidtrans_()) {
+  if (String(row.r[6]) === 'menunggu' && kunciMidtrans_() && String(row.r[7]).indexOf('dompet') !== 0) {
     const m = statusMidtrans_(orderId);
     if (m) row = terapkanStatus_(orderId, m) || row;
   }
@@ -746,7 +752,7 @@ function konsStatus_(d) {
 }
 
 function barisBayar_(r) {
-  return { orderId: String(r[0]), dibuat: String(r[1]), email: String(r[2]).replace(/^'/, ''), nama: String(r[3]).replace(/^'/, ''), paket: String(r[4]).replace(/^'/, ''), jumlah: Number(r[5]), status: String(r[6]), metode: String(r[7]), dibayar: String(r[8]), klienId: String(r[9]), permintaanId: String(r[13] || '') };
+  return { orderId: String(r[0]), dibuat: String(r[1]), email: String(r[2]).replace(/^'/, ''), nama: String(r[3]).replace(/^'/, ''), paket: String(r[4]).replace(/^'/, ''), jumlah: Number(r[5]), status: String(r[6]), metode: String(r[7]), dibayar: String(r[8]), klienId: String(r[9]), permintaanId: String(r[13] || ''), bukti: String(r[14] || ''), info: String(r[11] || '').replace(/^'/, ''), catatanVerifikasi: String(r[15] || '').replace(/^'/, '') };
 }
 function daftarBayar_(email) {
   const sh = tab_('Pembayaran', KOLOM_BAYAR);
@@ -759,6 +765,108 @@ function semuaBayar_() {
   const n = sh.getLastRow();
   if (n < 2) return [];
   return sh.getRange(2, 1, n - 1, KOLOM_BAYAR.length).getValues().map(barisBayar_);
+}
+
+
+/* ---------- Pembayaran langsung ke e-wallet pemilik (verifikasi oleh admin) ---------- */
+
+/** Klien memilih bayar via e-wallet: buat tagihan dengan kode unik 3 digit agar mudah dicocokkan di riwayat dompet. */
+function konsBayarDompet_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const t = cariTanya_(bersih_(d.permintaanId, 40));
+  if (!t || t.data.email !== email) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
+  if (t.data.status !== 'menunggu-bayar' || !(t.data.harga > 0)) return { ok: false, pesan: 'Permintaan ini tidak memerlukan pembayaran saat ini.' };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const semua = semuaBayar_();
+    // Tagihan e-wallet yang masih terbuka untuk permintaan ini dipakai ulang (harga belum berubah).
+    const ada = semua.filter(function (b) { return b.permintaanId === t.data.id && b.metode.indexOf('dompet') === 0 && (b.status === 'menunggu' || b.status === 'dicek'); })[0];
+    if (ada && ada.jumlah - t.data.harga >= 101 && ada.jumlah - t.data.harga <= 999) return { ok: true, orderId: ada.orderId, jumlah: ada.jumlah, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+    if (ada) setBayar_(ada.orderId, { 'Status': 'gagal', 'Catatan verifikasi': 'Diganti tagihan baru (harga berubah).' });
+    const dipakai = {};
+    semua.forEach(function (b) { if (b.status === 'menunggu' || b.status === 'dicek') dipakai[b.jumlah] = 1; });
+    let jumlah = 0;
+    for (let i = 0; i < 50 && !jumlah; i++) { const c = t.data.harga + 101 + Math.floor(Math.random() * 899); if (!dipakai[c]) jumlah = c; }
+    if (!jumlah) jumlah = t.data.harga + 101 + Math.floor(Math.random() * 899);
+    const orderId = 'MK-' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + '-' + Utilities.getUuid().slice(0, 4).toUpperCase();
+    tab_('Pembayaran', KOLOM_BAYAR).appendRow([orderId, waktu_(), aman_(email), aman_(t.data.nama), aman_((t.data.paket || 'Konsultasi lanjutan').slice(0, 80)), jumlah, 'menunggu', 'dompet', '', t.data.klienId, aman_(t.data.topik), '', waktu_(), t.data.id, '', '', '']);
+    setTanya_(t.baris, { 'Order ID': orderId });
+    return { ok: true, orderId: orderId, jumlah: jumlah, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+  } finally { lock.releaseLock(); }
+}
+
+/** Klien menyatakan sudah membayar: pilih dompet tujuan dan (sebaiknya) unggah bukti. Admin lalu mengonfirmasi. */
+function konsKonfirmasi_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const orderId = bersih_(d.orderId, 40);
+  const row = cariBayar_(orderId);
+  if (!row || String(row.r[2]).replace(/^'/, '').toLowerCase() !== email) return { ok: false, pesan: 'Tagihan tidak ditemukan.' };
+  if (String(row.r[7]).indexOf('dompet') !== 0) return { ok: false, pesan: 'Tagihan ini dibayar lewat pembayaran online.' };
+  if (['menunggu', 'dicek'].indexOf(String(row.r[6])) < 0) return { ok: false, pesan: 'Tagihan ini sudah ' + row.r[6] + '.' };
+  const dompet = DOMPET_SAH.indexOf(d.dompet) >= 0 ? d.dompet : '';
+  if (!dompet) return { ok: false, pesan: 'Pilih dompet tujuan pembayaran.' };
+  const pengirim = bersih_(d.pengirim, 80);
+  let bukti = String(row.r[14] || '');
+  if (d.bukti) {
+    const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(d.bukti));
+    if (!m) return { ok: false, pesan: 'Format bukti tidak dikenali.' };
+    if (m[1].length > 1500000) return { ok: false, pesan: 'Gambar bukti terlalu besar.' };
+    const akun = cariKlien_(email);
+    const folder = folderKlien_(email, akun ? akun.data.nama : email);
+    const file = folder.createFile(Utilities.newBlob(Utilities.base64Decode(m[1]), 'image/jpeg', 'bukti-bayar-' + orderId + '.jpg'));
+    bukti = file.getUrl();
+  }
+  if (!bukti && !pengirim) return { ok: false, pesan: 'Unggah bukti pembayaran atau tulis nama/nomor akun pengirim.' };
+  setBayar_(orderId, { 'Status': 'dicek', 'Metode': 'dompet:' + dompet, 'Bukti': bukti, 'Status Midtrans': pengirim ? 'pengirim: ' + aman_(pengirim) : '' });
+  const r = cariBayar_(orderId).r;
+  const rp = 'Rp' + Number(r[5]).toLocaleString('id-ID');
+  try {
+    MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, replyTo: email, name: 'Konsultasi Gizi murykuswari.com', subject: 'Cek pembayaran ' + dompet + ' ' + rp + ' – ' + String(r[3]).replace(/^'/, ''),
+      htmlBody: '<p><b>' + esc_(String(r[3]).replace(/^'/, '')) + '</b> (' + esc_(email) + ') menyatakan sudah membayar <b>' + rp + '</b> ke <b>' + esc_(dompet) + '</b> untuk ' + esc_(String(r[4]).replace(/^'/, '')) + '.</p>' +
+        (pengirim ? '<p>Akun pengirim: ' + esc_(pengirim) + '</p>' : '') + (bukti ? '<p>Bukti: <a href="' + bukti + '">' + bukti + '</a></p>' : '') +
+        '<p>Cocokkan nominal <b>' + rp + '</b> (3 digit terakhir = kode unik) di riwayat ' + esc_(dompet) + ' Anda, lalu klik <b>Konfirmasi lunas</b> di dashboard: https://murykuswari.com/dashboard.html</p>' });
+  } catch (e) { console.error(e); }
+  return { ok: true, status: 'dicek', pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+}
+
+/** Admin mengonfirmasi (lunas) atau menolak bukti pembayaran e-wallet. */
+function konsVerifikasi_(d) {
+  const admin = sesi_(d);
+  if (!admin) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  if (!isAdmin_(admin)) return { ok: false, pesan: 'Hanya pengelola.' };
+  const orderId = bersih_(d.orderId, 40);
+  const row = cariBayar_(orderId);
+  if (!row) return { ok: false, pesan: 'Tagihan tidak ditemukan.' };
+  if (String(row.r[7]).indexOf('dompet') !== 0) return { ok: false, pesan: 'Pembayaran online diverifikasi otomatis.' };
+  if (['menunggu', 'dicek'].indexOf(String(row.r[6])) < 0) return { ok: false, pesan: 'Tagihan ini sudah ' + row.r[6] + '.' };
+  const catatan = bersih_(d.catatan, 500);
+  if (d.terima === true) {
+    setBayar_(orderId, { 'Catatan verifikasi': aman_(catatan), 'Diverifikasi oleh': admin });
+    terapkanStatus_(orderId, { transaction_status: 'settlement', payment_type: String(row.r[7]), gross_amount: row.r[5], manual: true });
+  } else {
+    if (!catatan) return { ok: false, pesan: 'Tulis alasan penolakan untuk klien.' };
+    setBayar_(orderId, { 'Status': 'gagal', 'Catatan verifikasi': aman_(catatan), 'Diverifikasi oleh': admin });
+    const tid = String(row.r[13] || '');
+    const t = tid ? cariTanya_(tid) : null;
+    if (t && t.data.orderId === orderId) setTanya_(t.baris, { 'Order ID': '' });
+    const email = String(row.r[2]).replace(/^'/, '');
+    try {
+      MailApp.sendEmail({ to: email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: 'Pembayaran belum dapat dikonfirmasi',
+        htmlBody: '<p>Halo ' + esc_(String(row.r[3]).replace(/^'/, '')) + ',</p><p>Pembayaran Rp' + Number(row.r[5]).toLocaleString('id-ID') + ' (order ' + esc_(orderId) + ') belum dapat kami konfirmasi.</p><p><b>Alasan:</b> ' + esc_(catatan) + '</p><p>Silakan buka <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a> untuk membayar ulang atau membalas email ini bila Anda yakin sudah membayar.</p><p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
+    } catch (e) { console.error(e); }
+  }
+  return { ok: true, pembayaran: semuaBayar_(), permintaan: semuaTanya_() };
+}
+
+function setBayar_(orderId, nilai) {
+  const row = cariBayar_(orderId);
+  if (!row) return;
+  const sh = ss_().getSheetByName('Pembayaran');
+  Object.keys(nilai).forEach(function (k) { sh.getRange(row.baris, KOLOM_BAYAR.indexOf(k) + 1).setValue(nilai[k]); });
+  sh.getRange(row.baris, KOLOM_BAYAR.indexOf('Diperbarui') + 1).setValue(waktu_());
 }
 
 /* ---------- Permintaan konsultasi lanjutan (keputusan admin) ---------- */
@@ -837,7 +945,7 @@ function konsPutus_(d) {
     nilai = { 'Status': 'menunggu-bayar', 'Jenis': 'berbayar', 'Paket': namaPaket, 'Harga (Rp)': harga, 'Catatan admin': catatan };
     subjek = 'Konsultasi lanjutan: ' + namaPaket + ' – Rp' + harga.toLocaleString('id-ID');
     isi = '<p>Permintaan konsultasi Anda tentang <b>' + esc_(t.data.topik) + '</b> memerlukan pendampingan lanjutan: <b>' + esc_(namaPaket) + '</b>, biaya <b>Rp' + harga.toLocaleString('id-ID') + '</b>.</p>' +
-      (kunciMidtrans_() ? '<p>Masuk ke ' + KONS.SITUS + ' lalu klik <b>Bayar</b> pada permintaan Anda. Pembayaran (QRIS, transfer VA, e-wallet) diverifikasi otomatis.</p>' : '<p>Kami akan mengirim instruksi pembayaran melalui email/WhatsApp.</p>');
+      '<p>Masuk ke <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a> lalu klik <b>Bayar</b> pada permintaan Anda. Anda bisa membayar ke GoPay, DANA, atau LinkAja Dr. Mury dengan nominal yang tertera (termasuk 3 digit kode unik), lalu unggah bukti pembayaran.' + (kunciMidtrans_() ? ' Tersedia juga pembayaran online (QRIS, VA, e-wallet) yang diverifikasi otomatis.' : '') + '</p>';
   } else if (d.jenis === 'tolak') {
     nilai = { 'Status': 'ditolak', 'Jenis': 'ditolak', 'Catatan admin': catatan };
     subjek = 'Tentang permintaan konsultasi Anda';

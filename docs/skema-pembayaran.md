@@ -35,6 +35,24 @@ Aturan yang dijaga server:
 
 Validasi pembayaran berlapis: tanda tangan digital Midtrans, pengecekan ulang ke API resmi, dan pencocokan nominal. Notifikasi yang terkirim ulang tidak menggandakan email.
 
+## Bayar langsung ke GoPay / DANA / LinkAja (konfirmasi admin)
+
+Cara utama yang aktif tanpa Midtrans. Uang langsung masuk ke e-wallet Dr. Mury, dan setiap transaksi tercatat di tab **Pembayaran**.
+
+1. Admin memutuskan **berbayar** di dashboard.
+2. Klien membuka /konsultasi lalu klik **Bayar via GoPay / DANA / LinkAja**. Server membuat tagihan dengan **kode unik 3 digit** (contoh: Rp250.000 menjadi Rp250.437). Kode ini tidak dipakai tagihan lain yang masih terbuka.
+3. Klien mentransfer tepat sejumlah itu ke salah satu nomor, lalu klik **Saya sudah bayar**. Klien memilih dompet tujuan, menulis akun pengirim, dan mengunggah tangkapan layar bukti. Bukti disimpan di folder Drive klien.
+4. Admin menerima email "Cek pembayaran …". Kartu oranye juga muncul di dashboard › Pembayaran, dengan 3 digit terakhir disorot dan tautan bukti.
+5. Admin mencocokkan nominal di riwayat aplikasi e-wallet, lalu:
+   - **Konfirmasi lunas**: pembayaran menjadi `lunas`, permintaan menjadi `lunas` (siap dijawab), dan email terkirim ke klien serta admin.
+   - **Tolak** (wajib dengan alasan): pembayaran menjadi `gagal`, klien menerima email alasan dan bisa membayar ulang.
+
+Tracker di dashboard: total diterima, total bulan ini, total per dompet, jumlah yang perlu dikonfirmasi, tabel lengkap dengan bukti, dan tombol **Unduh rekap pembayaran (CSV)**.
+
+**Mengatur nomor dompet:** isi `dompet` di `config.js` (nomor HP dan nama pemilik akun). Dompet dengan nomor kosong tidak ditampilkan. Gambar QRIS opsional: simpan misalnya di `assets/img/qris.jpg` lalu isi `qris: "assets/img/qris.jpg"`. Jika Midtrans juga aktif, klien melihat dua tombol.
+
+Status pembayaran e-wallet: `menunggu` → `dicek` (klien mengirim bukti) → `lunas` atau `gagal`. Kolom baru di tab Pembayaran: Bukti, Catatan verifikasi, Diverifikasi oleh.
+
 ## Paket
 
 Diatur di `PAKET` pada `apps-script/Konsultasi.gs` dan muncul sebagai **pilihan cepat** di formulir keputusan admin (admin tetap bisa menetapkan harga lain). Harga saat ini adalah **contoh** dan wajib dikonfirmasi pemilik:

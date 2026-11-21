@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ["Peserta", P.filter((p) => p.peranLabel !== "Pelatih" && p.peranLabel !== "Ahli gizi").length, "Atlet & klien terdaftar", "k1"],
       ["Konsultasi", semuaK.length, "Total asesmen tersimpan", "k2"],
       ["30 hari terakhir", semuaK.filter((r) => new Date(r.tanggal).getTime() >= t30).length, "Asesmen baru", "k3"],
-      ["Perlu tindakan", st.tanya.filter((t) => ["menunggu-keputusan", "gratis", "lunas"].includes(t.status)).length, `${st.tanya.filter((t) => t.status === "menunggu-keputusan").length} perlu keputusan · ${P.filter((p) => p.peranLabel === "Pelatih" || p.peranLabel === "Ahli gizi").length} praktisi`, "k4"],
+      ["Perlu tindakan", st.tanya.filter((t) => ["menunggu-keputusan", "gratis", "lunas"].includes(t.status)).length + st.bayar.filter((b) => b.status === "dicek").length, `${st.tanya.filter((t) => t.status === "menunggu-keputusan").length} perlu keputusan · ${st.bayar.filter((b) => b.status === "dicek").length} bayar perlu dicek · ${P.filter((p) => p.peranLabel === "Pelatih" || p.peranLabel === "Ahli gizi").length} praktisi`, "k4"],
       ["Berisiko", P.filter((p) => p.risiko).length, "EA < 30 atau ≥ 2 tanda REDs", "k5"],
       ["Pendapatan (Rp)", st.bayar.filter((b) => b.status === "lunas").reduce((a, b) => a + b.jumlah, 0), `${st.bayar.filter((b) => b.status === "lunas").length} pembayaran lunas · ${semuaK.filter((r) => String(r.tanggal).slice(0, 7) === bulanIni).length} konsultasi bulan ini`, "k6"]
     ];
@@ -301,12 +301,65 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(a); a.click(); a.remove();
   });
 
-  /* ---------- Pembayaran ---------- */
+  /* ---------- Pembayaran (Midtrans otomatis + e-wallet dikonfirmasi admin) ---------- */
+  const isDompet = (b) => String(b.metode).indexOf("dompet") === 0;
+  const namaMetode = (b) => isDompet(b) ? (String(b.metode).split(":")[1] || "E-wallet (belum dipilih)") : (b.metode || "–");
+  const perluVerif = () => st.bayar.filter((b) => isDompet(b) && (b.status === "dicek" || b.status === "menunggu"));
   function renderBayar() {
     const L = st.bayar.slice().sort((a, b) => String(b.dibuat).localeCompare(String(a.dibuat)));
-    const chip = { lunas: "db-paid", menunggu: "", kedaluwarsa: "db-risk", gagal: "db-risk", dikembalikan: "db-risk" };
-    $("d-bayar").innerHTML = L.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dibuat</th><th>Nama</th><th>Paket</th><th class="n">Jumlah</th><th>Status</th><th>Metode</th><th>Order ID</th></tr></thead><tbody>${L.slice(0, 50).map((b) => `<tr><td>${esc(String(b.dibuat).slice(0, 16))}</td><td>${esc(b.nama)}<br><small class="note">${esc(b.email)}</small></td><td>${esc(b.paket)}</td><td class="n">Rp${f0(b.jumlah)}</td><td><span class="db-chip ${chip[b.status] || ""}">${esc(b.status)}</span></td><td>${esc(b.metode || "–")}</td><td><small>${esc(b.orderId)}</small></td></tr>`).join("")}</tbody></table></div>` : '<p class="note">Belum ada pembayaran. Pembayaran online aktif setelah kunci Midtrans dipasang (docs/skema-pembayaran.md).</p>';
+    const chip = { lunas: "db-paid", menunggu: "", dicek: "db-risk", kedaluwarsa: "db-risk", gagal: "db-risk", dikembalikan: "db-risk" };
+    const lunas = L.filter((b) => b.status === "lunas"), bln = new Date().toISOString().slice(0, 7);
+    const perDompet = {};
+    lunas.forEach((b) => { const n = namaMetode(b); perDompet[n] = (perDompet[n] || 0) + b.jumlah; });
+    const V = perluVerif().sort((a, b) => (b.status === "dicek") - (a.status === "dicek"));
+    const ringkas = `<div class="db-bsum">
+      <div><strong>Rp${f0(lunas.reduce((a, b) => a + b.jumlah, 0))}</strong><span>Total diterima · ${lunas.length} transaksi</span></div>
+      <div><strong>Rp${f0(lunas.filter((b) => String(b.dibayar).slice(0, 7) === bln).reduce((a, b) => a + b.jumlah, 0))}</strong><span>Bulan ini</span></div>
+      ${Object.keys(perDompet).map((n) => `<div><strong>Rp${f0(perDompet[n])}</strong><span>${esc(n)}</span></div>`).join("")}
+      <div class="${V.some((b) => b.status === "dicek") ? "warn" : ""}"><strong>${V.filter((b) => b.status === "dicek").length}</strong><span>Perlu dikonfirmasi</span></div>
+    </div>`;
+    const kartu = V.length ? `<h4 style="margin:0 0 8px">Cocokkan di aplikasi e-wallet Anda, lalu konfirmasi</h4><div class="db-verif">${V.map((b) => {
+      const s = String(Math.round(b.jumlah));
+      return `<div class="db-vc" data-order="${esc(b.orderId)}">
+        <div><div class="rp">Rp${f0(Math.floor(b.jumlah / 1000))}.<em>${s.slice(-3)}</em></div>
+          <strong>${esc(b.nama)}</strong> <small class="note">${esc(b.email)}</small><br>
+          <small>${esc(b.paket)} · ke <b>${esc(namaMetode(b))}</b>${b.info ? " · " + esc(b.info) : ""} · ${esc(String(b.dibuat).slice(0, 16))}</small></div>
+        <div><span class="db-chip ${b.status === "dicek" ? "db-risk" : ""}">${b.status === "dicek" ? "Klien sudah bayar" : "Belum ada konfirmasi klien"}</span>${b.bukti ? `<br><a href="${esc(b.bukti)}" target="_blank" rel="noopener">Lihat bukti ↗</a>` : ""}</div>
+        <div class="db-vc-act"><input class="db-vcat" placeholder="Catatan (wajib bila menolak, mis. nominal tidak ditemukan)">
+          <button type="button" class="btn btn-primary pg-sm" data-verif="1">Konfirmasi lunas</button>
+          <button type="button" class="btn btn-ghost pg-sm" data-verif="0">Tolak</button></div>
+      </div>`;
+    }).join("")}</div>` : "";
+    const tabel = L.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dibuat</th><th>Nama</th><th>Paket</th><th class="n">Jumlah</th><th>Status</th><th>Metode</th><th>Bukti</th><th>Order ID</th></tr></thead><tbody>${L.slice(0, 80).map((b) => `<tr><td>${esc(String(b.dibuat).slice(0, 16))}</td><td>${esc(b.nama)}<br><small class="note">${esc(b.email)}</small></td><td>${esc(b.paket)}</td><td class="n">Rp${f0(b.jumlah)}</td><td><span class="db-chip ${chip[b.status] || ""}">${esc(b.status === "dicek" ? "perlu konfirmasi" : b.status)}</span>${b.catatanVerifikasi ? `<br><small class="note">${esc(b.catatanVerifikasi)}</small>` : ""}</td><td>${esc(namaMetode(b))}</td><td>${b.bukti ? `<a href="${esc(b.bukti)}" target="_blank" rel="noopener">Lihat</a>` : "–"}</td><td><small>${esc(b.orderId)}</small></td></tr>`).join("")}</tbody></table></div>
+      <button type="button" class="btn btn-ghost pg-sm" id="d-bayar-csv" style="margin-top:10px">Unduh rekap pembayaran (CSV)</button>`
+      : '<p class="note">Belum ada pembayaran. Klien membayar ke e-wallet Anda (nomor di config.js → dompet) setelah Anda menetapkan "berbayar".</p>';
+    $("d-bayar").innerHTML = ringkas + kartu + tabel;
   }
+  $("d-bayar").addEventListener("click", async (e) => {
+    if (e.target.id === "d-bayar-csv") {
+      const rows = [["Dibuat", "Dibayar", "Nama", "Email", "Paket", "Jumlah (Rp)", "Status", "Metode", "Pengirim", "Bukti", "Catatan verifikasi", "Order ID"]];
+      st.bayar.forEach((b) => rows.push([b.dibuat, b.dibayar, b.nama, b.email, b.paket, b.jumlah, b.status, namaMetode(b), b.info, b.bukti, b.catatanVerifikasi, b.orderId]));
+      const csv = rows.map((r) => r.map((v) => { const x = String(v ?? ""); return /[",\n;]/.test(x) || /^[=+\-@]/.test(x) ? '"' + x.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""') + '"' : x; }).join(",")).join("\n");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+      a.download = `pembayaran-konsultasi-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+      return;
+    }
+    const v = e.target.closest("[data-verif]");
+    if (!v) return;
+    const box = v.closest(".db-vc"), terima = v.dataset.verif === "1", catatan = box.querySelector(".db-vcat").value.trim();
+    if (!terima && !catatan) { MK.toast("Tulis alasan penolakan untuk klien"); box.querySelector(".db-vcat").focus(); return; }
+    if (terima && !confirm("Pastikan nominal sudah masuk ke e-wallet Anda. Konfirmasi lunas?")) return;
+    box.querySelectorAll("button").forEach((x) => (x.disabled = true));
+    try {
+      const j = await api({ aksi: "kons-verifikasi", token: st.token, orderId: box.dataset.order, terima, catatan });
+      if (!j.ok) { MK.toast(j.pesan || "Gagal menyimpan"); return; }
+      st.bayar = j.pembayaran || st.bayar; st.tanya = j.permintaan || st.tanya;
+      renderBayar(); renderTanya(); renderKpi();
+      MK.toast(terima ? "Lunas. Klien menerima email; permintaan siap dijawab." : "Ditolak. Klien menerima email alasan.");
+    } catch (er) { MK.toast("Layanan tidak bisa dihubungi"); } finally { box.querySelectorAll("button").forEach((x) => (x.disabled = false)); }
+  });
 
   /* ---------- Permintaan konsultasi: keputusan admin ---------- */
   const rp = (n) => "Rp" + f0(n);
@@ -325,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <select class="db-paket">${opsi}<option value="">Harga lain…</option></select>
         <input class="db-nama" placeholder="Nama paket" value="${esc(t.paket || (st.paket[0] || {}).nama || "Konsultasi lanjutan")}">
         <input class="db-rp" type="number" inputmode="numeric" min="10000" step="5000" placeholder="Harga (Rp)" value="${t.harga || (st.paket[0] || {}).harga || ""}">
-        ${st.bayarAktif ? "" : '<small class="note">Midtrans belum aktif: klien akan diminta menunggu instruksi bayar via email.</small>'}
+        <small class="note">Klien membayar ke e-wallet Anda dengan kode unik, lalu mengunggah bukti. Konfirmasi di bagian Pembayaran.</small>
       </div>
       <textarea class="db-cat" rows="2" placeholder="Catatan untuk klien (alasan, saran, atau apa yang didapat)">${esc(t.catatan || "")}</textarea>
       <button type="button" class="btn btn-primary pg-sm db-simpan">Simpan keputusan & kirim email</button>
@@ -341,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="db-tq-h"><span>${peserta ? `<button type="button" class="dl-link" data-k="${esc(peserta.kunci)}">${esc(t.nama)}</button>` : esc(t.nama)} <small class="note">· ${esc(t.email)} · ${esc(String(t.dibuat).slice(0, 16))}</small></span><span class="db-chip ${l[1]}">${l[0]}</span></div>
         <strong>${esc(t.topik)}</strong>
         <p class="db-tq-isi">${esc(t.pertanyaan)}</p>
-        ${t.status === "menunggu-bayar" ? `<p class="note">Ditetapkan berbayar: ${esc(t.paket)} · ${rp(t.harga)}. Masih bisa diubah sebelum klien membayar.</p>` : ""}
+        ${t.status === "menunggu-bayar" ? `<p class="note">Ditetapkan berbayar: ${esc(t.paket)} · ${rp(t.harga)}. Masih bisa diubah sebelum klien membayar.${st.bayar.some((b) => b.orderId === t.orderId && b.status === "dicek") ? ' <b style="color:var(--orange)">Klien sudah mengirim bukti bayar: konfirmasi di bagian Pembayaran.</b>' : ""}</p>` : ""}
         ${["menunggu-keputusan", "menunggu-bayar"].includes(t.status) ? formPutus(t) : ""}
         ${["gratis", "lunas", "dijawab"].includes(t.status) ? `<div class="db-jawab" data-id="${esc(t.id)}"><textarea rows="5" class="db-jwb" placeholder="Tulis jawaban/rekomendasi untuk klien…">${esc(t.jawaban || "")}</textarea><button type="button" class="btn btn-primary pg-sm db-kirim">${t.status === "dijawab" ? "Perbarui jawaban" : "Kirim jawaban"}</button>${t.dijawab ? `<small class="note"> Dijawab ${esc(String(t.dijawab).slice(0, 16))}</small>` : ""}</div>` : ""}
         ${t.status === "ditolak" && t.catatan ? `<p class="note">Catatan: ${esc(t.catatan)}</p>` : ""}
