@@ -41,9 +41,10 @@ window.SITE = {
   // Isi nomor HP terdaftar dan nama pemilik akun. Dompet dengan nomor kosong tidak ditampilkan.
   // qris: (opsional) path gambar QRIS, mis. "assets/img/qris.jpg" — klien bisa memindai dari aplikasi apa pun.
   dompet: [
-    { nama: "GoPay", nomor: "", atasNama: "" },
-    { nama: "DANA", nomor: "", atasNama: "" },
-    { nama: "LinkAja", nomor: "", atasNama: "" }
+    { nama: "GoPay", nomor: "0811-8432-050", atasNama: "" },
+    { nama: "DANA", nomor: "0811-8432-050", atasNama: "" },
+    { nama: "OVO", nomor: "0811-8432-050", atasNama: "" },
+    { nama: "LinkAja", nomor: "0811-8432-050", atasNama: "" }
   ],
   qris: "",
 
