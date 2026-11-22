@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026r">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026s">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -233,14 +233,14 @@
     </section>
 
     <!-- CV BAND -->
-    <section style="padding-top:0" id="cv">
+    <section id="cv">
       <div class="wrap">
         <div class="cv-band reveal">
-          <div style="position:relative;z-index:1">
-            <span class="eyebrow" style="color:#ffb98f">Profil Lengkap</span>
+          <div class="cv-teks">
+            <span class="eyebrow">Profil Lengkap</span>
             <h2>Profil &amp; Karya Ilmiah</h2>
-            <p>CV lengkap dan daftar 150+ publikasi.</p>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <p>Satu dokumen ringkas untuk undangan narasumber, kerja sama riset, dan pendampingan atlet: pendidikan, jabatan, buku, penghargaan, dan daftar publikasi.</p>
+            <div class="cv-aksi">
               <a class="btn btn-primary" data-cv href="#">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
                 Unduh Profil (PDF)
@@ -248,12 +248,13 @@
               <a class="btn btn-ghost" href="publikasi.html">Daftar karya ilmiah</a>
             </div>
           </div>
-          <ul>
-            <li>Pendidikan S1–S3 dan riwayat jabatan</li>
-            <li>Penulis buku gizi olahraga dan kebugaran</li>
-            <li>Penelitian terbaru dan 150+ publikasi</li>
-            <li>Penghargaan nasional dan internasional</li>
-          </ul>
+          <div class="cv-panel">
+            <div class="cv-angka" id="cv-angka"></div>
+            <a class="cv-sumber" href="https://scholar.google.com/citations?user=Z8e0i-0AAAAJ&amp;hl=en" target="_blank" rel="noopener">
+              <span id="cv-sumber">Google Scholar</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -337,6 +338,16 @@
         <div><strong>${(window.PEMBICARA || []).length}</strong><span>kegiatan pembicara</span></div>`;
       const intl = (window.PEMBICARA || []).filter((r) => r[2] === "I").length;
       if (intl) document.getElementById("hc-intl").textContent = intl + " forum dunia";
+
+      const cvAngka = document.getElementById("cv-angka");
+      if (cvAngka) {
+        cvAngka.innerHTML = `
+          <div><strong>${st.sitasi.toLocaleString("id-ID")}</strong><span>sitasi Google Scholar</span></div>
+          <div><strong>${st.hIndex}</strong><span>h-index</span></div>
+          <div><strong>150+</strong><span>publikasi ilmiah</span></div>
+          <div><strong>${(window.BUKU || []).filter((b) => !/^Modul/.test(b.judul)).length}</strong><span>buku rujukan</span></div>`;
+        document.getElementById("cv-sumber").textContent = "Sitasi dan h-index: Google Scholar, " + st.diperbarui;
+      }
 
       document.getElementById("books").innerHTML = MK.shelfHtml(window.BUKU || []);
 
