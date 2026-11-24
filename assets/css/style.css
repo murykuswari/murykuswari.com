@@ -1100,3 +1100,17 @@ section[id] { scroll-margin-top: 72px; }
 .hero-unduh svg { width: 18px; height: 18px; }
 .hero-unduh:hover { color: var(--blue); text-decoration: underline; }
 @media (max-width: 560px) { .hero-pilih { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Form konsultasi: persetujuan & tombol kirim ---------- */
+.consent { display: flex; flex-direction: column; gap: 12px; margin: 4px 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.consent .check { display: flex; gap: 12px; align-items: flex-start; margin: 0; font-weight: 600; font-size: .92rem; line-height: 1.45; cursor: pointer; }
+.consent .check input { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--orange); cursor: pointer; }
+.consent .err:empty { display: none; }
+.send-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.send-actions .btn { width: 100%; }
+.send-actions #c-wa[hidden] + #c-mail { grid-column: 1 / -1; }
+.btn-copy { grid-column: 1 / -1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 1.5px dashed var(--line); border-radius: 999px; background: transparent; color: var(--ink-2); font: 600 .88rem/1 var(--font); cursor: pointer; transition: background .15s ease, color .15s ease; }
+.btn-copy:hover { background: var(--surface-2); color: var(--ink); }
+.btn-copy svg { width: 16px; height: 16px; flex: none; }
+.form-note { margin: 14px 0 0; text-align: center; line-height: 1.5; }
+@media (max-width: 480px) { .send-actions { grid-template-columns: 1fr; } }
