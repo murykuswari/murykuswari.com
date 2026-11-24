@@ -16,7 +16,7 @@ window.SITE = {
 
   // Nomor WhatsApp untuk konsultasi, format internasional tanpa "+" atau spasi.
   // Contoh: "6281234567890". Jika kosong, tombol konsultasi memakai email.
-  whatsapp: "628118432050",
+  whatsapp: "6282245039450",
 
   // (Opsional) Link Google Form konsultasi. Jika diisi, muncul tombol "Isi Formulir".
   formKonsultasi: "",
