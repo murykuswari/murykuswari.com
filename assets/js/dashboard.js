@@ -253,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ${p.email ? `<a class="btn btn-ghost pg-sm" href="mailto:${esc(p.email)}">Email</a>` : ""}
           ${waLink ? `<a class="btn btn-primary pg-sm" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
           ${p.folder ? `<a class="btn btn-ghost pg-sm" href="${esc(p.folder)}" target="_blank" rel="noopener">Folder Drive</a>` : ""}
+          <button type="button" class="btn btn-ghost pg-sm" id="dm-kartu">Lihat &amp; unduh profil (PNG/JPEG)</button>
           <span class="note">${esc(p.email || "")}${p.asal ? " · " + esc(p.asal) : ""}${p.profesi ? " · " + esc(p.profesi) : ""} · terdaftar ${esc(String(p.terdaftar || "").slice(0, 10))}</span>
         </div>
         ${p.risiko ? `<div class="callout bad">Perlu perhatian: ${lr.ea != null && lr.ea < 30 ? "ketersediaan energi " + f1(lr.ea) + " kkal/kg FFM (< 30)" : ""}${(last.reds || []).length ? " · tanda REDs: " + esc(last.reds.join(", ")) : ""}</div>` : ""}
@@ -272,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("d-modal").hidden = false;
     document.body.style.overflow = "hidden";
     $("dm-tutup").onclick = tutup;
+    $("dm-kartu").onclick = () => kartuPeserta(p);
     if (p.R.length && Chart) {
       const lab = p.R.map((r) => String(r.tanggal).slice(2));
       chart("dm-ch1", { type: "line", data: { labels: lab, datasets: [
@@ -285,6 +287,25 @@ document.addEventListener("DOMContentLoaded", () => {
         { label: "Lemak (kkal)", data: p.R.map((r) => ((r.ringkas || {}).lemak || 0) * 9), backgroundColor: "#118ab2", borderRadius: 6, stack: "e" }
       ] }, options: { ...opsiDasar, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } } });
     }
+  }
+  async function kartuPeserta(p) {
+    if (!window.MKKartu) { window.MK.toast("Muat ulang halaman lalu coba lagi"); return; }
+    if (p.adaFoto && !st.foto[p.kunci]) {
+      try {
+        const j = await api(p.jenis === "klien-praktisi" ? { aksi: "kons-foto-ambil", token: st.token, klienId: p.id, email: p.praktisiEmail } : { aksi: "kons-foto-ambil", token: st.token, email: p.email });
+        if (j.ok && j.foto) st.foto[p.kunci] = j.foto;
+      } catch (e) { /* tanpa foto */ }
+    }
+    const lr = p.lr || {}, last = p.last || {};
+    window.MKKartu.tampilkan({
+      nama: p.nama,
+      eyebrow: p.jenis === "klien-praktisi" ? "Program Gizi Olahraga · via " + (p.praktisiNama || "praktisi") : "Program Gizi Olahraga",
+      sub: [p.caborN, p.caborLain, p.usia != null ? p.usia + " tahun" : "", p.level].filter(Boolean).join(" · "),
+      foto: st.foto[p.kunci] || "",
+      tiles: [["BB", last.bb ? f1(last.bb) + " kg" : "–"], ["Lemak", lr.pct != null ? f1(lr.pct) + "%" : "–"], ["FFM", lr.ffm != null ? f1(lr.ffm) + " kg" : "–"], ["Konsultasi", String(p.R.length)]],
+      tilesPrivat: [["Konsultasi", String(p.R.length)], ["Cabang", String(p.caborN || "-").split(" ")[0]]],
+      seri: p.R.map((r) => ({ t: String(r.tanggal || ""), bb: Number(r.bb) || null }))
+    });
   }
   function tutup() { $("d-modal").hidden = true; document.body.style.overflow = ""; }
   $("d-modal").addEventListener("click", (e) => { if (e.target.id === "d-modal") tutup(); });

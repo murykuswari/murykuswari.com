@@ -46,6 +46,11 @@ window.SITE = {
     { nama: "OVO", nomor: "0811-8432-050", atasNama: "" },
     { nama: "LinkAja", nomor: "0811-8432-050", atasNama: "" }
   ],
+  // (opsional) Rekening bank untuk transfer, mis. { bank: "BCA", nomor: "1234567890", atasNama: "Mury Kuswari" }.
+  // Samakan dengan PEMBAYARAN.rekening di apps-script/Konsultasi.gs (dipakai di email instruksi pembayaran).
+  rekening: [
+    { bank: "", nomor: "", atasNama: "" }
+  ],
   qris: "",
 
   // Statistik Google Scholar (perbarui berkala, mis. tiap semester).

@@ -41,6 +41,26 @@ const KOLOM_BAYAR = ['Order ID', 'Dibuat', 'Email', 'Nama', 'Paket', 'Jumlah (Rp
 // Pembayaran langsung ke e-wallet pemilik (GoPay/DANA/LinkAja). Nomor dompet diatur di config.js (SITE.dompet).
 // Status: menunggu -> dicek (klien mengunggah bukti) -> lunas (admin konfirmasi) | gagal (admin tolak bukti).
 const DOMPET_SAH = ['GoPay', 'DANA', 'LinkAja', 'OVO', 'ShopeePay', 'QRIS', 'Transfer bank'];
+
+/**
+ * Tujuan pembayaran yang dicantumkan di email instruksi pembayaran (dikirim saat admin memilih "berbayar").
+ * Samakan dengan SITE.dompet / SITE.rekening / SITE.qris di config.js. Baris dengan nomor kosong tidak ditampilkan.
+ */
+const PEMBAYARAN = {
+  dompet: [
+    { nama: 'GoPay', nomor: '0811-8432-050', atasNama: '' },
+    { nama: 'DANA', nomor: '0811-8432-050', atasNama: '' },
+    { nama: 'OVO', nomor: '0811-8432-050', atasNama: '' },
+    { nama: 'LinkAja', nomor: '0811-8432-050', atasNama: '' }
+  ],
+  // Transfer bank, mis. { bank: 'BCA', nomor: '1234567890', atasNama: 'Mury Kuswari' }
+  rekening: [
+    { bank: '', nomor: '', atasNama: '' }
+  ],
+  qris: '',           // URL gambar QRIS, mis. 'https://murykuswari.com/assets/img/qris.jpg'
+  batasJam: 72,       // batas waktu pembayaran yang dicantumkan di email
+  whatsapp: '6282245039450'
+};
 // Permintaan konsultasi lanjutan: admin memutuskan gratis / berbayar / ditolak sebelum menjawab.
 const KOLOM_TANYA = ['ID', 'Dibuat', 'Email', 'Nama', 'ID klien praktisi', 'Topik', 'Pertanyaan', 'Status', 'Jenis', 'Paket', 'Harga (Rp)', 'Catatan admin', 'Order ID', 'Jawaban', 'Dijawab', 'Diperbarui'];
 const TOPIK = ['Performa & persiapan kompetisi', 'Komposisi tubuh (turun lemak / naik otot)', 'Membuat berat badan kelas tanding', 'Menu & pola makan harian', 'Suplemen', 'Cedera, pemulihan, atau keluhan kesehatan', 'Program untuk tim / klien', 'Lainnya'];
@@ -770,20 +790,15 @@ function semuaBayar_() {
 
 /* ---------- Pembayaran langsung ke e-wallet pemilik (verifikasi oleh admin) ---------- */
 
-/** Klien memilih bayar via e-wallet: buat tagihan dengan kode unik 3 digit agar mudah dicocokkan di riwayat dompet. */
-function konsBayarDompet_(d) {
-  const email = sesi_(d);
-  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
-  const t = cariTanya_(bersih_(d.permintaanId, 40));
-  if (!t || t.data.email !== email) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
-  if (t.data.status !== 'menunggu-bayar' || !(t.data.harga > 0)) return { ok: false, pesan: 'Permintaan ini tidak memerlukan pembayaran saat ini.' };
+/** Buat (atau pakai ulang) tagihan transfer dengan kode unik 3 digit untuk satu permintaan berbayar. */
+function buatTagihanDompet_(t) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     const semua = semuaBayar_();
-    // Tagihan e-wallet yang masih terbuka untuk permintaan ini dipakai ulang (harga belum berubah).
+    // Tagihan transfer yang masih terbuka untuk permintaan ini dipakai ulang bila harga belum berubah.
     const ada = semua.filter(function (b) { return b.permintaanId === t.data.id && b.metode.indexOf('dompet') === 0 && (b.status === 'menunggu' || b.status === 'dicek'); })[0];
-    if (ada && ada.jumlah - t.data.harga >= 101 && ada.jumlah - t.data.harga <= 999) return { ok: true, orderId: ada.orderId, jumlah: ada.jumlah, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+    if (ada && ada.jumlah - t.data.harga >= 101 && ada.jumlah - t.data.harga <= 999) return { orderId: ada.orderId, jumlah: ada.jumlah };
     if (ada) setBayar_(ada.orderId, { 'Status': 'gagal', 'Catatan verifikasi': 'Diganti tagihan baru (harga berubah).' });
     const dipakai = {};
     semua.forEach(function (b) { if (b.status === 'menunggu' || b.status === 'dicek') dipakai[b.jumlah] = 1; });
@@ -791,10 +806,70 @@ function konsBayarDompet_(d) {
     for (let i = 0; i < 50 && !jumlah; i++) { const c = t.data.harga + 101 + Math.floor(Math.random() * 899); if (!dipakai[c]) jumlah = c; }
     if (!jumlah) jumlah = t.data.harga + 101 + Math.floor(Math.random() * 899);
     const orderId = 'MK-' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyMMddHHmmss') + '-' + Utilities.getUuid().slice(0, 4).toUpperCase();
-    tab_('Pembayaran', KOLOM_BAYAR).appendRow([orderId, waktu_(), aman_(email), aman_(t.data.nama), aman_((t.data.paket || 'Konsultasi lanjutan').slice(0, 80)), jumlah, 'menunggu', 'dompet', '', t.data.klienId, aman_(t.data.topik), '', waktu_(), t.data.id, '', '', '']);
+    tab_('Pembayaran', KOLOM_BAYAR).appendRow([orderId, waktu_(), aman_(t.data.email), aman_(t.data.nama), aman_((t.data.paket || 'Konsultasi lanjutan').slice(0, 80)), jumlah, 'menunggu', 'dompet', '', t.data.klienId, aman_(t.data.topik), '', waktu_(), t.data.id, '', '', '']);
     setTanya_(t.baris, { 'Order ID': orderId });
-    return { ok: true, orderId: orderId, jumlah: jumlah, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+    return { orderId: orderId, jumlah: jumlah };
   } finally { lock.releaseLock(); }
+}
+
+/** Batalkan tagihan transfer yang masih terbuka bila keputusan diubah menjadi gratis atau tolak. */
+function batalkanTagihanTerbuka_(t, alasan) {
+  semuaBayar_().forEach(function (b) {
+    if (b.permintaanId === t.data.id && b.metode.indexOf('dompet') === 0 && b.status === 'menunggu') setBayar_(b.orderId, { 'Status': 'gagal', 'Catatan verifikasi': alasan });
+  });
+}
+
+/** Klien memilih bayar via e-wallet/transfer: buat tagihan dengan kode unik 3 digit agar mudah dicocokkan. */
+function konsBayarDompet_(d) {
+  const email = sesi_(d);
+  if (!email) return { ok: false, ulang: true, pesan: 'Sesi berakhir. Silakan masuk lagi.' };
+  const t = cariTanya_(bersih_(d.permintaanId, 40));
+  if (!t || t.data.email !== email) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
+  if (t.data.status !== 'menunggu-bayar' || !(t.data.harga > 0)) return { ok: false, pesan: 'Permintaan ini tidak memerlukan pembayaran saat ini.' };
+  const tg = buatTagihanDompet_(t);
+  return { ok: true, orderId: tg.orderId, jumlah: tg.jumlah, pembayaran: daftarBayar_(email), permintaan: daftarTanya_(email) };
+}
+
+/** Email instruksi pembayaran lengkap: rincian tagihan, tujuan pembayaran, langkah konfirmasi. */
+function htmlInstruksiBayar_(t, paket, harga, tg, catatan) {
+  const rp = function (n) { return 'Rp' + Number(n).toLocaleString('id-ID'); };
+  const kode = tg.jumlah - harga;
+  const batas = Utilities.formatDate(new Date(Date.now() + PEMBAYARAN.batasJam * 3600 * 1000), 'Asia/Jakarta', "d MMMM yyyy, HH:mm 'WIB'");
+  const td = 'padding:10px 14px;border-bottom:1px solid #e3e7ec;font-size:14px;';
+  const baris = function (a, b, tebal) { return '<tr><td style="' + td + 'color:#55657a;">' + a + '</td><td style="' + td + 'text-align:right;' + (tebal ? 'font-weight:800;color:#003a63;font-size:18px;' : 'color:#1f2a37;') + '">' + b + '</td></tr>'; };
+  const tujuan = [];
+  PEMBAYARAN.dompet.filter(function (w) { return String(w.nomor || '').trim(); }).forEach(function (w) {
+    tujuan.push('<tr><td style="' + td + '"><b>' + esc_(w.nama) + '</b></td><td style="' + td + 'font-family:monospace;font-size:15px;">' + esc_(w.nomor) + '</td><td style="' + td + 'color:#55657a;">' + (w.atasNama ? 'a.n. ' + esc_(w.atasNama) : '') + '</td></tr>');
+  });
+  PEMBAYARAN.rekening.filter(function (b) { return String(b.nomor || '').trim(); }).forEach(function (b) {
+    tujuan.push('<tr><td style="' + td + '"><b>Transfer ' + esc_(b.bank) + '</b></td><td style="' + td + 'font-family:monospace;font-size:15px;">' + esc_(b.nomor) + '</td><td style="' + td + 'color:#55657a;">' + (b.atasNama ? 'a.n. ' + esc_(b.atasNama) : '') + '</td></tr>');
+  });
+  const wa = PEMBAYARAN.whatsapp ? 'https://wa.me/' + PEMBAYARAN.whatsapp + '?text=' + encodeURIComponent('Halo Dr. Mury, saya sudah membayar konsultasi lanjutan ' + paket + ' sebesar ' + rp(tg.jumlah) + ' (order ' + tg.orderId + '). Bukti transfer saya lampirkan.') : '';
+  const tombol = function (href, label, warna) { return '<a href="' + href + '" style="display:inline-block;background:' + warna + ';color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;margin:4px 6px 4px 0;font-size:14px;">' + label + '</a>'; };
+  return '<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2a37;max-width:620px;line-height:1.55;">' +
+    '<p>Halo ' + esc_(t.data.nama) + ',</p>' +
+    '<p>Terima kasih atas permintaan konsultasi Anda tentang <b>' + esc_(t.data.topik) + '</b>. Setelah saya telaah bersama profil dan riwayat program Anda, permintaan ini saya tangani melalui <b>' + esc_(paket) + '</b>.</p>' +
+    (catatan ? '<p style="background:#f4f8fc;border-left:4px solid #0070b8;padding:10px 14px;margin:14px 0;"><b>Catatan Dr. Mury:</b> ' + esc_(catatan) + '</p>' : '') +
+    '<h3 style="color:#003a63;margin:22px 0 8px;font-size:16px;">1. Rincian tagihan</h3>' +
+    '<table style="border-collapse:collapse;width:100%;border:1px solid #e3e7ec;border-radius:10px;">' +
+      baris('Layanan', esc_(paket)) + baris('Biaya konsultasi', rp(harga)) + baris('Kode unik verifikasi', '+' + rp(kode)) + baris('Total yang ditransfer', rp(tg.jumlah), true) +
+      baris('Nomor order', esc_(tg.orderId)) + baris('Bayar sebelum', batas) +
+    '</table>' +
+    '<p style="font-size:13px;color:#55657a;margin:8px 0 0;">Mohon transfer <b>tepat ' + rp(tg.jumlah) + '</b>. Tiga digit terakhir adalah kode unik agar pembayaran Anda langsung dikenali.</p>' +
+    '<h3 style="color:#003a63;margin:22px 0 8px;font-size:16px;">2. Tujuan pembayaran</h3>' +
+    (tujuan.length ? '<table style="border-collapse:collapse;width:100%;border:1px solid #e3e7ec;">' + tujuan.join('') + '</table>' : '<p>Nomor tujuan pembayaran akan dikirim terpisah oleh Dr. Mury.</p>') +
+    (PEMBAYARAN.qris ? '<p style="margin:12px 0 0;">Atau pindai QRIS berikut dengan aplikasi e-wallet/m-banking apa pun, lalu masukkan nominal ' + rp(tg.jumlah) + ':<br><img src="' + PEMBAYARAN.qris + '" alt="QRIS" width="220" style="margin-top:8px;border:1px solid #e3e7ec;border-radius:8px;"></p>' : '') +
+    (kunciMidtrans_() ? '<p style="margin:12px 0 0;">Tersedia juga pembayaran online (QRIS, virtual account, e-wallet) yang diverifikasi otomatis dari halaman konsultasi.</p>' : '') +
+    '<h3 style="color:#003a63;margin:22px 0 8px;font-size:16px;">3. Konfirmasi pembayaran</h3>' +
+    '<ol style="padding-left:20px;margin:0;">' +
+      '<li>Simpan tangkapan layar bukti transfer.</li>' +
+      '<li>Buka <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a>, masuk dengan email ini, lalu klik <b>Saya sudah bayar</b> pada permintaan Anda dan unggah bukti. Anda juga boleh <b>membalas email ini</b> dengan melampirkan bukti transfer' + (wa ? ' atau mengirimkannya lewat WhatsApp' : '') + '.</li>' +
+      '<li>Saya akan mencocokkan pembayaran (biasanya kurang dari 1×24 jam) dan mengirim email <b>Pembayaran diterima</b>, lalu konsultasi lanjutan Anda segera saya kerjakan.</li>' +
+    '</ol>' +
+    '<p style="margin:18px 0 6px;">' + tombol(KONS.SITUS, 'Konfirmasi & unggah bukti', '#f05828') + (wa ? tombol(wa, 'Kirim bukti via WhatsApp', '#25a244') : '') + '</p>' +
+    '<p style="font-size:13px;color:#55657a;">Bila tagihan melewati batas waktu, cukup balas email ini dan saya buatkan tagihan baru. Pembayaran hanya ke nomor di atas; saya tidak pernah meminta transfer ke nomor lain.</p>' +
+    '<p>Salam sehat dan bugar,<br><b>Assoc. Prof. Dr. Mury Kuswari, S.Pd., M.Si</b><br>Dosen Peneliti Gizi Olahraga &amp; Kebugaran · Universitas Esa Unggul<br><a href="https://murykuswari.com">murykuswari.com</a></p>' +
+  '</div>';
 }
 
 /** Klien menyatakan sudah membayar: pilih dompet tujuan dan (sebaiknya) unggah bukti. Admin lalu mengonfirmasi. */
@@ -932,7 +1007,7 @@ function konsPutus_(d) {
   if (!t) return { ok: false, pesan: 'Permintaan tidak ditemukan.' };
   if (['menunggu-keputusan', 'menunggu-bayar'].indexOf(t.data.status) < 0) return { ok: false, pesan: 'Permintaan ini sudah diproses (' + t.data.status + ').' };
   const catatan = bersih_(d.catatan, 1500);
-  let nilai, subjek, isi;
+  let nilai, subjek, isi, berbayar = null;
   if (d.jenis === 'gratis') {
     nilai = { 'Status': 'gratis', 'Jenis': 'gratis', 'Paket': '', 'Harga (Rp)': 0, 'Catatan admin': catatan };
     subjek = 'Konsultasi Anda diterima (gratis)';
@@ -943,20 +1018,27 @@ function konsPutus_(d) {
     if (!(harga >= 10000 && harga <= 100000000)) return { ok: false, pesan: 'Isi harga yang valid (minimal Rp10.000).' };
     const namaPaket = bersih_(d.namaPaket || (pk && pk.nama) || 'Konsultasi lanjutan', 80);
     nilai = { 'Status': 'menunggu-bayar', 'Jenis': 'berbayar', 'Paket': namaPaket, 'Harga (Rp)': harga, 'Catatan admin': catatan };
-    subjek = 'Konsultasi lanjutan: ' + namaPaket + ' – Rp' + harga.toLocaleString('id-ID');
-    isi = '<p>Permintaan konsultasi Anda tentang <b>' + esc_(t.data.topik) + '</b> memerlukan pendampingan lanjutan: <b>' + esc_(namaPaket) + '</b>, biaya <b>Rp' + harga.toLocaleString('id-ID') + '</b>.</p>' +
-      '<p>Masuk ke <a href="' + KONS.SITUS + '">' + KONS.SITUS + '</a> lalu klik <b>Bayar</b> pada permintaan Anda. Anda bisa membayar ke GoPay, DANA, atau LinkAja Dr. Mury dengan nominal yang tertera (termasuk 3 digit kode unik), lalu unggah bukti pembayaran.' + (kunciMidtrans_() ? ' Tersedia juga pembayaran online (QRIS, VA, e-wallet) yang diverifikasi otomatis.' : '') + '</p>';
+    subjek = 'Konfirmasi konsultasi lanjutan & instruksi pembayaran: ' + namaPaket;
+    berbayar = { paket: namaPaket, harga: harga };
   } else if (d.jenis === 'tolak') {
     nilai = { 'Status': 'ditolak', 'Jenis': 'ditolak', 'Catatan admin': catatan };
     subjek = 'Tentang permintaan konsultasi Anda';
     isi = '<p>Terima kasih atas permintaan konsultasi tentang <b>' + esc_(t.data.topik) + '</b>. Saat ini permintaan tersebut belum dapat kami layani.</p>';
   } else return { ok: false, pesan: 'Pilih gratis, berbayar, atau tolak.' };
   setTanya_(t.baris, nilai);
+  let htmlBody;
+  if (berbayar) {
+    const t2 = cariTanya_(t.data.id);
+    const tg = buatTagihanDompet_(t2);
+    htmlBody = htmlInstruksiBayar_(t2, berbayar.paket, berbayar.harga, tg, catatan);
+  } else {
+    batalkanTagihanTerbuka_(t, 'Keputusan diubah menjadi ' + d.jenis + '.');
+    htmlBody = '<p>Halo ' + esc_(t.data.nama) + ',</p>' + isi + (catatan ? '<p><b>Catatan Dr. Mury:</b> ' + esc_(catatan) + '</p>' : '') + '<p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>';
+  }
   try {
-    MailApp.sendEmail({ to: t.data.email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: subjek,
-      htmlBody: '<p>Halo ' + esc_(t.data.nama) + ',</p>' + isi + (catatan ? '<p><b>Catatan Dr. Mury:</b> ' + esc_(catatan) + '</p>' : '') + '<p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
+    MailApp.sendEmail({ to: t.data.email, replyTo: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: subjek, htmlBody: htmlBody });
   } catch (e) { console.error(e); }
-  return { ok: true, permintaan: semuaTanya_() };
+  return { ok: true, permintaan: semuaTanya_(), pembayaran: semuaBayar_() };
 }
 
 /** Admin menjawab permintaan yang gratis atau sudah lunas. */
@@ -975,4 +1057,12 @@ function konsJawab_(d) {
       htmlBody: '<p>Halo ' + esc_(t.data.nama) + ',</p><p><b>Pertanyaan Anda:</b><br>' + esc_(t.data.pertanyaan) + '</p><p><b>Jawaban Dr. Mury:</b><br>' + esc_(jawaban).replace(/\n/g, '<br>') + '</p><p>Jawaban ini juga tersimpan di ' + KONS.SITUS + '.</p><p>Salam,<br>Assoc. Prof. Dr. Mury Kuswari</p>' });
   } catch (e) { console.error(e); }
   return { ok: true, permintaan: semuaTanya_() };
+}
+
+
+/** Jalankan dari editor untuk melihat contoh email instruksi pembayaran di inbox pemilik (tanpa membuat tagihan). */
+function ujiEmailInstruksiBayar() {
+  const t = { data: { id: 'UJI', nama: 'Klien Contoh', email: KONS.EMAIL_PEMILIK, topik: 'Komposisi tubuh (turun lemak / naik otot)' } };
+  const html = htmlInstruksiBayar_(t, 'Konsultasi lanjutan 1 sesi', 250000, { orderId: 'MK-UJI-0001', jumlah: 250437 }, 'Kita bahas pola makan saat shift malam dan target lemak 12 minggu.');
+  MailApp.sendEmail({ to: KONS.EMAIL_PEMILIK, name: 'Konsultasi Gizi murykuswari.com', subject: '[UJI] Konfirmasi konsultasi lanjutan & instruksi pembayaran', htmlBody: html });
 }

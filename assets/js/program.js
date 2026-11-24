@@ -633,7 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         ${!prakTanpaKlien && S.seri.filter((x) => x.bb).length >= 2 ? `<div class="pg-kartu-chart"><canvas id="k-chart" aria-label="Grafik perkembangan berat badan dan persen lemak"></canvas></div>` : ""}
       </div>
-      ${!prakTanpaKlien ? `<div class="pg-kartu-aksi"><label class="pg-cek-inline"><input type="checkbox" id="k-privat"> Sembunyikan angka tubuh di kartu</label><button type="button" class="btn btn-ghost pg-sm" id="k-unduh">Unduh kartu profil (PNG)</button></div>` : ""}`;
+      ${!prakTanpaKlien ? `<div class="pg-kartu-aksi"><button type="button" class="btn btn-ghost pg-sm" id="k-unduh">Lihat &amp; unduh kartu profil (PNG/JPEG)</button></div>` : ""}`;
     $("k-foto").onclick = () => $("foto-input").click();
     const u = $("k-unduh"); if (u) u.onclick = unduhKartu;
     const cv = $("k-chart");
@@ -696,63 +696,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Kartu 1080×1350 (rasio Instagram 4:5) untuk diunduh dan diposting.
-  async function unduhKartu() {
-    try { await document.fonts.ready; } catch (e) { /* lanjut dengan font cadangan */ }
-    const W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-    const x = cv.getContext("2d");
-    const font = (w, s) => `${w} ${s}px Outfit, "Segoe UI", sans-serif`;
-    const g = x.createLinearGradient(0, 0, W, H);
-    g.addColorStop(0, "#003a63"); g.addColorStop(.55, "#0070b8"); g.addColorStop(1, "#f05828");
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    [["#ffd166", 900, 160, 260, .35], ["#06d6a0", 120, 1180, 220, .3], ["#ef476f", 980, 1040, 160, .3], ["#ffffff", 140, 220, 120, .12]].forEach(([c, cx, cy, r, a]) => { x.globalAlpha = a; x.fillStyle = c; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); });
-    x.globalAlpha = 1;
-    x.fillStyle = "rgba(255,255,255,.85)"; x.font = font(700, 30); x.textAlign = "center";
-    x.fillText("PROGRAM GIZI OLAHRAGA", W / 2, 110);
-    const subj = subjek(), S = statSubjek(), privat = $("k-privat") && $("k-privat").checked;
-    const cx = W / 2, cy = 330, r = 170;
-    x.save(); x.beginPath(); x.arc(cx, cy, r + 14, 0, 7); x.fillStyle = "#fff"; x.fill(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.clip();
-    const src = fotoSubjek();
-    if (src) { const im = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }); if (im) x.drawImage(im, cx - r, cy - r, 2 * r, 2 * r); }
-    else { const gg = x.createLinearGradient(cx - r, cy - r, cx + r, cy + r); gg.addColorStop(0, "#ffd166"); gg.addColorStop(1, "#ef476f"); x.fillStyle = gg; x.fillRect(cx - r, cy - r, 2 * r, 2 * r); x.fillStyle = "#fff"; x.font = font(800, 120); x.textBaseline = "middle"; x.fillText(inisial(subj.nama), cx, cy + 6); x.textBaseline = "alphabetic"; }
-    x.restore();
-    x.fillStyle = "#fff"; x.font = font(800, 68);
-    let nama = subj.nama || ""; while (x.measureText(nama).width > W - 120 && nama.length > 4) nama = nama.slice(0, -2) + "…";
-    x.fillText(nama, W / 2, 610);
+  // Kartu 1080×1350 (rasio Instagram 4:5): pratinjau, unduh PNG/JPEG, bagikan (assets/js/kartu-profil.js).
+  function unduhKartu() {
+    if (!window.MKKartu) { MK.toast("Muat ulang halaman lalu coba lagi"); return; }
+    const subj = subjek(), S = statSubjek();
     const c = PG.CABOR_MAP[subj.cabor], usia = PG.usiaDari(subj.tglLahir);
-    x.font = font(500, 34); x.fillStyle = "rgba(255,255,255,.92)";
-    x.fillText([c ? c.n : subj.cabor, subj.caborLain, usia != null ? usia + " tahun" : ""].filter(Boolean).join(" · "), W / 2, 662);
-    const tiles = privat ? [["Konsultasi", String(S.n)], ["Cabang", c ? c.n.split(" ")[0] : "-"]] : [["BB", S.bb ? f1(S.bb) + " kg" : "–"], ["Lemak", S.pct != null ? f1(S.pct) + "%" : "–"], ["FFM", S.ffm != null ? f1(S.ffm) + " kg" : "–"], ["Konsultasi", String(S.n)]];
-    const warna = ["#ffd166", "#06d6a0", "#118ab2", "#ef476f"];
-    const tw = (W - 120 - (tiles.length - 1) * 24) / tiles.length;
-    tiles.forEach(([l, v], i) => {
-      const tx = 60 + i * (tw + 24), ty = 720;
-      x.fillStyle = "rgba(255,255,255,.14)"; rrect(x, tx, ty, tw, 150, 28); x.fill();
-      x.fillStyle = warna[i % 4]; rrect(x, tx, ty, 12, 150, 6); x.fill();
-      x.fillStyle = "#fff"; x.textAlign = "center"; x.font = font(800, tiles.length > 2 ? 46 : 58); x.fillText(v, tx + tw / 2 + 6, ty + 78);
-      x.font = font(600, 26); x.fillStyle = "rgba(255,255,255,.85)"; x.fillText(l.toUpperCase(), tx + tw / 2 + 6, ty + 122);
+    window.MKKartu.tampilkan({
+      nama: subj.nama || "Member",
+      eyebrow: "Program Gizi Olahraga",
+      sub: [c ? c.n : subj.cabor, subj.caborLain, usia != null ? usia + " tahun" : "", subj.level].filter(Boolean).join(" · "),
+      foto: fotoSubjek(),
+      tiles: [["BB", S.bb ? f1(S.bb) + " kg" : "–"], ["Lemak", S.pct != null ? f1(S.pct) + "%" : "–"], ["FFM", S.ffm != null ? f1(S.ffm) + " kg" : "–"], ["Konsultasi", String(S.n)]],
+      tilesPrivat: [["Konsultasi", String(S.n)], ["Cabang", c ? c.n.split(" ")[0] : "-"]],
+      seri: S.seri
     });
-    const pts = S.seri.filter((p) => p.bb);
-    if (!privat && pts.length >= 2) {
-      const gx = 90, gy = 940, gw = W - 180, gh = 230;
-      x.fillStyle = "rgba(0,0,0,.18)"; rrect(x, 60, 910, W - 120, 300, 28); x.fill();
-      const lo = Math.min(...pts.map((p) => p.bb)) - 1, hi = Math.max(...pts.map((p) => p.bb)) + 1;
-      const px = (i) => gx + (i * gw) / (pts.length - 1), py = (v) => gy + gh - ((v - lo) / (hi - lo)) * (gh - 40);
-      x.strokeStyle = "#ffd166"; x.lineWidth = 7; x.lineJoin = "round"; x.beginPath();
-      pts.forEach((p, i) => (i ? x.lineTo(px(i), py(p.bb)) : x.moveTo(px(i), py(p.bb)))); x.stroke();
-      pts.forEach((p, i) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(px(i), py(p.bb), 11, 0, 7); x.fill(); x.fillStyle = "#ffd166"; x.beginPath(); x.arc(px(i), py(p.bb), 6, 0, 7); x.fill(); });
-      x.fillStyle = "#fff"; x.font = font(700, 26); x.textAlign = "left"; x.fillText("Perkembangan berat badan", gx, 900 + 50);
-      x.textAlign = "center"; x.font = font(500, 22); x.fillStyle = "rgba(255,255,255,.8)";
-      [0, pts.length - 1].forEach((i) => x.fillText(pts[i].t, px(i), gy + gh + 30));
-    } else {
-      x.fillStyle = "rgba(255,255,255,.9)"; x.font = font(600, 38); x.textAlign = "center";
-      x.fillText("Berlatih cerdas, makan tepat, juara!", W / 2, 1050);
-    }
-    x.textAlign = "center"; x.fillStyle = "#fff"; x.font = font(700, 30); x.fillText("murykuswari.com", W / 2, 1275);
-    x.font = font(500, 22); x.fillStyle = "rgba(255,255,255,.85)"; x.fillText("Program Gizi Olahraga · Assoc. Prof. Dr. Mury Kuswari", W / 2, 1312);
-    const a = document.createElement("a");
-    a.download = `kartu-profil-${String(subj.nama || "member").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
-    a.href = cv.toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove();
   }
   function rrect(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
 
@@ -793,9 +750,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ${(st.bayar || []).some((x) => x.status === "lunas") && P.jadwal ? `<a class="btn btn-ghost pg-sm" href="${esc(P.jadwal)}" target="_blank" rel="noopener">Pilih jadwal sesi</a>` : ""}`;
   }
   /* Pembayaran langsung ke e-wallet Dr. Mury (SITE.dompet) dengan kode unik, dikonfirmasi admin. */
-  const DOMPET = (S.dompet || []).filter((d) => d && String(d.nomor || "").trim());
+  const REKENING = (S.rekening || []).filter((d) => d && String(d.nomor || "").trim()).map((d) => ({ nama: "Transfer " + (d.bank || "bank"), nomor: d.nomor, atasNama: d.atasNama, bank: true }));
+  const DOMPET = (S.dompet || []).filter((d) => d && String(d.nomor || "").trim()).concat(REKENING);
   const adaDompet = () => DOMPET.length > 0 || !!S.qris;
-  const pilihanDompet = () => DOMPET.map((d) => d.nama).concat(S.qris ? ["QRIS"] : []);
+  const pilihanDompet = () => DOMPET.filter((d) => !d.bank).map((d) => d.nama).concat(REKENING.length ? ["Transfer bank"] : [], S.qris ? ["QRIS"] : []);
   function blokBayar(t, bayar, P) {
     const kepala = `<div class="pg-paket-aksi"><span><strong>${esc(t.paket)}</strong><br><b>${rp(t.harga)}</b></span>`;
     const ditolak = (st.bayar || []).filter((x) => x.permintaanId === t.id && x.status === "gagal" && x.catatanVerifikasi).slice(-1)[0];

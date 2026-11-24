@@ -1114,3 +1114,14 @@ section[id] { scroll-margin-top: 72px; }
 .btn-copy svg { width: 16px; height: 16px; flex: none; }
 .form-note { margin: 14px 0 0; text-align: center; line-height: 1.5; }
 @media (max-width: 480px) { .send-actions { grid-template-columns: 1fr; } }
+
+/* ---------- Kartu profil: pratinjau & unduh ---------- */
+.kp-wrap { padding: 26px 26px 22px; }
+.kp-judul { font-size: 1.35rem; margin: 0 40px 14px 0; }
+.kp-pratinjau { display: grid; place-items: center; min-height: 240px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.kp-pratinjau img { width: 100%; max-width: 360px; height: auto; border-radius: 12px; box-shadow: 0 12px 30px rgba(0, 28, 50, .25); }
+.kp-privat { display: flex; gap: 10px; align-items: center; margin: 14px 0 0; font-weight: 600; font-size: .92rem; cursor: pointer; }
+.kp-privat input { width: 18px; height: 18px; margin: 0; accent-color: var(--orange); }
+.kp-aksi { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+.kp-aksi .btn { width: 100%; }
+.kp-hint { margin: 12px 0 0; font-size: .82rem; text-align: center; }

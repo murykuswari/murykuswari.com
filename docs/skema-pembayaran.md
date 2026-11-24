@@ -53,6 +53,18 @@ Tracker di dashboard: total diterima, total bulan ini, total per dompet, jumlah 
 
 Status pembayaran e-wallet: `menunggu` → `dicek` (klien mengirim bukti) → `lunas` atau `gagal`. Kolom baru di tab Pembayaran: Bukti, Catatan verifikasi, Diverifikasi oleh.
 
+## Email konfirmasi & instruksi pembayaran (otomatis)
+
+Begitu admin memilih **berbayar** di dashboard, server langsung membuat tagihan dengan kode unik 3 digit dan mengirim email **"Konfirmasi konsultasi lanjutan & instruksi pembayaran"** ke klien, berisi:
+
+1. **Rincian tagihan**: layanan, biaya, kode unik, total yang ditransfer, nomor order, batas waktu (`PEMBAYARAN.batasJam`, bawaan 72 jam).
+2. **Tujuan pembayaran**: semua e-wallet dan rekening bank yang nomornya terisi di `PEMBAYARAN` (`apps-script/Konsultasi.gs`), plus gambar QRIS bila diisi.
+3. **Langkah konfirmasi**: unggah bukti di /konsultasi (tombol *Saya sudah bayar*), atau balas email / kirim via WhatsApp; admin lalu menekan **Konfirmasi lunas** dan klien menerima email *Pembayaran diterima*.
+
+Bila keputusan diubah menjadi gratis atau tolak, tagihan yang masih terbuka otomatis dibatalkan. Untuk melihat contoh email tanpa membuat tagihan, jalankan `ujiEmailInstruksiBayar` dari editor Apps Script (email terkirim ke `KONS.EMAIL_PEMILIK`).
+
+**Samakan tujuan pembayaran di dua tempat:** `PEMBAYARAN` di `apps-script/Konsultasi.gs` (untuk email) dan `dompet` / `rekening` / `qris` di `config.js` (untuk halaman konsultasi).
+
 ## Paket
 
 Diatur di `PAKET` pada `apps-script/Konsultasi.gs` dan muncul sebagai **pilihan cepat** di formulir keputusan admin (admin tetap bisa menetapkan harga lain). Harga saat ini adalah **contoh** dan wajib dikonfirmasi pemilik:
