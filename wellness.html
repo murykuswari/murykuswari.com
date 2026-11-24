@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalkulator Wellness Korporat: Skrining, Energi Pekerja, Zona Latihan, Kebugaran, Perencanaan Program | Assoc. Prof. Dr. Mury Kuswari</title>
+  <meta name="description" content="Kalkulator konsultasi wellness korporat berbasis pedoman ACSM, WHO, AKG 2019 dan CDC: skrining risiko pekerja (IMT Asia, WHtR, sindrom metabolik, FINDRISC), kebutuhan energi dan zat gizi pekerja, zona denyut nadi dan beban latihan, tes kebugaran, WHO-5, serta perencanaan program corporate wellness lengkap dengan perhitungan sasaran, besar sampel, biaya, dan ROI.">
+  <link rel="canonical" href="https://murykuswari.com/wellness.html">
+  <meta property="og:title" content="Kalkulator Wellness Korporat | Assoc. Prof. Dr. Mury Kuswari">
+  <meta property="og:image" content="https://murykuswari.com/assets/img/mury.jpg">
+  <meta name="theme-color" content="#003a63">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026r">
+</head>
+<body>
+  <header id="site-header"></header>
+  <main>
+    <div class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Kalkulator Wellness Korporat</span>
+        <h1>Ukur dulu, lalu rancang program yang berdampak</h1>
+        <p>Alat ukur yang saya pakai saat mendampingi program wellness di perusahaan dan instansi: skrining risiko pekerja, kebutuhan energi dan zat gizi sesuai jenis pekerjaan, zona denyut nadi dan beban latihan, tes kebugaran sederhana di kantor, kesejahteraan (WHO-5), hingga perencanaan program lengkap dengan sasaran, besar sampel, biaya, dan nilai ekonomi. Rumus mengikuti pedoman ACSM, WHO, AKG 2019, CDC Workplace Health Model, dan riset tele-exercise karyawan. Data hanya dihitung di perangkat Anda dan tidak disimpan di server.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:6px">
+      <div class="wrap calc-layout">
+        <div class="calc-tabs" role="tablist" aria-label="Pilih kalkulator">
+          <button class="calc-tab" role="tab" aria-selected="true" aria-controls="p-skrining" id="t-skrining">Skrining Risiko<small>IMT Asia, WHtR, sindrom metabolik, FINDRISC</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-energi" id="t-energi">Energi &amp; Gizi Pekerja<small>BMR, PAL pekerjaan, makro, cairan</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-latihan" id="t-latihan">Aktivitas &amp; Zona Latihan<small>Karvonen, MET, beban sRPE</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-bugar" id="t-bugar">Tes Kebugaran<small>Step test, Rockport, Cooper, handgrip</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-wellbeing" id="t-wellbeing">Kesejahteraan<small>WHO-5 &amp; tidur</small></button>
+          <button class="calc-tab" role="tab" aria-selected="false" aria-controls="p-program" id="t-program">Perencanaan Program<small>Sasaran, sampel, biaya, ROI</small></button>
+          <a class="calc-tab calc-link" href="gizi.html">Kalkulator Gizi Olahraga<small>Untuk atlet &amp; individu aktif</small></a>
+        </div>
+
+        <div>
+          <!-- SKRINING -->
+          <div class="card calc-panel" role="tabpanel" id="p-skrining" aria-labelledby="t-skrining">
+            <h2 style="font-size:1.7rem">Skrining Risiko Kardiometabolik Pekerja</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="sk-usia">Usia (tahun)</label><input id="sk-usia" data-share="usia" type="number" inputmode="numeric" min="18" max="80" placeholder="40"></div>
+                  <div class="field"><label for="sk-bb">Berat badan (kg)</label><input id="sk-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="85"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="sk-tb">Tinggi badan (cm)</label><input id="sk-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="170"></div>
+                  <div class="field"><label for="sk-lp">Lingkar pinggang (cm)</label><input id="sk-lp" data-share="lp" type="number" inputmode="decimal" step="0.1" placeholder="98"><small>Setinggi pusar, akhir napas biasa.</small></div>
+                </div>
+                <p class="note" style="margin:6px 0 10px"><strong>Opsional: hasil MCU</strong> untuk menghitung komponen sindrom metabolik.</p>
+                <div class="row">
+                  <div class="field"><label for="sk-sis">Tekanan darah sistolik (mmHg)</label><input id="sk-sis" type="number" inputmode="numeric" placeholder="130"></div>
+                  <div class="field"><label for="sk-dia">Diastolik (mmHg)</label><input id="sk-dia" type="number" inputmode="numeric" placeholder="85"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="sk-gdp">Glukosa darah puasa (mg/dL)</label><input id="sk-gdp" type="number" inputmode="numeric" placeholder="100"></div>
+                  <div class="field"><label for="sk-tg">Trigliserida (mg/dL)</label><input id="sk-tg" type="number" inputmode="numeric" placeholder="150"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="sk-hdl">Kolesterol HDL (mg/dL)</label><input id="sk-hdl" type="number" inputmode="numeric" placeholder="45"></div>
+                  <div class="field"><label for="sk-obat">Minum obat hipertensi/diabetes/lipid?</label><select id="sk-obat"><option value="0">Tidak</option><option value="1">Ya</option></select></div>
+                </div>
+                <p class="note" style="margin:6px 0 10px"><strong>FINDRISC</strong>: risiko diabetes tipe 2 dalam 10 tahun.</p>
+                <div class="row">
+                  <div class="field"><label for="fr-pa">Aktif fisik ≥30 menit/hari?</label><select id="fr-pa"><option value="0">Ya</option><option value="2">Tidak</option></select></div>
+                  <div class="field"><label for="fr-sayur">Makan sayur/buah setiap hari?</label><select id="fr-sayur"><option value="0">Ya</option><option value="1">Tidak</option></select></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="fr-ht">Pernah minum obat hipertensi?</label><select id="fr-ht"><option value="0">Tidak</option><option value="2">Ya</option></select></div>
+                  <div class="field"><label for="fr-glu">Pernah gula darah tinggi?</label><select id="fr-glu"><option value="0">Tidak</option><option value="5">Ya</option></select></div>
+                </div>
+                <div class="field"><label for="fr-kel">Keluarga dengan diabetes</label><select id="fr-kel"><option value="0">Tidak ada</option><option value="3">Kakek/nenek, paman/bibi, sepupu</option><option value="5">Orang tua, saudara kandung, anak</option></select></div>
+              </form>
+              <div class="result" id="r-skrining" aria-live="polite"></div>
+            </div>
+            <div id="r-skrining-detail"></div>
+          </div>
+
+          <!-- ENERGI -->
+          <div class="card calc-panel" role="tabpanel" id="p-energi" aria-labelledby="t-energi" hidden>
+            <h2 style="font-size:1.7rem">Kebutuhan Energi &amp; Zat Gizi Pekerja</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-usia">Usia (tahun)</label><input id="en-usia" data-share="usia" type="number" inputmode="numeric" placeholder="40"></div>
+                  <div class="field"><label for="en-bb">Berat badan (kg)</label><input id="en-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="85"></div>
+                </div>
+                <div class="field"><label for="en-tb">Tinggi badan (cm)</label><input id="en-tb" data-share="tb" type="number" inputmode="decimal" step="0.1" placeholder="170"></div>
+                <div class="field"><label for="en-pal">Jenis pekerjaan &amp; aktivitas (PAL)</label>
+                  <select id="en-pal">
+                    <option value="1.40">Kantor, banyak duduk, jarang olahraga (1,40)</option>
+                    <option value="1.55">Kantor + olahraga 3×/minggu atau banyak berjalan (1,55)</option>
+                    <option value="1.70">Pekerja lapangan / produksi, aktivitas sedang (1,70)</option>
+                    <option value="1.90">Pekerja fisik berat (bongkar muat, konstruksi) (1,90)</option>
+                  </select>
+                  <small>Kategori PAL menurut FAO/WHO/UNU (2004).</small>
+                </div>
+                <div class="field"><label for="en-tujuan">Tujuan</label>
+                  <select id="en-tujuan">
+                    <option value="0">Mempertahankan berat badan</option>
+                    <option value="-500" selected>Menurunkan berat badan (defisit 500 kkal)</option>
+                    <option value="-750">Menurunkan berat badan lebih cepat (defisit 750 kkal)</option>
+                    <option value="300">Menambah massa otot (surplus 300 kkal)</option>
+                  </select>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="en-pro">Protein (g/kg BB/hari)</label><input id="en-pro" type="number" inputmode="decimal" step="0.1" min="0.8" max="2.2" placeholder="1.2"><small>Turun BB: 1,2–1,6 · pertahankan: 1,0</small></div>
+                  <div class="field"><label for="en-lemak">Lemak (% energi)</label><input id="en-lemak" type="number" inputmode="numeric" min="20" max="35" placeholder="25"><small>20–30% energi</small></div>
+                </div>
+                <div class="field"><label for="en-olahraga">Durasi olahraga pada hari latihan (menit)</label><input id="en-olahraga" type="number" inputmode="numeric" min="0" placeholder="30"><small>Untuk tambahan kebutuhan cairan.</small></div>
+              </form>
+              <div class="result" id="r-energi" aria-live="polite"></div>
+            </div>
+            <div id="r-energi-detail"></div>
+          </div>
+
+          <!-- LATIHAN -->
+          <div class="card calc-panel" role="tabpanel" id="p-latihan" aria-labelledby="t-latihan" hidden>
+            <h2 style="font-size:1.7rem">Aktivitas Fisik, Zona Denyut Nadi &amp; Beban Latihan</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false">
+                <div class="row">
+                  <div class="field"><label for="la-usia">Usia (tahun)</label><input id="la-usia" data-share="usia" type="number" inputmode="numeric" placeholder="40"></div>
+                  <div class="field"><label for="la-hr">Denyut nadi istirahat (bpm)</label><input id="la-hr" type="number" inputmode="numeric" placeholder="75"><small>Pagi hari, sebelum bangun.</small></div>
+                </div>
+                <div class="field"><label for="la-bb">Berat badan (kg)</label><input id="la-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="85"></div>
+                <p class="note" style="margin:6px 0 10px"><strong>Aktivitas seminggu terakhir</strong></p>
+                <div class="row">
+                  <div class="field"><label for="la-sedang">Menit aktivitas sedang/minggu</label><input id="la-sedang" type="number" inputmode="numeric" min="0" placeholder="90"><small>Jalan cepat, bersepeda santai</small></div>
+                  <div class="field"><label for="la-berat">Menit aktivitas berat/minggu</label><input id="la-berat" type="number" inputmode="numeric" min="0" placeholder="0"><small>Jogging, HIIT, futsal</small></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="la-kekuatan">Hari latihan kekuatan/minggu</label><input id="la-kekuatan" type="number" inputmode="numeric" min="0" max="7" placeholder="1"></div>
+                  <div class="field"><label for="la-langkah">Rata-rata langkah/hari</label><input id="la-langkah" type="number" inputmode="numeric" min="0" placeholder="5000"></div>
+                </div>
+                <p class="note" style="margin:6px 0 10px"><strong>Rencana sesi latihan</strong></p>
+                <div class="field"><label for="la-jenis">Jenis latihan</label>
+                  <select id="la-jenis">
+                    <option value="4.3">Jalan cepat 5,6 km/jam (4,3 MET)</option>
+                    <option value="7">Jogging (7,0 MET)</option>
+                    <option value="5.5">Senam aerobik intensitas sedang (5,5 MET)</option>
+                    <option value="8" selected>Tele-exercise HIIT / sirkuit (8,0 MET)</option>
+                    <option value="3.5">Latihan beban ringan–sedang (3,5 MET)</option>
+                    <option value="6">Latihan beban berat (6,0 MET)</option>
+                    <option value="5.5">Bulu tangkis rekreasi (5,5 MET)</option>
+                    <option value="7">Futsal rekreasi (7,0 MET)</option>
+                    <option value="6">Berenang santai (6,0 MET)</option>
+                    <option value="2.5">Yoga / peregangan (2,5 MET)</option>
+                  </select>
+                  <small>Nilai MET dibulatkan dari Compendium of Physical Activities.</small>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="la-durasi">Durasi sesi (menit)</label><input id="la-durasi" type="number" inputmode="numeric" placeholder="30"></div>
+                  <div class="field"><label for="la-sesi">Sesi per minggu</label><input id="la-sesi" type="number" inputmode="numeric" min="1" max="14" placeholder="3"></div>
+                </div>
+                <div class="field"><label for="la-rpe">RPE sesi (skala 0–10)</label><input id="la-rpe" type="number" inputmode="numeric" min="0" max="10" placeholder="6"><small>Ditanyakan 30 menit setelah latihan: 3 sedang, 5 berat, 7 sangat berat.</small></div>
+              </form>
+              <div class="result" id="r-latihan" aria-live="polite"></div>
+            </div>
+            <div id="r-latihan-detail"></div>
+          </div>
+
+          <!-- KEBUGARAN -->
+          <div class="card calc-panel" role="tabpanel" id="p-bugar" aria-labelledby="t-bugar" hidden>
+            <h2 style="font-size:1.7rem">Tes Kebugaran Sederhana di Tempat Kerja</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false">
+                <div class="field"><label>Jenis kelamin</label>
+                  <div class="seg" data-share-seg="jk"><button type="button" aria-pressed="true" data-v="L">Laki-laki</button><button type="button" aria-pressed="false" data-v="P">Perempuan</button></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="bg-usia">Usia (tahun)</label><input id="bg-usia" data-share="usia" type="number" inputmode="numeric" placeholder="40"></div>
+                  <div class="field"><label for="bg-bb">Berat badan (kg)</label><input id="bg-bb" data-share="bb" type="number" inputmode="decimal" step="0.1" placeholder="85"></div>
+                </div>
+                <div class="field"><label for="bg-metode">Metode tes kapasitas aerobik</label>
+                  <select id="bg-metode">
+                    <option value="step">Queens College Step Test (3 menit, bangku 41 cm)</option>
+                    <option value="rockport">Rockport 1-mile walk (jalan cepat 1,6 km)</option>
+                    <option value="cooper">Cooper 12 menit (lari/jalan)</option>
+                  </select>
+                </div>
+                <div data-bm="step">
+                  <div class="field"><label for="bg-stephr">Denyut nadi 5–20 detik setelah tes (bpm)</label><input id="bg-stephr" type="number" inputmode="numeric" placeholder="150"><small>Hitung nadi 15 detik × 4. Irama 24 langkah/menit (L) atau 22 (P).</small></div>
+                </div>
+                <div data-bm="rockport" hidden>
+                  <div class="row">
+                    <div class="field"><label for="bg-rmin">Waktu tempuh (menit)</label><input id="bg-rmin" type="number" inputmode="numeric" placeholder="15"></div>
+                    <div class="field"><label for="bg-rdet">Detik</label><input id="bg-rdet" type="number" inputmode="numeric" min="0" max="59" placeholder="30"></div>
+                  </div>
+                  <div class="field"><label for="bg-rhr">Denyut nadi akhir (bpm)</label><input id="bg-rhr" type="number" inputmode="numeric" placeholder="140"></div>
+                </div>
+                <div data-bm="cooper" hidden>
+                  <div class="field"><label for="bg-cjarak">Jarak tempuh 12 menit (meter)</label><input id="bg-cjarak" type="number" inputmode="numeric" placeholder="1800"></div>
+                </div>
+                <p class="note" style="margin:6px 0 10px"><strong>Opsional: kekuatan &amp; daya tahan otot</strong></p>
+                <div class="row">
+                  <div class="field"><label for="bg-grip">Handgrip tangan dominan (kg)</label><input id="bg-grip" type="number" inputmode="decimal" step="0.1" placeholder="32"></div>
+                  <div class="field"><label for="bg-pushup">Push-up 1 menit (kali)</label><input id="bg-pushup" type="number" inputmode="numeric" placeholder="15"></div>
+                </div>
+              </form>
+              <div class="result" id="r-bugar" aria-live="polite"></div>
+            </div>
+            <div id="r-bugar-detail"></div>
+          </div>
+
+          <!-- WELLBEING -->
+          <div class="card calc-panel" role="tabpanel" id="p-wellbeing" aria-labelledby="t-wellbeing" hidden>
+            <h2 style="font-size:1.7rem">Kesejahteraan (WHO-5) &amp; Tidur</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false" id="who5">
+                <p class="note" style="margin:0 0 10px">Dalam <strong>2 minggu terakhir</strong>, seberapa sering Anda merasakan hal berikut? 5 = sepanjang waktu, 4 = sering sekali, 3 = lebih dari separuh waktu, 2 = kurang dari separuh waktu, 1 = kadang-kadang, 0 = tidak pernah.</p>
+                <div class="field"><label for="w1">1. Saya merasa ceria dan bersemangat</label><select id="w1" class="w5"><option value="">Pilih</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option></select></div>
+                <div class="field"><label for="w2">2. Saya merasa tenang dan rileks</label><select id="w2" class="w5"><option value="">Pilih</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option></select></div>
+                <div class="field"><label for="w3">3. Saya merasa aktif dan bertenaga</label><select id="w3" class="w5"><option value="">Pilih</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option></select></div>
+                <div class="field"><label for="w4">4. Saya bangun dengan perasaan segar dan cukup istirahat</label><select id="w4" class="w5"><option value="">Pilih</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option></select></div>
+                <div class="field"><label for="w5">5. Hari-hari saya diisi hal-hal yang menarik bagi saya</label><select id="w5" class="w5"><option value="">Pilih</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option><option>0</option></select></div>
+                <div class="row">
+                  <div class="field"><label for="wb-tidur">Rata-rata tidur malam (jam)</label><input id="wb-tidur" type="number" inputmode="decimal" step="0.25" placeholder="6.5"></div>
+                  <div class="field"><label for="wb-shift">Pola kerja</label><select id="wb-shift"><option value="0">Jam kantor</option><option value="1">Shift / malam</option></select></div>
+                </div>
+              </form>
+              <div class="result" id="r-wellbeing" aria-live="polite"></div>
+            </div>
+            <div id="r-wellbeing-detail"></div>
+          </div>
+
+          <!-- PROGRAM -->
+          <div class="card calc-panel" role="tabpanel" id="p-program" aria-labelledby="t-program" hidden>
+            <h2 style="font-size:1.7rem">Perencanaan Program Corporate Wellness</h2>
+            <div class="calc-grid">
+              <form onsubmit="return false">
+                <p class="note" style="margin:0 0 10px"><strong>Sasaran &amp; partisipasi</strong></p>
+                <div class="row">
+                  <div class="field"><label for="pg-karyawan">Jumlah karyawan</label><input id="pg-karyawan" type="number" inputmode="numeric" placeholder="500"></div>
+                  <div class="field"><label for="pg-prev">% berisiko (mis. obesitas)</label><input id="pg-prev" type="number" inputmode="decimal" step="0.1" placeholder="35"><small>Dari skrining atau MCU.</small></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pg-ikut">Perkiraan partisipasi (%)</label><input id="pg-ikut" type="number" inputmode="numeric" placeholder="60"></div>
+                  <div class="field"><label for="pg-drop">Perkiraan drop-out (%)</label><input id="pg-drop" type="number" inputmode="numeric" placeholder="20"></div>
+                </div>
+                <p class="note" style="margin:6px 0 10px"><strong>Besar sampel evaluasi (pre–post)</strong></p>
+                <div class="row">
+                  <div class="field"><label for="pg-d">Perubahan yang ingin dideteksi</label><input id="pg-d" type="number" inputmode="decimal" step="0.1" placeholder="2"><small>Mis. 2 kg berat badan.</small></div>
+                  <div class="field"><label for="pg-sd">SD selisih pre–post</label><input id="pg-sd" type="number" inputmode="decimal" step="0.1" placeholder="4"><small>Dari studi serupa.</small></div>
+                </div>
+                <div class="field"><label for="pg-power">Power &amp; α</label><select id="pg-power"><option value="0.84">80% · α 0,05</option><option value="1.28">90% · α 0,05</option></select></div>
+                <p class="note" style="margin:6px 0 10px"><strong>Biaya &amp; nilai ekonomi (isi dengan data HR)</strong></p>
+                <div class="row">
+                  <div class="field"><label for="pg-biaya">Biaya per peserta (Rp)</label><input id="pg-biaya" type="number" inputmode="numeric" placeholder="1500000"></div>
+                  <div class="field"><label for="pg-upah">Upah harian rata-rata (Rp)</label><input id="pg-upah" type="number" inputmode="numeric" placeholder="400000"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pg-sakit">Hari sakit/karyawan/tahun</label><input id="pg-sakit" type="number" inputmode="decimal" step="0.1" placeholder="4"></div>
+                  <div class="field"><label for="pg-turunsakit">Perkiraan penurunan absensi (%)</label><input id="pg-turunsakit" type="number" inputmode="numeric" placeholder="15"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pg-wpai">Hendaya kerja/presenteeism (%)</label><input id="pg-wpai" type="number" inputmode="numeric" placeholder="20"><small>Skor WPAI peserta.</small></div>
+                  <div class="field"><label for="pg-turunwpai">Perbaikan presenteeism (poin %)</label><input id="pg-turunwpai" type="number" inputmode="numeric" placeholder="3"></div>
+                </div>
+                <div class="row">
+                  <div class="field"><label for="pg-hari">Hari kerja/tahun</label><input id="pg-hari" type="number" inputmode="numeric" placeholder="240"></div>
+                  <div class="field"><label for="pg-kg">Rata-rata BB turun/peserta (kg)</label><input id="pg-kg" type="number" inputmode="decimal" step="0.1" placeholder="2.7"><small>Mis. WLC 2023–2024: −2,74 kg.</small></div>
+                </div>
+              </form>
+              <div class="result" id="r-program" aria-live="polite"></div>
+            </div>
+            <div id="r-program-detail"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RUJUKAN -->
+    <section id="rujukan" style="padding-top:10px">
+      <div class="wrap">
+        <details class="refs card">
+          <summary><strong>Dasar perhitungan &amp; daftar rujukan</strong> <span class="note">(klik untuk membuka)</span></summary>
+          <div class="refs-body">
+            <h3>Skrining risiko</h3>
+            <ol>
+              <li>WHO Western Pacific Region, IASO, IOTF. <em>The Asia-Pacific Perspective: Redefining Obesity and Its Treatment</em>. Sydney: Health Communications Australia; 2000.</li>
+              <li>Ashwell M, Gunn P, Gibson S. Waist-to-height ratio is a better screening tool than waist circumference and BMI for adult cardiometabolic risk factors: systematic review and meta-analysis. <em>Obes Rev</em>. 2012;13(3):275–286.</li>
+              <li>Alberti KGMM, Eckel RH, Grundy SM, dkk. Harmonizing the metabolic syndrome. <em>Circulation</em>. 2009;120(16):1640–1645.</li>
+              <li>Lindström J, Tuomilehto J. The diabetes risk score: a practical tool to predict type 2 diabetes risk. <em>Diabetes Care</em>. 2003;26(3):725–731.</li>
+            </ol>
+            <h3>Energi &amp; zat gizi</h3>
+            <ol start="5">
+              <li>Mifflin MD, St Jeor ST, Hill LA, dkk. A new predictive equation for resting energy expenditure in healthy individuals. <em>Am J Clin Nutr</em>. 1990;51(2):241–247.</li>
+              <li>FAO/WHO/UNU. <em>Human Energy Requirements</em>. FAO Food and Nutrition Technical Report Series 1. Rome: FAO; 2004.</li>
+              <li>Jensen MD, Ryan DH, Apovian CM, dkk. 2013 AHA/ACC/TOS guideline for the management of overweight and obesity in adults. <em>Circulation</em>. 2014;129(25 Suppl 2):S102–S138.</li>
+              <li>Hall KD, Sacks G, Chandramohan D, dkk. Quantification of the effect of energy imbalance on bodyweight. <em>Lancet</em>. 2011;378(9793):826–837.</li>
+              <li>Kementerian Kesehatan RI. Peraturan Menteri Kesehatan No. 28 Tahun 2019 tentang Angka Kecukupan Gizi yang Dianjurkan untuk Masyarakat Indonesia.</li>
+              <li>Kementerian Kesehatan RI. Peraturan Menteri Kesehatan No. 30 Tahun 2013 tentang Pencantuman Informasi Kandungan Gula, Garam, dan Lemak.</li>
+            </ol>
+            <h3>Aktivitas fisik, latihan &amp; kebugaran</h3>
+            <ol start="11">
+              <li>Bull FC, Al-Ansari SS, Biddle S, dkk. World Health Organization 2020 guidelines on physical activity and sedentary behaviour. <em>Br J Sports Med</em>. 2020;54(24):1451–1462.</li>
+              <li>American College of Sports Medicine. <em>ACSM’s Guidelines for Exercise Testing and Prescription</em>. 11th ed. Philadelphia: Wolters Kluwer; 2021.</li>
+              <li>Tanaka H, Monahan KD, Seals DR. Age-predicted maximal heart rate revisited. <em>J Am Coll Cardiol</em>. 2001;37(1):153–156.</li>
+              <li>Herrmann SD, Willis EA, Ainsworth BE, dkk. 2024 Adult Compendium of Physical Activities. <em>J Sport Health Sci</em>. 2024;13(1):6–12.</li>
+              <li>Foster C, Florhaug JA, Franklin J, dkk. A new approach to monitoring exercise training. <em>J Strength Cond Res</em>. 2001;15(1):109–115.</li>
+              <li>Paluch AE, Bajpai S, Bassett DR, dkk. Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts. <em>Lancet Public Health</em>. 2022;7(3):e219–e228.</li>
+              <li>McArdle WD, Katch FI, Pechar GS, dkk. Reliability and interrelationships between maximal oxygen intake, physical work capacity and step-test scores in college women. <em>Med Sci Sports</em>. 1972;4(4):182–186.</li>
+              <li>Kline GM, Porcari JP, Hintermeister R, dkk. Estimation of VO2max from a one-mile track walk, gender, age, and body weight. <em>Med Sci Sports Exerc</em>. 1987;19(3):253–259.</li>
+              <li>Cooper KH. A means of assessing maximal oxygen intake. <em>JAMA</em>. 1968;203(3):201–204.</li>
+              <li>Shvartz E, Reibold RC. Aerobic fitness norms for males and females aged 6 to 75 years. <em>Aviat Space Environ Med</em>. 1990;61(1):3–11.</li>
+              <li>Chen LK, Woo J, Assantachai P, dkk. Asian Working Group for Sarcopenia: 2019 consensus update. <em>J Am Med Dir Assoc</em>. 2020;21(3):300–307.</li>
+              <li>Tudor-Locke C, Bassett DR Jr. How many steps/day are enough? Preliminary pedometer indices for public health. <em>Sports Med</em>. 2004;34(1):1–8.</li>
+            </ol>
+            <h3>Kesejahteraan &amp; program</h3>
+            <ol start="23">
+              <li>Topp CW, Østergaard SD, Søndergaard S, Bech P. The WHO-5 Well-Being Index: a systematic review of the literature. <em>Psychother Psychosom</em>. 2015;84(3):167–176.</li>
+              <li>Hirshkowitz M, Whiton K, Albert SM, dkk. National Sleep Foundation’s sleep time duration recommendations. <em>Sleep Health</em>. 2015;1(1):40–43.</li>
+              <li>Reilly MC, Zbrozek AS, Dukes EM. The validity and reproducibility of a work productivity and activity impairment instrument. <em>Pharmacoeconomics</em>. 1993;4(5):353–365.</li>
+              <li>Centers for Disease Control and Prevention. <em>Workplace Health Model</em>. Atlanta: CDC; 2016.</li>
+              <li>Glasgow RE, Vogt TM, Boles SM. Evaluating the public health impact of health promotion interventions: the RE-AIM framework. <em>Am J Public Health</em>. 1999;89(9):1322–1327.</li>
+              <li>Baicker K, Cutler D, Song Z. Workplace wellness programs can generate savings. <em>Health Aff</em>. 2010;29(2):304–311.</li>
+              <li>Song Z, Baicker K. Effect of a workplace wellness program on employee health and economic outcomes: a randomized clinical trial. <em>JAMA</em>. 2019;321(15):1491–1501.</li>
+              <li>Kuswari M, Rimbawan R, Hardinsyah H, Dewi M, Gifari N. The effect differences of 30-minutes versus 60-minutes tele-exercise on fitness level of obese employees. <em>Media Gizi Indonesia</em>. 2022;17(3):243–249.</li>
+              <li>Kuswari M, Rimbawan R, Hardinsyah H, Dewi M, Gifari N. Effect of tele-exercise versus combination of tele-exercise with tele-counselling on obese office employee’s weight loss. <em>Argipa</em>. 2021;6(2).</li>
+              <li>Kuswari M, Gifari N, Nuzrina R, Himarwan A, Yunitasari AR. The effect of wellness programs based on tele-exercise and nutrition assistance decreased body weight, BMI, and waist circumference obese employees in Indonesia. <em>Physical Activity</em>. 2025;3(2):20–26.</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- KONSULTASI -->
+    <section class="section-alt" id="konsultasi">
+      <div class="wrap consult-box">
+        <div>
+          <span class="eyebrow">Konsultasi Wellness Korporat</span>
+          <h2 style="font-size:clamp(1.8rem,3.6vw,2.5rem)">Angkanya sudah ada? Mari susun programnya.</h2>
+          <p style="color:var(--ink-2)">Untuk perusahaan, instansi pemerintah, dan BUMN yang ingin menjalankan program wellness berbasis riset: skrining, tele-exercise, pendampingan gizi, Weight Loss Challenge, hingga laporan dampak untuk pimpinan. Pesan akan terbuka di WhatsApp atau email Anda, lengkap dengan hasil kalkulator.</p>
+          <div class="rules">
+            <h3>Ketentuan konsultasi</h3>
+            <ol>
+              <li>Wajib mengisi <strong>nama PIC</strong> dan <strong>nama perusahaan/instansi</strong>.</li>
+              <li>Wajib mengisi <strong>nomor WhatsApp aktif</strong> dan <strong>alamat email</strong> yang valid untuk tindak lanjut.</li>
+              <li>Wajib menuliskan <strong>tujuan program</strong> (minimal 30 karakter): kondisi karyawan saat ini, target, dan waktu pelaksanaan.</li>
+              <li>Hasil kalkulator individu bersifat edukatif dan tidak menggantikan pemeriksaan medis. Karyawan dengan penyakit jantung, diabetes, atau hipertensi tidak terkontrol perlu izin dokter sebelum berolahraga.</li>
+              <li>Jangan mengirim data pribadi karyawan yang dapat dikenali. Untuk perencanaan cukup data agregat.</li>
+              <li>Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</li>
+            </ol>
+          </div>
+        </div>
+        <form class="card" id="consult" onsubmit="return false" novalidate>
+          <div class="field"><label for="c-nama">Nama PIC <span class="req">*</span></label><input id="c-nama" required autocomplete="name" placeholder="Nama lengkap"><small class="err" data-err="c-nama"></small></div>
+          <div class="field"><label for="c-asal">Perusahaan/instansi &amp; kota <span class="req">*</span></label><input id="c-asal" required autocomplete="organization" placeholder="mis. PT Contoh Sehat · Jakarta"><small class="err" data-err="c-asal"></small></div>
+          <div class="row">
+            <div class="field"><label for="c-wa-no">No. WhatsApp <span class="req">*</span></label><input id="c-wa-no" required type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx"><small class="err" data-err="c-wa-no"></small></div>
+            <div class="field"><label for="c-email">Email <span class="req">*</span></label><input id="c-email" required type="email" inputmode="email" autocomplete="email" placeholder="nama@perusahaan.com"><small class="err" data-err="c-email"></small></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="c-jml">Jumlah karyawan</label><input id="c-jml" type="number" inputmode="numeric" placeholder="500"></div>
+            <div class="field"><label for="c-tujuan">Fokus program</label>
+              <select id="c-tujuan"><option>Menurunkan obesitas &amp; berat badan</option><option>Meningkatkan kebugaran</option><option>Produktivitas &amp; absensi</option><option>Kesehatan mental &amp; stres</option><option>Lingkungan pangan &amp; kantin sehat</option><option>Konsultasi individu karyawan</option><option>Lainnya</option></select>
+            </div>
+          </div>
+          <div class="field"><label for="c-pesan">Tujuan program (deskripsi singkat) <span class="req">*</span></label><textarea id="c-pesan" rows="4" required maxlength="800" placeholder="Contoh: 500 karyawan kantor pusat, 35% obesitas dari MCU. Ingin program 12 minggu dengan tele-exercise dan pendampingan gizi, mulai Januari."></textarea><small class="hint"><span id="c-count">0</span>/800 karakter · minimal 30</small><small class="err" data-err="c-pesan"></small></div>
+          <div class="field" style="display:flex;gap:10px;align-items:center">
+            <input id="c-hasil" type="checkbox" checked style="width:auto"><label for="c-hasil" style="margin:0;font-weight:600">Sertakan hasil kalkulator</label>
+          </div>
+          <div class="field" style="display:flex;gap:10px;align-items:flex-start">
+            <input id="c-setuju" type="checkbox" style="width:auto;margin-top:5px"><label for="c-setuju" style="margin:0;font-weight:600">Saya telah membaca ketentuan konsultasi dan data yang saya isi benar. <span class="req">*</span></label>
+          </div>
+          <small class="err" data-err="c-setuju" style="display:block;margin:-8px 0 12px"></small>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="c-wa" type="button">Kirim via WhatsApp</button>
+            <button class="btn btn-ghost" id="c-mail" type="button">Kirim via Email</button>
+            <button class="btn btn-ghost" id="c-salin" type="button">Salin ringkasan hasil</button>
+          </div>
+          <p class="disclaimer" style="margin-bottom:0"><span class="req">*</span> wajib diisi. Data hanya dipakai untuk menyusun pesan Anda dan tidak disimpan oleh website ini.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="assets/js/main.js?v=2026n"></script>
+  <script src="assets/js/wellness.js?v=2026a"></script>
+</body>
+</html>
