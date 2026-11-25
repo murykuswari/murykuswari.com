@@ -3,6 +3,7 @@
   const S = window.SITE || {};
 
   const ICON = {
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     sun: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
     moon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
@@ -29,7 +30,7 @@
     ["publikasi.html", "Karya Ilmiah"],
     ["berita.html", "Berita"],
     ["unduhan.html", "Unduhan"],
-    ["gizi.html", "Kalkulator"],
+    ["gizi.html", "Atlet & Fitness"],
     ["wellness.html", "Wellness Korporat"],
     ["konsultasi/", "Konsultasi"]
   ];
@@ -38,6 +39,25 @@
     if (/^\/konsultasi\/?/.test(location.pathname)) return "konsultasi/";
     const p = location.pathname.split("/").pop() || "index.html";
     return p === "" ? "index.html" : p;
+  }
+
+  // Menu Masuk: klien (konsultasi/), daftar klien baru (pendaftaran/), dan admin (dashboard.html).
+  function menuAkun() {
+    let email = "";
+    try {
+      const a = JSON.parse(sessionStorage.getItem("mk-program-sesi") || "null"), b = JSON.parse(localStorage.getItem("mk-ingat") || "null");
+      if (a && a.sampai > Date.now()) email = a.email || ""; else if (b && b.sampai > Date.now()) email = b.email || "";
+    } catch (e) { /* penyimpanan diblokir */ }
+    const label = email ? "Akun saya" : "Masuk";
+    return `<details class="nav-akun">
+            <summary>${ICON.user || ""}<span>${label}</span></summary>
+            <div class="nav-akun-menu">
+              ${email ? `<p class="nav-akun-who">Masuk sebagai<br><b>${email.replace(/[<>&"]/g, "")}</b></p>` : ""}
+              <a href="konsultasi/"><b>Masuk sebagai klien</b><small>Atlet, individu, pelatih &amp; ahli gizi</small></a>
+              <a href="pendaftaran/"><b>Daftar klien baru</b><small>Belum punya akun? Daftar konsultasi Atlet atau Wellness Korporat</small></a>
+              <a href="dashboard.html"><b>Masuk sebagai admin</b><small>Dashboard pengelola</small></a>
+            </div>
+          </details>`;
   }
 
   function renderHeader() {
@@ -54,6 +74,7 @@
         <button class="menu-toggle" aria-label="Buka menu" aria-expanded="false">${ICON.menu}</button>
         <nav class="nav" aria-label="Navigasi utama">
           ${NAV.map(([href, label]) => `<a href="${href}"${href === cur ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
+          ${menuAkun()}
           <button class="theme-toggle" type="button" aria-label="Ganti tema terang/gelap"></button>
           <a class="btn btn-primary btn-sm" href="${S.cv}" download>${ICON.download} Unduh CV</a>
         </nav>
@@ -66,6 +87,9 @@
     });
     nav.addEventListener("click", (e) => { if (e.target.closest("a")) nav.classList.remove("open"); });
     setupTheme(el.querySelector(".theme-toggle"));
+    const akun = el.querySelector(".nav-akun");
+    document.addEventListener("click", (e) => { if (akun.open && !akun.contains(e.target)) akun.open = false; });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") akun.open = false; });
   }
 
   function setupTheme(btn) {
@@ -109,7 +133,7 @@
               <li><a href="publikasi.html">Penelitian, Buku &amp; Abdimas</a></li>
               <li><a href="berita.html">Berita &amp; Liputan Media</a></li>
               <li><a href="unduhan.html">Unduhan Modul</a></li>
-              <li><a href="gizi.html">Kalkulator Gizi Olahraga</a></li>
+              <li><a href="gizi.html">Atlet &amp; Fitness</a></li>
               <li><a href="wellness.html">Kalkulator Wellness Korporat</a></li>
               <li><a href="konsultasi/">Konsultasi Gizi Personal</a></li>
               <li><a href="${S.cv}" download>Unduh CV / Profil</a></li>
