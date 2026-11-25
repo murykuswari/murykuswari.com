@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Dashboard Pendaftaran | murykuswari.com</title>
+<meta name="theme-color" content="#003a63">
+<style>
+:root{--navy:#003a63;--blue:#0070b8;--blue-soft:#e6f2fb;--green:#0f7b5f;--green-soft:#e3f4ee;--ink:#0b1e33;--muted:#5b6f86;--line:#d6e0ea;--bg:#f4f7fa;--card:#fff;--red:#b42318;--red-soft:#fdecea;--amber:#9a6700;--amber-soft:#fff6db;--accent:var(--blue);--accent-soft:var(--blue-soft);--r:14px}
+body.t-korporat{--accent:var(--green);--accent-soft:var(--green-soft)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;padding-bottom:14px}
+header b{font-size:16px}
+header small{opacity:.8}
+header button{font:inherit;color:#fff;background:rgba(255,255,255,.15);border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
+.tabs{display:flex;gap:8px;margin:18px 0 14px;overflow-x:auto}
+.tab{font:inherit;font-weight:700;flex:1 1 0;min-width:150px;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;color:var(--ink)}
+.tab span{display:block;font-size:24px}
+.tab.on.atlet{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.tab.on.korporat{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:24px;color:var(--accent);line-height:1.2}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi.warn b{color:var(--red)}
+.charts{display:grid;gap:12px;grid-template-columns:1fr;margin-bottom:14px}
+@media(min-width:760px){.charts{grid-template-columns:repeat(3,1fr)}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.panel h3{margin:0 0 10px;font-size:15px}
+.bars{display:grid;gap:7px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:13px;cursor:pointer;border-radius:6px;padding:2px}
+.bar:hover{background:var(--bg)}
+.bar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .v{color:var(--muted);font-variant-numeric:tabular-nums}
+.bar .tr{grid-column:1/-1;height:8px;background:var(--bg);border-radius:6px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.bar.sel .nm{font-weight:700;color:var(--accent)}
+.empty{color:var(--muted);font-size:13px}
+.filters{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-bottom:12px}
+@media(min-width:760px){.filters{grid-template-columns:2fr 1fr 1fr 1fr auto}}
+.filters .full{grid-column:1/-1}
+@media(min-width:760px){.filters .full{grid-column:auto}}
+input,select,textarea{width:100%;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;background:#fff;color:var(--ink)}
+textarea{min-height:90px}
+.btn{font:inherit;font-weight:700;border-radius:10px;border:1.5px solid var(--accent);padding:10px 14px;min-height:44px;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap}
+.btn.ghost{background:#fff;color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{font-size:13px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 10px;border:0;cursor:pointer;font-weight:600}
+/* daftar */
+.list{display:grid;gap:10px}
+.row{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;display:grid;gap:4px;grid-template-columns:1fr}
+.row .nm{order:-1}
+.row:hover{border-color:var(--accent)}
+.row .nm{font-weight:700}
+.row .meta{grid-column:1/-1;color:var(--muted);font-size:13px}
+.row .q{grid-column:1/-1;font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:4px}
+.tag.Baru{background:var(--amber-soft);color:var(--amber)}
+.tag.Dijawab,.tag.Selesai{background:var(--green-soft);color:var(--green)}
+.tag.Lanjut{background:var(--blue-soft);color:var(--blue)}
+.tag.Ditolak{background:#eee;color:#555}
+.tag.cek{background:var(--red-soft);color:var(--red)}
+@media(min-width:900px){
+  .row .nm{order:0}
+  .row{grid-template-columns:110px 1.4fr 1.4fr 90px 120px 130px;align-items:center}
+  .row .meta,.row .q{grid-column:auto}
+  .row .q{-webkit-line-clamp:1}
+  .head{display:grid!important;grid-template-columns:110px 1.4fr 1.4fr 90px 120px 130px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:0 15px}
+}
+.head{display:none}
+/* detail */
+.sheet{position:fixed;inset:0;background:rgba(11,30,51,.45);display:none;z-index:20;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.sheet .box{background:#fff;width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media(min-width:760px){.sheet{align-items:center}.sheet .box{border-radius:18px;padding:22px 24px}}
+.sheet h2{margin:0 0 2px;font-size:20px}
+dl{display:grid;grid-template-columns:1fr;margin:8px 0}
+dl div{display:grid;grid-template-columns:44% 1fr;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+dt{color:var(--muted)}dd{margin:0;word-break:break-word}
+.sec{font-weight:700;color:var(--accent);margin-top:12px}
+.actrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actrow>*{flex:1 1 140px}
+.login{max-width:420px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.login h1{font-size:20px;margin:0 0 6px}
+.login p{color:var(--muted);margin:0 0 14px}
+.login .btn{width:100%;margin-top:10px}
+.msg{font-size:14px;margin-top:10px}
+.msg.bad{color:var(--red)}
+.demo{background:var(--amber-soft);color:#5c3d00;border:1px solid #f0d78c;border-radius:10px;padding:8px 12px;margin-top:14px;font-size:14px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div><b>Dashboard Pendaftaran Konsultasi</b><br><small>murykuswari.com · khusus pengelola</small></div><button id="keluar" class="hidden" type="button">Keluar</button></div></header>
+
+<main class="wrap">
+  <section id="login" class="login">
+    <h1>Masuk sebagai pengelola</h1>
+    <p>Kode 6 digit dikirim ke email pengelola.</p>
+    <div id="l1"><input type="email" id="lemail" placeholder="email@esaunggul.ac.id" autocomplete="email" inputmode="email"><button class="btn" id="lkirim" type="button">Kirim kode</button></div>
+    <div id="l2" class="hidden"><input type="text" id="lotp" placeholder="6 digit kode" inputmode="numeric" maxlength="6" autocomplete="one-time-code"><button class="btn" id="lmasuk" type="button">Masuk</button></div>
+    <div class="msg" id="lmsg"></div>
+    <button class="btn ghost" id="ldemo" type="button" style="width:100%;margin-top:14px">Lihat contoh dengan data demo</button>
+  </section>
+
+  <section id="app" class="hidden">
+    <div id="demoNote" class="demo hidden">Mode demo: data contoh, bukan data peserta.</div>
+    <div class="tabs">
+      <button class="tab atlet on" data-j="atlet" type="button">Konsultasi Atlet<span id="nA">0</span></button>
+      <button class="tab korporat" data-j="korporat" type="button">Wellness Korporat<span id="nK">0</span></button>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="charts" id="charts"></div>
+    <div class="filters">
+      <input type="search" id="cari" class="full" placeholder="Cari nama, email, perusahaan, cabor…">
+      <select id="fStatus"><option value="">Semua status</option><option>Baru</option><option>Dijawab</option><option>Lanjut konsultasi</option><option>Selesai</option><option>Ditolak</option></select>
+      <select id="fCek"><option value="">Semua kasus</option><option value="Ya">Perlu cek manual</option><option value="Tidak">Umum</option></select>
+      <select id="fUrut"><option value="baru">Terbaru</option><option value="lama">Terlama</option><option value="nama">Nama A–Z</option></select>
+      <button class="btn ghost" id="csv" type="button">Unduh CSV</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="head" id="head"></div>
+    <div class="list" id="list"></div>
+    <p class="empty" id="dibuat" style="margin:16px 0 40px"></p>
+  </section>
+</main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="box" id="sbox"></div></div>
+
+<script src="/config.js"></script>
+<script>window.MK_SCRIPT_URL = window.MK_SCRIPT_URL || (window.SITE || {}).programEndpoint || "";</script>
+<script>
+const SCRIPT_URL = window.MK_SCRIPT_URL || '';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let token = '', demo = false, data = { atlet: [], korporat: [] }, jenis = 'atlet', saring = {};
+try { token = sessionStorage.getItem('mk-dash-token') || ''; } catch (e) {}
+// Pakai sesi dari dashboard.html bila sudah masuk di sana (kunci mk-program-sesi / mk-ingat).
+if (!token) { try { const a = JSON.parse(sessionStorage.getItem('mk-program-sesi') || 'null'); const b = JSON.parse(localStorage.getItem('mk-ingat') || 'null'); if (a && a.sampai > Date.now()) token = a.token; else if (b && b.sampai > Date.now()) token = b.token; } catch (e) {} }
+
+async function api(body) {
+  const r = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  return r.json();
+}
+
+/* ---------- login ---------- */
+$('#lkirim').onclick = async () => {
+  if (!SCRIPT_URL) return msg('SCRIPT_URL belum diatur. Gunakan data demo atau hubungi staf IT.', 1);
+  const email = $('#lemail').value.trim();
+  msg('Mengirim kode…');
+  try { const j = await api({ aksi: 'kons-kirim', email }); if (!j.ok) return msg(j.pesan, 1); $('#l1').classList.add('hidden'); $('#l2').classList.remove('hidden'); msg('Kode terkirim ke ' + email + '.'); $('#lotp').focus(); }
+  catch (e) { msg('Koneksi bermasalah.', 1); }
+};
+$('#lmasuk').onclick = async () => {
+  msg('Memeriksa…');
+  try {
+    const j = await api({ aksi: 'kons-masuk', email: $('#lemail').value.trim(), otp: $('#lotp').value.trim() });
+    if (!j.ok) return msg(j.pesan, 1);
+    if (!j.admin) return msg('Email ini bukan pengelola.', 1);
+    token = j.token; try { sessionStorage.setItem('mk-dash-token', token); } catch (e) {}
+    muat();
+  } catch (e) { msg('Koneksi bermasalah.', 1); }
+};
+$('#ldemo').onclick = () => { demo = true; data = buatDemo(); tampil(); };
+$('#keluar').onclick = () => { try { sessionStorage.removeItem('mk-dash-token'); } catch (e) {} location.reload(); };
+function msg(t, bad) { $('#lmsg').textContent = t; $('#lmsg').className = 'msg' + (bad ? ' bad' : ''); }
+
+async function muat(ubah) {
+  if (demo) { tampil(); return; }
+  try {
+    const j = await api({ aksi: 'kons-daftar-admin', token, ubah });
+    if (!j.ok) { if (j.ulang) { token = ''; try { sessionStorage.removeItem('mk-dash-token'); } catch (e) {} $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); } return msg(j.pesan, 1); }
+    data = { atlet: j.atlet || [], korporat: j.korporat || [] };
+    $('#dibuat').textContent = 'Data diambil ' + j.dibuat + ' WIB.';
+    tampil();
+  } catch (e) { msg('Gagal memuat data.', 1); }
+}
+
+/* ---------- konfigurasi per jenis ---------- */
+const CFG = {
+  atlet: {
+    cari: ['Nama', 'Email', 'Cabang olahraga', 'Klub/instansi', 'Pelatih', 'Kota', 'ID'],
+    charts: [['Cabang olahraga', 'Cabang olahraga'], ['Level', 'Level'], ['Tujuan', 'Tujuan'], ['Fase', 'Fase latihan'], ['Kategori IMT', 'Kategori IMT'], ['Bulan', 'Pendaftar per bulan']],
+    sub: r => [r['Cabang olahraga'], r['Nomor/posisi/kelas'], r['Level']].filter(Boolean).join(' · '),
+    kol2: r => r['Cabang olahraga'] + ' · ' + r['Level'],
+    kpi: rows => [
+      [rows.length, 'Pendaftar'], [hitungBaru(rows), 'Status baru'], [rows.filter(r => r['Perlu cek manual'] === 'Ya').length, 'Perlu cek manual', 1],
+      [new Set(rows.map(r => r['Cabang olahraga'])).size, 'Cabang olahraga'], [rata(rows, 'Jam latihan/minggu') + ' jam', 'Rata-rata latihan/minggu'],
+      [rows.filter(r => r['Kompetisi terdekat'] && r['Kompetisi terdekat'] !== 'Belum ada').length, 'Punya jadwal kompetisi']],
+    detail: [['Olahraga', ['Cabang olahraga', 'Nomor/posisi/kelas', 'Level', 'Klub/instansi', 'Pelatih', 'Sesi/minggu', 'Durasi/sesi (menit)', 'Jam latihan/minggu', 'Fase', 'Kompetisi terdekat', 'Tujuan', 'Cedera 3 bulan']]]
+  },
+  korporat: {
+    cari: ['Nama', 'Email', 'Perusahaan/instansi', 'Kode program', 'Jabatan/divisi', 'Kota', 'ID'],
+    charts: [['Perusahaan/instansi', 'Perusahaan/instansi'], ['Sektor', 'Sektor'], ['Tujuan', 'Tujuan'], ['Pola kerja', 'Pola kerja'], ['Kategori IMT', 'Kategori IMT'], ['Pinggang berisiko', 'Lingkar pinggang berisiko']],
+    sub: r => [r['Jabatan/divisi'], r['Perusahaan/instansi']].filter(Boolean).join(' · '),
+    kol2: r => r['Perusahaan/instansi'] + ' · ' + r['Sektor'],
+    kpi: rows => [
+      [rows.length, 'Pendaftar'], [hitungBaru(rows), 'Status baru'], [rows.filter(r => r['Perlu cek manual'] === 'Ya').length, 'Perlu cek manual', 1],
+      [new Set(rows.map(r => r['Perusahaan/instansi'])).size, 'Perusahaan'], [persen(rows, r => r['Pinggang berisiko'] === 'Ya'), 'Pinggang berisiko'],
+      [persen(rows, r => r['Aktivitas cukup (≥150)'] === 'Ya'), 'Aktif ≥150 mnt/mg']],
+    detail: [['Pekerjaan', ['Perusahaan/instansi', 'Kode program', 'Sektor', 'Jabatan/divisi', 'Pola kerja', 'Jam kerja/hari', 'Jam duduk/hari']],
+             ['Gaya hidup', ['Aktivitas (menit/minggu)', 'Aktivitas cukup (≥150)', 'Jenis olahraga', 'Sarapan', 'Makan utama/hari', 'Sumber makan siang', 'Minuman manis/hari', 'Tidur (jam)', 'Stres kerja', 'Merokok', 'MCU 12 bulan', 'Tujuan']]]
+  }
+};
+const hitungBaru = rows => rows.filter(r => (r.Status || 'Baru') === 'Baru').length;
+const rata = (rows, k) => { const v = rows.map(r => +r[k]).filter(x => isFinite(x) && x > 0); return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1).replace('.', ',') : '-'; };
+const persen = (rows, fn) => rows.length ? Math.round(rows.filter(fn).length / rows.length * 100) + '%' : '-';
+const nilai = (r, k) => k === 'Bulan' ? String(r.Waktu || '').slice(0, 7) : (r[k] === '' || r[k] == null ? '(kosong)' : String(r[k]));
+
+/* ---------- tampilan ---------- */
+function tampil() {
+  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); $('#keluar').classList.remove('hidden');
+  $('#demoNote').classList.toggle('hidden', !demo);
+  $('#nA').textContent = data.atlet.length; $('#nK').textContent = data.korporat.length;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.j === jenis));
+  document.body.classList.toggle('t-korporat', jenis === 'korporat');
+  const cfg = CFG[jenis], semua = data[jenis];
+  $('#kpis').innerHTML = cfg.kpi(semua).map(([v, l, w]) => `<div class="kpi ${w && +v > 0 ? 'warn' : ''}"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
+  $('#charts').innerHTML = cfg.charts.map(([k, judul]) => {
+    const hit = {}; semua.forEach(r => { const v = nilai(r, k); hit[v] = (hit[v] || 0) + 1; });
+    let ent = Object.entries(hit); ent.sort(k === 'Bulan' ? (a, b) => a[0] < b[0] ? 1 : -1 : (a, b) => b[1] - a[1]); ent = ent.slice(0, 7);
+    const max = Math.max(1, ...ent.map(e => e[1]));
+    return `<div class="panel"><h3>${esc(judul)}</h3><div class="bars">${ent.length ? ent.map(([n, v]) => `<div class="bar ${saring[k] === n ? 'sel' : ''}" data-k="${esc(k)}" data-v="${esc(n)}"><span class="nm">${esc(n)}</span><span class="v">${v}</span><span class="tr"><i style="width:${v / max * 100}%"></i></span></div>`).join('') : '<div class="empty">Belum ada data.</div>'}</div></div>`;
+  }).join('');
+  document.querySelectorAll('.bar').forEach(b => b.onclick = () => { const k = b.dataset.k, v = b.dataset.v; if (saring[k] === v) delete saring[k]; else saring[k] = v; tampil(); });
+  $('#chips').innerHTML = Object.entries(saring).map(([k, v]) => `<button class="chip" data-k="${esc(k)}" type="button">${esc(k === 'Bulan' ? 'Bulan' : k)}: ${esc(v)} ✕</button>`).join('');
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { delete saring[c.dataset.k]; tampil(); });
+  $('#head').innerHTML = `<span>Tanggal</span><span>Nama</span><span>${jenis === 'atlet' ? 'Cabor · level' : 'Perusahaan · sektor'}</span><span>IMT</span><span>Tujuan</span><span>Status</span>`;
+  const rows = tersaring();
+  $('#list').innerHTML = rows.length ? rows.map(r => `<div class="row" data-id="${esc(r.ID)}" tabindex="0">
+      <span class="meta" style="grid-column:auto">${esc(String(r.Waktu).slice(0, 10))}</span>
+      <span class="nm">${esc(r.Nama)}${r['Perlu cek manual'] === 'Ya' ? '<span class="tag cek">Cek manual</span>' : ''}</span>
+      <span class="meta">${esc(cfg.kol2(r))}</span>
+      <span class="meta">IMT ${esc(r.IMT)} · ${esc(r['Kategori IMT'])}</span>
+      <span class="q">${esc(r.Tujuan)}</span>
+      <span><span class="tag ${esc(String(r.Status || 'Baru').split(' ')[0])}">${esc(r.Status || 'Baru')}</span></span>
+    </div>`).join('') : '<div class="panel empty">Tidak ada pendaftar yang cocok dengan filter.</div>';
+  document.querySelectorAll('.row').forEach(el => { el.onclick = () => buka(el.dataset.id); el.onkeydown = e => { if (e.key === 'Enter') buka(el.dataset.id); }; });
+  if (demo) $('#dibuat').textContent = 'Data demo dibuat di browser.';
+}
+function tersaring() {
+  const cfg = CFG[jenis], q = $('#cari').value.trim().toLowerCase(), s = $('#fStatus').value, c = $('#fCek').value, u = $('#fUrut').value;
+  let rows = data[jenis].filter(r =>
+    (!q || cfg.cari.some(k => String(r[k] || '').toLowerCase().includes(q))) &&
+    (!s || (r.Status || 'Baru') === s) && (!c || r['Perlu cek manual'] === c) &&
+    Object.entries(saring).every(([k, v]) => nilai(r, k) === v));
+  rows.sort(u === 'nama' ? (a, b) => String(a.Nama).localeCompare(b.Nama) : u === 'lama' ? (a, b) => String(a.Waktu) < String(b.Waktu) ? -1 : 1 : (a, b) => String(a.Waktu) < String(b.Waktu) ? 1 : -1);
+  return rows;
+}
+['#cari', '#fStatus', '#fCek', '#fUrut'].forEach(s => $(s).addEventListener('input', tampil));
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => { jenis = t.dataset.j; saring = {}; tampil(); });
+
+function buka(id) {
+  const r = data[jenis].find(x => String(x.ID) === String(id)); if (!r) return;
+  const dl = keys => `<dl>${keys.filter(k => r[k] !== undefined && r[k] !== '').map(k => `<div><dt>${esc(k)}</dt><dd>${esc(r[k])}</dd></div>`).join('')}</dl>`;
+  const wa = String(r.WhatsApp || '').replace(/\D/g, '');
+  $('#sbox').innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><h2>${esc(r.Nama)}</h2><div class="empty">${esc(r.ID)} · ${esc(r.Waktu)}</div></div><button class="btn ghost" id="tutup" type="button">Tutup</button></div>
+    ${r['Perlu cek manual'] === 'Ya' ? `<p class="tag cek" style="display:block;padding:8px 10px;border-radius:10px;margin:12px 0 0">Perlu cek manual: ${esc(r['Alasan cek'])}. Jangan dijawab otomatis.</p>` : ''}
+    <div class="sec">Pertanyaan</div><p style="margin:6px 0;white-space:pre-wrap">${esc(r.Pertanyaan)}</p>
+    <div class="sec">Data diri & tubuh</div>${dl(['Panggilan', 'Jenis kelamin', 'Tanggal lahir', 'Usia', 'Email', 'WhatsApp', 'Kota', 'BB (kg)', 'TB (cm)', 'IMT', 'Kategori IMT', 'Lingkar pinggang (cm)', 'Pinggang berisiko', '% lemak', 'Estimasi energi (kkal)'])}
+    ${CFG[jenis].detail.map(([t, ks]) => `<div class="sec">${esc(t)}</div>${dl(ks)}`).join('')}
+    <div class="sec">Kesehatan</div>${dl(['Kondisi medis', 'Obat/suplemen', 'Hamil/menyusui'])}
+    <div class="sec">Tindak lanjut</div>
+    <div class="actrow"><select id="dStatus">${['Baru', 'Dijawab', 'Lanjut konsultasi', 'Selesai', 'Ditolak'].map(s => `<option ${s === (r.Status || 'Baru') ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+    <textarea id="dCatatan" placeholder="Catatan pengelola (tidak terlihat peserta)" style="margin-top:8px">${esc(r['Catatan pengelola'] || '')}</textarea>
+    <div class="actrow"><button class="btn" id="dSimpan" type="button">Simpan status</button>
+      <a class="btn ghost" style="text-align:center;text-decoration:none" href="mailto:${esc(r.Email)}?subject=${encodeURIComponent('Re: Konsultasi Gizi Olahraga - ' + (jenis === 'atlet' ? 'Atlet' : 'Wellness Korporat') + ' - ' + r.Nama)}">Balas email</a>
+      ${wa ? `<a class="btn ghost" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${wa}">WhatsApp</a>` : ''}</div>`;
+  $('#sheet').classList.add('on'); document.body.style.overflow = 'hidden';
+  $('#tutup').onclick = tutup;
+  $('#dSimpan').onclick = async () => {
+    const ubah = { jenis, id: r.ID, status: $('#dStatus').value, catatan: $('#dCatatan').value };
+    r.Status = ubah.status; r['Catatan pengelola'] = ubah.catatan;
+    $('#dSimpan').textContent = 'Menyimpan…'; await muat(demo ? undefined : ubah); tutup();
+  };
+}
+function tutup() { $('#sheet').classList.remove('on'); document.body.style.overflow = ''; }
+$('#sheet').onclick = e => { if (e.target.id === 'sheet') tutup(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') tutup(); });
+
+$('#csv').onclick = () => {
+  const rows = tersaring(); if (!rows.length) return;
+  const keys = Object.keys(rows[0]).filter(k => k !== 'baris');
+  const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const csv = '﻿' + [keys.map(q).join(',')].concat(rows.map(r => keys.map(k => q(r[k])).join(','))).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = (jenis === 'atlet' ? 'pendaftar-atlet-' : 'pendaftar-wellness-korporat-') + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+};
+
+/* ---------- data demo ---------- */
+function buatDemo() {
+  const pick = (a, i) => a[i % a.length];
+  const namaA = ['Rizky Pratama', 'Nadia Putri', 'Bagas Saputra', 'Siti Rahma', 'Dimas Aditya', 'Ayu Lestari', 'Fajar Nugroho', 'Intan Permata', 'Yoga Firmansyah', 'Laras Wulandari', 'Hendra Wijaya', 'Maya Sari'];
+  const namaK = ['Andi Kurniawan', 'Rina Marlina', 'Budi Santoso', 'Dewi Anggraini', 'Agus Setiawan', 'Fitri Handayani', 'Joko Susilo', 'Wulan Sari', 'Teguh Prasetyo', 'Ratna Dewi', 'Iwan Hermawan', 'Sri Mulyani', 'Eko Purnomo', 'Lina Marlina'];
+  const tgl = i => { const d = new Date(Date.now() - i * 4.3 * 864e5); return d.toISOString().slice(0, 10) + ' 0' + (8 + i % 2) + ':1' + i % 6 + ':00'; };
+  const imtK = x => x < 18.5 ? 'Kurus' : x <= 25 ? 'Normal' : x <= 27 ? 'Gemuk' : 'Obesitas';
+  const atlet = namaA.map((n, i) => { const imt = 19 + (i * 1.3) % 8; return { ID: 'A' + (2611 - i) + '-0' + i, Waktu: tgl(i), Status: pick(['Baru', 'Dijawab', 'Lanjut konsultasi', 'Selesai'], i), 'Perlu cek manual': i % 5 === 3 ? 'Ya' : 'Tidak', 'Alasan cek': i % 5 === 3 ? 'usia < 18' : '', Email: n.split(' ')[0].toLowerCase() + '@contoh.id', Nama: n, Panggilan: n.split(' ')[0], 'Jenis kelamin': i % 2 ? 'P' : 'L', Usia: 16 + i % 10, WhatsApp: '62812000000' + i, Kota: pick(['Jakarta Barat', 'Tangerang', 'Bekasi', 'Depok'], i), 'BB (kg)': 55 + i * 2, 'TB (cm)': 160 + i * 1.5, IMT: imt.toFixed(1), 'Kategori IMT': imtK(imt), 'Cabang olahraga': pick(['Bulutangkis', 'Sepak bola', 'Pencak silat', 'Renang', 'Atletik', 'Bulutangkis'], i), 'Nomor/posisi/kelas': pick(['Tunggal putra', 'Gelandang', 'Kelas C', '100 m gaya bebas', '400 m'], i), Level: pick(['Pelajar/klub', 'Provinsi (PON/Porprov)', 'Nasional (pelatnas/timnas)', 'Daerah (kota/kabupaten)'], i), 'Klub/instansi': pick(['PB Jaya Raya', 'SSB Garuda', 'Perguruan Merpati', 'Klub Renang Tirta'], i), Pelatih: 'Coach ' + pick(['Hadi', 'Rudi', 'Sari'], i), 'Sesi/minggu': 4 + i % 6, 'Durasi/sesi (menit)': 90 + (i % 3) * 30, 'Jam latihan/minggu': ((4 + i % 6) * (90 + (i % 3) * 30) / 60).toFixed(1), Fase: pick(['Persiapan umum', 'Persiapan khusus', 'Kompetisi', 'Pra-kompetisi'], i), 'Kompetisi terdekat': i % 3 ? '2027-0' + (1 + i % 8) + '-15' : 'Belum ada', Tujuan: pick(['Meningkatkan performa', 'Menurunkan/menjaga kelas berat badan', 'Menambah massa otot', 'Persiapan kompetisi'], i), 'Cedera 3 bulan': i % 4 ? 'tidak' : 'ringan', 'Kondisi medis': 'Tidak ada', 'Obat/suplemen': 'Tidak', 'Hamil/menyusui': i % 2 ? 'tidak' : '-', Pertanyaan: 'Bagaimana pola makan yang tepat sebelum dan sesudah latihan sore agar tidak cepat lelah saat sesi kedua?', 'Estimasi energi (kkal)': 2600 + i * 50, 'Catatan pengelola': '' }; });
+  const korporat = namaK.map((n, i) => { const imt = 22 + (i * 1.7) % 10; const ping = (i % 2 ? 78 : 88) + i % 9; return { ID: 'W' + (2611 - i) + '-1' + i, Waktu: tgl(i + 1), Status: pick(['Baru', 'Baru', 'Dijawab', 'Selesai', 'Lanjut konsultasi'], i), 'Perlu cek manual': i % 4 === 1 ? 'Ya' : 'Tidak', 'Alasan cek': i % 4 === 1 ? 'kondisi medis' : '', Email: n.split(' ')[0].toLowerCase() + '@perusahaan.id', Nama: n, Panggilan: n.split(' ')[0], 'Jenis kelamin': i % 2 ? 'P' : 'L', Usia: 28 + i * 2 % 25, WhatsApp: '62813000000' + i, Kota: pick(['Jakarta Selatan', 'Jakarta Pusat', 'Tangerang Selatan'], i), 'BB (kg)': 62 + i * 2.5, 'TB (cm)': 158 + i, IMT: imt.toFixed(1), 'Kategori IMT': imtK(imt), 'Lingkar pinggang (cm)': ping, 'Pinggang berisiko': ping >= (i % 2 ? 80 : 90) ? 'Ya' : 'Tidak', 'Perusahaan/instansi': pick(['PT Bank Sehat', 'PT Energi Nusantara', 'Universitas Esa Unggul', 'PT Logistik Prima'], i), 'Kode program': pick(['BS-2026', 'EN-FIT', '', 'LP-WELL'], i), Sektor: pick(['Perbankan & keuangan', 'Energi & pertambangan', 'Pendidikan', 'Transportasi & logistik'], i), 'Jabatan/divisi': pick(['Staf keuangan', 'Supervisor operasional', 'Dosen', 'Admin gudang'], i), 'Pola kerja': pick(['Kantor (kerja di meja)', 'Shift (termasuk malam)', 'Hybrid/WFH', 'Lapangan (banyak bergerak)'], i), 'Jam kerja/hari': 8 + i % 3, 'Jam duduk/hari': 5 + i % 6, 'Aktivitas (menit/minggu)': (i * 37) % 260, 'Aktivitas cukup (≥150)': (i * 37) % 260 >= 150 ? 'Ya' : 'Tidak', 'Jenis olahraga': pick(['Jalan kaki', 'Tidak ada', 'Futsal', 'Senam'], i), Sarapan: pick(['rutin', 'kadang', 'tidak'], i), 'Makan utama/hari': pick(['3', '1-2', '>3'], i), 'Sumber makan siang': pick(['Kantin kantor', 'Pesan antar online', 'Bekal dari rumah'], i), 'Minuman manis/hari': pick(['1', '2+', '0'], i), 'Tidur (jam)': 5.5 + i % 3, 'Stres kerja': pick(['Sedang', 'Tinggi', 'Rendah'], i), Merokok: i % 5 ? 'tidak' : 'ya', 'MCU 12 bulan': i % 3 ? 'ya' : 'tidak', Tujuan: pick(['Menurunkan berat badan/lemak', 'Energi & fokus saat bekerja', 'Mencegah penyakit (hasil MCU)', 'Pola makan seimbang'], i), 'Kondisi medis': i % 4 === 1 ? 'Ada: kolesterol tinggi' : 'Tidak ada', 'Obat/suplemen': 'Tidak', 'Hamil/menyusui': i % 2 ? 'tidak' : '-', Pertanyaan: 'Saya sering lapar di sore hari dan ngemil gorengan di kantor. Bagaimana mengatur makan siang dan camilan agar berat badan turun?', 'Estimasi energi (kkal)': 1900 + i * 30, 'Catatan pengelola': '' }; });
+  return { atlet, korporat };
+}
+
+if (new URLSearchParams(location.search).has('demo')) { demo = true; data = buatDemo(); tampil(); }
+else if (token && SCRIPT_URL) muat();
+</script>
+</body>
+</html>

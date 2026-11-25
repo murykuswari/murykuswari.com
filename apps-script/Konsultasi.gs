@@ -91,6 +91,8 @@ function konsultasi_(d) {
     case 'kons-bayar-dompet': return konsBayarDompet_(d);
     case 'kons-konfirmasi': return konsKonfirmasi_(d);
     case 'kons-verifikasi': return konsVerifikasi_(d);
+    case 'kons-daftar': return konsDaftar_(d);           // Pendaftaran.gs
+    case 'kons-daftar-admin': return konsDaftarAdmin_(d); // Pendaftaran.gs
     default: return { ok: false, pesan: 'Permintaan tidak dikenali.' };
   }
 }

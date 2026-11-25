@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pendaftaran Konsultasi Gizi | murykuswari.com</title>
+<meta name="description" content="Pendaftaran konsultasi gizi olahraga untuk atlet dan program wellness korporat bersama Assoc. Prof. Dr. Mury Kuswari.">
+<meta name="theme-color" content="#003a63">
+<style>
+:root{
+  --navy:#003a63;--blue:#0070b8;--blue-soft:#e6f2fb;
+  --green:#0f7b5f;--green-soft:#e3f4ee;
+  --ink:#0b1e33;--muted:#5b6f86;--line:#d6e0ea;--bg:#f4f7fa;--card:#fff;
+  --red:#b42318;--red-soft:#fdecea;--amber:#9a6700;--amber-soft:#fff6db;
+  --accent:var(--blue);--accent-soft:var(--blue-soft);
+  --r:14px;
+}
+body.t-korporat{--accent:var(--green);--accent-soft:var(--green-soft)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header.top{background:var(--navy);color:#fff}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:14px}
+header.top a{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.2px}
+header.top small{opacity:.8;font-size:13px}
+.hero{padding:24px 0 8px}
+.hero h1{font-size:clamp(22px,5.4vw,30px);line-height:1.2;margin:0 0 6px}
+.hero p{margin:0;color:var(--muted)}
+/* progress */
+.steps{display:flex;gap:6px;margin:18px 0 6px}
+.steps span{flex:1;height:6px;border-radius:6px;background:var(--line)}
+.steps span.on{background:var(--accent)}
+.steplabel{font-size:13px;color:var(--muted);margin-bottom:12px}
+/* pilihan jenis */
+.choices{display:grid;gap:14px;grid-template-columns:1fr;margin:18px 0 28px}
+@media(min-width:620px){.choices{grid-template-columns:1fr 1fr}}
+.choice{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:18px;transition:border-color .15s,box-shadow .15s}
+.choice:hover,.choice:focus-visible{border-color:var(--c);box-shadow:0 0 0 4px var(--cs)}
+.choice .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--cs);color:var(--c);margin-bottom:10px}
+.choice h2{margin:0 0 4px;font-size:19px;color:var(--c)}
+.choice p{margin:0 0 10px;color:var(--muted);font-size:15px}
+.choice ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink)}
+.choice .go{display:inline-block;margin-top:12px;font-weight:700;color:var(--c)}
+.c-atlet{--c:var(--blue);--cs:var(--blue-soft)}
+.c-korporat{--c:var(--green);--cs:var(--green-soft)}
+/* kartu form */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 16px;margin-bottom:16px}
+@media(min-width:620px){.panel{padding:22px 24px}}
+.panel h3{margin:0 0 4px;font-size:18px}
+.panel .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:620px){.grid{grid-template-columns:1fr 1fr}.grid .full{grid-column:1/-1}}
+.f label.l{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.f label.l .req{color:var(--red)}
+.f label.l .opt{color:var(--muted);font-weight:400;font-size:13px}
+.f .help{font-size:13px;color:var(--muted);margin-top:4px}
+.f .err{display:none;font-size:13px;color:var(--red);margin-top:4px}
+.f.bad .err{display:block}
+.f.bad input,.f.bad select,.f.bad textarea{border-color:var(--red);background:#fffafa}
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],select,textarea{
+  width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.unit{position:relative}
+.unit input{padding-right:58px}
+.unit em{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--muted);font-size:14px;pointer-events:none}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{flex:1 1 auto;min-width:96px;display:flex;align-items:center;justify-content:center;text-align:center;gap:8px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;cursor:pointer;font-size:15px;background:#fff}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.seg label:has(input:focus-visible){box-shadow:0 0 0 3px var(--accent-soft)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer}
+.check input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
+.count{float:right;font-weight:400;color:var(--muted);font-size:13px}
+.hidden{display:none!important}
+/* bar aksi */
+.actions{position:sticky;bottom:0;z-index:5;background:rgba(244,247,250,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom));margin-top:8px}
+.actions .wrap{display:flex;gap:10px}
+.btn{font:inherit;font-weight:700;font-size:16px;border-radius:12px;border:1.5px solid var(--accent);padding:12px 18px;min-height:50px;cursor:pointer;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.wa{background:#1f9d55;border-color:#1f9d55}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.actions .btn{flex:1}
+.actions .btn.ghost{flex:0 0 auto}
+.alert{border-radius:12px;padding:12px 14px;font-size:15px;margin-bottom:14px}
+.alert.warn{background:var(--amber-soft);color:#5c3d00;border:1px solid #f0d78c}
+.alert.bad{background:var(--red-soft);color:var(--red);border:1px solid #f5c2bd}
+.alert.ok{background:var(--green-soft);color:#0b4f3d;border:1px solid #b6e2d3}
+/* ringkasan */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0 4px}
+@media(min-width:620px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--accent-soft);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:20px;color:var(--accent)}
+.stat span{font-size:13px;color:var(--muted)}
+dl.rev{display:grid;grid-template-columns:1fr;gap:0;margin:0}
+dl.rev div{display:grid;grid-template-columns:42% 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15px}
+dl.rev dt{color:var(--muted)}
+dl.rev dd{margin:0;word-break:break-word}
+.revsec{font-weight:700;margin:16px 0 4px;color:var(--accent)}
+.revsec button{float:right;font:inherit;font-size:13px;color:var(--accent);background:none;border:0;text-decoration:underline;cursor:pointer}
+/* kartu profil */
+.cardbox{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:620px){.cardbox{grid-template-columns:300px 1fr;align-items:start}}
+.cardbox canvas{width:100%;max-width:340px;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,30,60,.15);display:block;margin:0 auto}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.btnrow .btn{flex:1 1 160px}
+footer{color:var(--muted);font-size:13px;padding:24px 0 40px;text-align:center}
+.hp{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a href="/">murykuswari.com</a><small>Konsultasi Gizi Olahraga</small></div></header>
+
+<main class="wrap">
+  <!-- LANGKAH 0: pilih jenis -->
+  <section id="s0">
+    <div class="hero">
+      <h1>Pendaftaran Konsultasi Gizi</h1>
+      <p>Pilih jenis konsultasi. Atlet dan wellness korporat memakai formulir berbeda supaya data Anda tercatat dengan tepat.</p>
+    </div>
+    <div class="choices">
+      <button class="choice c-atlet" data-jenis="atlet" type="button">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4" r="2"/><path d="M4 17l4-1 2-4 3 3v5"/><path d="M10 12l2-4 4 2 3-1"/></svg></div>
+        <h2>Konsultasi Atlet</h2>
+        <p>Untuk atlet, calon atlet, dan pegiat olahraga prestasi.</p>
+        <ul><li>Cabang olahraga, level, dan fase latihan</li><li>Program latihan dan jadwal kompetisi</li><li>Energi, makronutrien, dan hidrasi</li></ul>
+        <span class="go">Isi formulir atlet →</span>
+      </button>
+      <button class="choice c-korporat" data-jenis="korporat" type="button">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></div>
+        <h2>Wellness Korporat</h2>
+        <p>Untuk karyawan atau peserta program kesehatan perusahaan dan instansi.</p>
+        <ul><li>Pola kerja, duduk, dan aktivitas fisik</li><li>Kebiasaan makan, tidur, dan stres</li><li>Risiko lingkar pinggang dan IMT</li></ul>
+        <span class="go">Isi formulir korporat →</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- FORMULIR -->
+  <form id="form" class="hidden" novalidate autocomplete="on">
+    <div class="steps" id="bar"></div>
+    <div class="steplabel" id="steplabel"></div>
+    <div id="formAlert"></div>
+    <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div id="pages"></div>
+  </form>
+
+  <!-- SELESAI -->
+  <section id="done" class="hidden"></section>
+</main>
+
+<div class="actions hidden" id="actions"><div class="wrap">
+  <button class="btn ghost" type="button" id="back">← Kembali</button>
+  <button class="btn" type="button" id="next">Lanjut →</button>
+</div></div>
+
+<footer class="wrap">Data Anda hanya dipakai untuk konsultasi dan disimpan secara privat oleh pengelola murykuswari.com.<br>Hasil hitungan di halaman ini adalah estimasi, bukan diagnosis.</footer>
+
+<script src="/config.js"></script>
+<script>window.MK_SCRIPT_URL = window.MK_SCRIPT_URL || (window.SITE || {}).programEndpoint || "";</script>
+<script>
+/* ================= PENGATURAN =================
+ * SCRIPT_URL: URL /exec Apps Script yang sama dengan layanan unduhan & Program Gizi.
+ * Bila config.js situs sudah mendefinisikan window.MK_SCRIPT_URL, nilai itu yang dipakai.
+ */
+const SCRIPT_URL = window.MK_SCRIPT_URL || '';
+const EMAIL_KONSULTASI = 'mury@esaunggul.ac.id';
+const WA_KONSULTASI = '6282245039450';
+
+/* ================= SKEMA FORMULIR ================= */
+const CABOR = ['Atletik','Bulutangkis','Sepak bola','Futsal','Bola basket','Bola voli','Renang','Bersepeda','Lari jarak jauh/maraton','Triatlon','Tenis','Tenis meja','Pencak silat','Karate','Taekwondo','Judo','Tinju','Gulat','Angkat besi','Binaraga/physique','Panahan','Menembak','Senam','Dayung','Esports','Lainnya'];
+const LEVEL = ['Rekreasional/hobi','Pelajar/klub','Daerah (kota/kabupaten)','Provinsi (PON/Porprov)','Nasional (pelatnas/timnas)','Internasional','Profesional'];
+const FASE = ['Persiapan umum','Persiapan khusus','Pra-kompetisi','Kompetisi','Transisi/pemulihan','Tidak sedang dalam program'];
+const TUJUAN_ATLET = ['Meningkatkan performa','Menambah massa otot','Menurunkan lemak tubuh','Menurunkan/menjaga kelas berat badan','Pemulihan dan mencegah cedera','Hidrasi dan stamina','Persiapan kompetisi'];
+const SEKTOR = ['Pemerintahan/BUMN','Perbankan & keuangan','Kesehatan','Pendidikan','Manufaktur','Teknologi & digital','Energi & pertambangan','Transportasi & logistik','Ritel & jasa','Keamanan/kepolisian/TNI','Lainnya'];
+const POLA = ['Kantor (kerja di meja)','Lapangan (banyak bergerak)','Shift (termasuk malam)','Hybrid/WFH','Campuran kantor & lapangan'];
+const TUJUAN_KORP = ['Menurunkan berat badan/lemak','Meningkatkan kebugaran','Energi & fokus saat bekerja','Pola makan seimbang','Mencegah penyakit (hasil MCU)','Menambah massa otot'];
+
+const STEPS = {
+  atlet: [
+    { t: 'Data diri', s: 'Semua kolom bertanda * wajib diisi.', sec: ['diri'] },
+    { t: 'Ukuran tubuh & olahraga', s: 'Gunakan hasil timbang dan ukur terbaru.', sec: ['tubuh', 'atlet'] },
+    { t: 'Kesehatan & tujuan', s: 'Membantu kami memberi saran yang aman.', sec: ['sehat'] },
+    { t: 'Periksa & kartu profil', s: 'Periksa ulang data, lalu kirim.', sec: ['review'] }
+  ],
+  korporat: [
+    { t: 'Data diri', s: 'Semua kolom bertanda * wajib diisi.', sec: ['diri'] },
+    { t: 'Pekerjaan & ukuran tubuh', s: 'Data perusahaan dipakai untuk mengelompokkan program wellness.', sec: ['kerja', 'tubuh'] },
+    { t: 'Gaya hidup', s: 'Kebiasaan sehari-hari dalam satu bulan terakhir.', sec: ['gaya'] },
+    { t: 'Kesehatan & tujuan', s: 'Membantu kami memberi saran yang aman.', sec: ['sehat'] },
+    { t: 'Periksa & kartu profil', s: 'Periksa ulang data, lalu kirim.', sec: ['review'] }
+  ]
+};
+
+const SECTIONS = {
+  diri: { t: 'Data diri', f: [
+    { id: 'nama', l: 'Nama lengkap', type: 'text', req: 1, min: 3, max: 80, ac: 'name' },
+    { id: 'panggilan', l: 'Nama panggilan', type: 'text', req: 1, min: 2, max: 30, ac: 'nickname' },
+    { id: 'jk', l: 'Jenis kelamin', type: 'seg', req: 1, o: [['L', 'Laki-laki'], ['P', 'Perempuan']] },
+    { id: 'tglLahir', l: 'Tanggal lahir', type: 'date', req: 1, ac: 'bday' },
+    { id: 'email', l: 'Email', type: 'email', req: 1, ac: 'email', help: 'Jawaban konsultasi dikirim ke email ini.' },
+    { id: 'wa', l: 'Nomor WhatsApp', type: 'tel', req: 1, ac: 'tel', ph: '08xxxxxxxxxx' },
+    { id: 'kota', l: 'Kota domisili', type: 'text', req: 1, min: 3, max: 60, ac: 'address-level2', full: 1 }
+  ]},
+  tubuh: { t: 'Ukuran tubuh', f: [
+    { id: 'bb', l: 'Berat badan', type: 'num', unit: 'kg', req: 1, lo: 25, hi: 250, step: '0.1' },
+    { id: 'tb', l: 'Tinggi badan', type: 'num', unit: 'cm', req: 1, lo: 100, hi: 230, step: '0.1' },
+    { id: 'pinggang', l: 'Lingkar pinggang', type: 'num', unit: 'cm', reqIf: d => d.jenis === 'korporat', lo: 40, hi: 200, step: '0.1', help: 'Ukur di antara tulang rusuk terbawah dan tulang panggul, setelah membuang napas.' },
+    { id: 'lemak', l: 'Persen lemak tubuh', type: 'num', unit: '%', lo: 3, hi: 65, step: '0.1', help: 'Isi bila pernah diukur (BIA/skinfold/DXA). Bisa diukur di Lantai 8 Kampus Universitas Esa Unggul.' }
+  ]},
+  atlet: { t: 'Data olahraga', f: [
+    { id: 'cabor', l: 'Cabang olahraga', type: 'sel', req: 1, o: CABOR },
+    { id: 'caborLain', l: 'Sebutkan cabang olahraga', type: 'text', req: 1, min: 3, max: 60, showIf: d => d.cabor === 'Lainnya' },
+    { id: 'posisi', l: 'Nomor / posisi / kelas tanding', type: 'text', req: 1, min: 1, max: 60, ph: 'mis. tunggal putra, gelandang, -60 kg' },
+    { id: 'level', l: 'Level', type: 'sel', req: 1, o: LEVEL },
+    { id: 'klub', l: 'Klub / sekolah / instansi', type: 'text', req: 1, min: 2, max: 80 },
+    { id: 'pelatih', l: 'Nama pelatih', type: 'text', req: 1, min: 2, max: 60, help: 'Tulis "Tidak ada" bila berlatih mandiri.' },
+    { id: 'sesi', l: 'Sesi latihan per minggu', type: 'num', unit: 'sesi', req: 1, lo: 1, hi: 21, step: '1' },
+    { id: 'durasi', l: 'Durasi rata-rata per sesi', type: 'num', unit: 'menit', req: 1, lo: 15, hi: 360, step: '5' },
+    { id: 'fase', l: 'Fase latihan saat ini', type: 'sel', req: 1, o: FASE },
+    { id: 'kompetisi', l: 'Jadwal kompetisi terdekat', type: 'seg', req: 1, o: [['ada', 'Sudah ada'], ['belum', 'Belum ada']] },
+    { id: 'tglKompetisi', l: 'Tanggal kompetisi', type: 'date', req: 1, showIf: d => d.kompetisi === 'ada' },
+    { id: 'tujuan', l: 'Tujuan utama', type: 'sel', req: 1, o: TUJUAN_ATLET, full: 1 }
+  ]},
+  kerja: { t: 'Pekerjaan', f: [
+    { id: 'perusahaan', l: 'Nama perusahaan / instansi', type: 'text', req: 1, min: 2, max: 100, ac: 'organization' },
+    { id: 'kodeProgram', l: 'Kode program wellness', type: 'text', max: 30, help: 'Isi bila perusahaan Anda memberi kode program.' },
+    { id: 'sektor', l: 'Sektor', type: 'sel', req: 1, o: SEKTOR },
+    { id: 'jabatan', l: 'Jabatan / divisi', type: 'text', req: 1, min: 2, max: 80, ac: 'organization-title' },
+    { id: 'pola', l: 'Pola kerja', type: 'sel', req: 1, o: POLA },
+    { id: 'jamKerja', l: 'Jam kerja per hari', type: 'num', unit: 'jam', req: 1, lo: 1, hi: 18, step: '0.5' },
+    { id: 'jamDuduk', l: 'Lama duduk per hari', type: 'num', unit: 'jam', req: 1, lo: 0, hi: 18, step: '0.5', help: 'Termasuk di kantor, perjalanan, dan di rumah.' }
+  ]},
+  gaya: { t: 'Gaya hidup', f: [
+    { id: 'aktivitas', l: 'Olahraga / aktivitas fisik per minggu', type: 'num', unit: 'menit', req: 1, lo: 0, hi: 3000, step: '5', help: 'Jalan cepat, bersepeda, olahraga, dsb. Isi 0 bila tidak ada.' },
+    { id: 'jenisOlahraga', l: 'Jenis olahraga yang dilakukan', type: 'text', req: 1, min: 2, max: 80, help: 'Tulis "Tidak ada" bila belum berolahraga.' },
+    { id: 'sarapan', l: 'Sarapan', type: 'seg', req: 1, o: [['rutin', 'Rutin'], ['kadang', 'Kadang'], ['tidak', 'Jarang/tidak']] },
+    { id: 'makan', l: 'Makan utama per hari', type: 'seg', req: 1, o: [['1-2', '1–2 kali'], ['3', '3 kali'], ['>3', 'Lebih dari 3']] },
+    { id: 'sumberMakan', l: 'Makan siang biasanya dari', type: 'sel', req: 1, o: ['Bekal dari rumah', 'Kantin kantor', 'Warung/restoran sekitar', 'Pesan antar online', 'Tidak makan siang'] },
+    { id: 'manis', l: 'Minuman manis per hari', type: 'seg', req: 1, o: [['0', 'Tidak ada'], ['1', '1 gelas'], ['2+', '2 gelas atau lebih']] },
+    { id: 'tidur', l: 'Lama tidur per malam', type: 'num', unit: 'jam', req: 1, lo: 2, hi: 14, step: '0.5' },
+    { id: 'stres', l: 'Tingkat stres kerja', type: 'seg', req: 1, o: [['1', 'Rendah'], ['2', 'Sedang'], ['3', 'Tinggi']] },
+    { id: 'rokok', l: 'Merokok / vape', type: 'seg', req: 1, o: [['tidak', 'Tidak'], ['ya', 'Ya']] },
+    { id: 'mcu', l: 'Medical check-up 12 bulan terakhir', type: 'seg', req: 1, o: [['ya', 'Sudah'], ['tidak', 'Belum']] },
+    { id: 'tujuan', l: 'Tujuan utama', type: 'sel', req: 1, o: TUJUAN_KORP, full: 1 }
+  ]},
+  sehat: { t: 'Kesehatan & tujuan', f: [
+    { id: 'medis', l: 'Kondisi medis yang sedang dialami', type: 'seg', req: 1, o: [['tidak', 'Tidak ada'], ['ada', 'Ada']], full: 1, help: 'Contoh: diabetes, hipertensi, kolesterol, asam urat, jantung, ginjal, alergi makanan, gangguan makan.' },
+    { id: 'medisDetail', l: 'Sebutkan kondisinya', type: 'area', req: 1, min: 3, max: 400, showIf: d => d.medis === 'ada', full: 1 },
+    { id: 'obat', l: 'Rutin minum obat / suplemen', type: 'seg', req: 1, o: [['tidak', 'Tidak'], ['ya', 'Ya']] },
+    { id: 'obatDetail', l: 'Sebutkan obat / suplemen', type: 'text', req: 1, min: 2, max: 200, showIf: d => d.obat === 'ya' },
+    { id: 'hamil', l: 'Sedang hamil / menyusui', type: 'seg', req: 1, o: [['tidak', 'Tidak'], ['hamil', 'Hamil'], ['menyusui', 'Menyusui']], showIf: d => d.jk === 'P', full: 1 },
+    { id: 'cedera', l: 'Cedera dalam 3 bulan terakhir', type: 'seg', req: 1, o: [['tidak', 'Tidak ada'], ['ringan', 'Ringan'], ['berat', 'Berat/sedang dirawat']], showIf: d => d.jenis === 'atlet', full: 1 },
+    { id: 'pertanyaan', l: 'Pertanyaan atau masalah yang ingin dikonsultasikan', type: 'area', req: 1, min: 30, max: 800, full: 1, counter: 1, help: 'Ceritakan sejelas mungkin: kondisi saat ini, yang sudah dicoba, dan hasil yang diharapkan.' },
+    { id: 'wali', l: 'Saya orang tua/wali, atau pendaftaran ini sudah disetujui orang tua/wali.', type: 'chk', req: 1, showIf: d => usia(d.tglLahir) !== null && usia(d.tglLahir) < 18, full: 1 },
+    { id: 'setuju', l: 'Data yang saya isi benar, dan saya setuju data ini disimpan untuk keperluan konsultasi serta pencatatan program.', type: 'chk', req: 1, full: 1 }
+  ]}
+};
+
+/* ================= STATE ================= */
+const KEY = 'mk-pendaftaran-v1';
+let st = { jenis: null, step: 0, d: {}, foto: '', sembunyi: false, id: '' };
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.jenis) st = Object.assign(st, s, { step: 0 }); } catch (e) {}
+const simpanLokal = () => { try { localStorage.setItem(KEY, JSON.stringify({ jenis: st.jenis, d: st.d, sembunyi: st.sembunyi })); } catch (e) {} };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ================= HITUNGAN ================= */
+function usia(t) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t || '')) return null;
+  const b = new Date(t + 'T00:00:00'), n = new Date();
+  let u = n.getFullYear() - b.getFullYear();
+  if (n.getMonth() < b.getMonth() || (n.getMonth() === b.getMonth() && n.getDate() < b.getDate())) u--;
+  return u >= 0 && u < 110 ? u : null;
+}
+function hitung(d) {
+  const bb = +d.bb, tb = +d.tb, u = usia(d.tglLahir);
+  const r = { usia: u };
+  if (bb && tb) {
+    const m = tb / 100;
+    r.imt = Math.round(bb / (m * m) * 10) / 10;
+    // Klasifikasi IMT Kemenkes RI (P2PTM)
+    r.katImt = r.imt < 17 ? 'Sangat kurus' : r.imt < 18.5 ? 'Kurus' : r.imt <= 25 ? 'Normal' : r.imt <= 27 ? 'Gemuk' : 'Obesitas';
+    r.bbMin = Math.round(18.5 * m * m); r.bbMax = Math.round(25 * m * m);
+    if (u !== null) {
+      // Mifflin-St Jeor
+      const ree = 10 * bb + 6.25 * tb - 5 * u + (d.jk === 'P' ? -161 : 5);
+      let pal;
+      if (d.jenis === 'atlet') {
+        const jam = (+d.sesi || 0) * (+d.durasi || 0) / 60;
+        pal = jam < 4 ? 1.55 : jam < 8 ? 1.7 : jam < 12 ? 1.85 : jam < 18 ? 2.0 : 2.2;
+      } else {
+        const mnt = +d.aktivitas || 0;
+        pal = (d.pola || '').startsWith('Lapangan') ? 1.6 : 1.4;
+        if (mnt >= 150) pal += 0.1; if (mnt >= 300) pal += 0.1;
+      }
+      r.ree = Math.round(ree); r.pal = pal; r.energi = Math.round(ree * pal / 10) * 10;
+    }
+  }
+  if (d.pinggang) {
+    const p = +d.pinggang, batas = d.jk === 'P' ? 80 : 90;
+    r.pinggangRisiko = p >= batas;
+    r.batasPinggang = batas;
+  }
+  if (d.jenis === 'korporat') r.aktifCukup = (+d.aktivitas || 0) >= 150;
+  // Kasus yang harus dicek manual (tidak boleh dijawab otomatis)
+  const alasan = [];
+  if (d.medis === 'ada') alasan.push('kondisi medis');
+  if (d.obat === 'ya') alasan.push('obat/suplemen rutin');
+  if (d.jk === 'P' && (d.hamil === 'hamil' || d.hamil === 'menyusui')) alasan.push(d.hamil);
+  if (u !== null && u < 18) alasan.push('usia di bawah 18 tahun');
+  if (d.jenis === 'atlet' && d.cedera === 'berat') alasan.push('cedera berat');
+  if (r.imt && r.imt < 17) alasan.push('IMT sangat rendah');
+  r.cekManual = alasan;
+  return r;
+}
+
+/* ================= RENDER FORM ================= */
+function fieldsFor(secId) { return SECTIONS[secId].f; }
+function terlihat(f) { return !f.showIf || f.showIf(Object.assign({ jenis: st.jenis }, st.d)); }
+function wajib(f) { return f.req || (f.reqIf && f.reqIf(Object.assign({ jenis: st.jenis }, st.d))); }
+
+function htmlField(f) {
+  const v = st.d[f.id] == null ? '' : st.d[f.id];
+  const req = wajib(f);
+  const lab = `<label class="l" for="f-${f.id}">${esc(f.l)} ${req ? '<span class="req">*</span>' : '<span class="opt">(bila ada)</span>'}${f.counter ? `<span class="count" id="c-${f.id}">${String(v).length}/${f.max}</span>` : ''}</label>`;
+  let inp = '';
+  const common = `id="f-${f.id}" name="${f.id}" ${req ? 'required aria-required="true"' : ''}`;
+  if (f.type === 'text' || f.type === 'email' || f.type === 'tel') {
+    const t = f.type;
+    inp = `<input type="${t}" ${common} value="${esc(v)}" ${f.max ? `maxlength="${f.max}"` : ''} ${f.ac ? `autocomplete="${f.ac}"` : ''} ${t === 'tel' ? 'inputmode="tel"' : ''} ${t === 'email' ? 'inputmode="email" autocapitalize="off"' : ''} placeholder="${esc(f.ph || '')}">`;
+  } else if (f.type === 'date') {
+    inp = `<input type="date" ${common} value="${esc(v)}" ${f.ac ? `autocomplete="${f.ac}"` : ''}>`;
+  } else if (f.type === 'num') {
+    inp = `<div class="unit"><input type="number" ${common} value="${esc(v)}" inputmode="decimal" step="${f.step || 'any'}" min="${f.lo}" max="${f.hi}"><em>${esc(f.unit)}</em></div>`;
+  } else if (f.type === 'sel') {
+    inp = `<select ${common}><option value="">Pilih…</option>${f.o.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  } else if (f.type === 'seg') {
+    inp = `<div class="seg" role="radiogroup" id="f-${f.id}">${f.o.map(([val, txt]) => `<label><input type="radio" name="${f.id}" value="${esc(val)}" ${v === val ? 'checked' : ''}>${esc(txt)}</label>`).join('')}</div>`;
+    return `<div class="f ${f.full ? 'full' : ''}" data-f="${f.id}"><span class="l" style="display:block;font-weight:600;font-size:15px;margin-bottom:6px">${esc(f.l)} ${req ? '<span style="color:var(--red)">*</span>' : ''}</span>${inp}${f.help ? `<div class="help">${esc(f.help)}</div>` : ''}<div class="err"></div></div>`;
+  } else if (f.type === 'area') {
+    inp = `<textarea ${common} maxlength="${f.max}">${esc(v)}</textarea>`;
+  } else if (f.type === 'chk') {
+    return `<div class="f full" data-f="${f.id}"><label class="check"><input type="checkbox" id="f-${f.id}" name="${f.id}" ${v ? 'checked' : ''}><span>${esc(f.l)} <span style="color:var(--red)">*</span></span></label><div class="err"></div></div>`;
+  }
+  return `<div class="f ${f.full ? 'full' : ''}" data-f="${f.id}">${lab}${inp}${f.help ? `<div class="help">${esc(f.help)}</div>` : ''}<div class="err"></div></div>`;
+}
+
+function renderStep() {
+  const steps = STEPS[st.jenis];
+  const sp = steps[st.step];
+  $('#bar').innerHTML = steps.map((_, i) => `<span class="${i <= st.step ? 'on' : ''}"></span>`).join('');
+  $('#steplabel').innerHTML = `<span class="badge">${st.jenis === 'atlet' ? 'Konsultasi Atlet' : 'Wellness Korporat'}</span> &nbsp;Langkah ${st.step + 1} dari ${steps.length}: <b>${esc(sp.t)}</b>`;
+  $('#formAlert').innerHTML = '';
+  if (sp.sec[0] === 'review') { renderReview(); }
+  else {
+    $('#pages').innerHTML = sp.sec.map((sid, i) => `<div class="panel"><h3>${esc(SECTIONS[sid].t)}</h3>${i === 0 ? `<p class="sub">${esc(sp.s)}</p>` : ''}<div class="grid">${fieldsFor(sid).filter(terlihat).map(htmlField).join('')}</div></div>`).join('');
+  }
+  $('#back').textContent = st.step === 0 ? '← Ganti jenis' : '← Kembali';
+  $('#next').textContent = sp.sec[0] === 'review' ? 'Simpan & kirim' : 'Lanjut →';
+  $('#next').disabled = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* baca nilai, tampilkan/sembunyikan kolom kondisional tanpa merender ulang seluruh halaman */
+document.addEventListener('input', onChange);
+document.addEventListener('change', onChange);
+function onChange(e) {
+  const el = e.target;
+  if (!el.name || !$('#pages').contains(el)) return;
+  st.d[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim ? el.value : el.value;
+  const f = el.closest('.f');
+  if (f && f.classList.contains('bad')) cekField(findField(el.name));
+  const c = document.getElementById('c-' + el.name);
+  if (c) c.textContent = el.value.length + '/' + findField(el.name).max;
+  if (e.type === 'change' || el.type === 'radio') refreshKondisional();
+  simpanLokal();
+}
+function findField(id) {
+  const sec = STEPS[st.jenis][st.step].sec;
+  for (const s of sec) { if (!SECTIONS[s]) continue; const f = SECTIONS[s].f.find(x => x.id === id); if (f) return f; }
+  return null;
+}
+function refreshKondisional() {
+  const sp = STEPS[st.jenis][st.step];
+  if (sp.sec[0] === 'review') return;
+  const ada = [...document.querySelectorAll('#pages .f')].map(x => x.dataset.f).join(',');
+  const mau = sp.sec.flatMap(s => fieldsFor(s).filter(terlihat).map(f => f.id)).join(',');
+  if (ada !== mau) {
+    const fokus = document.activeElement && document.activeElement.name;
+    const y = window.scrollY;
+    $('#pages').innerHTML = sp.sec.map((sid, i) => `<div class="panel"><h3>${esc(SECTIONS[sid].t)}</h3>${i === 0 ? `<p class="sub">${esc(sp.s)}</p>` : ''}<div class="grid">${fieldsFor(sid).filter(terlihat).map(htmlField).join('')}</div></div>`).join('');
+    window.scrollTo(0, y);
+    if (fokus) { const el = document.querySelector(`#pages [name="${fokus}"]:checked`) || document.querySelector(`#pages [name="${fokus}"]`); if (el && el.type !== 'radio') el.focus({ preventScroll: true }); }
+  }
+}
+
+/* ================= VALIDASI ================= */
+function pesanSalah(f) {
+  const v = st.d[f.id];
+  const kosong = v == null || v === '' || v === false;
+  if (kosong) return wajib(f) ? (f.type === 'chk' ? 'Centang untuk melanjutkan.' : f.type === 'seg' || f.type === 'sel' ? 'Pilih salah satu.' : 'Wajib diisi.') : '';
+  const s = String(v).trim();
+  if (f.type === 'email' && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(s)) return 'Format email belum benar.';
+  if (f.type === 'tel') { const n = s.replace(/\D/g, ''); if (!/^(0|62)8\d{7,12}$/.test(n)) return 'Gunakan nomor WhatsApp Indonesia, mis. 0812xxxxxxx.'; }
+  if (f.type === 'text' || f.type === 'area') { if (f.min && s.length < f.min) return `Minimal ${f.min} karakter.`; }
+  if (f.type === 'num') { const n = Number(s.replace(',', '.')); if (!isFinite(n) || n < f.lo || n > f.hi) return `Isi angka ${f.lo}–${f.hi} ${f.unit}.`; }
+  if (f.type === 'date') {
+    if (f.id === 'tglLahir') { const u = usia(s); if (u === null || u < 8 || u > 90) return 'Tanggal lahir belum benar.'; }
+    if (f.id === 'tglKompetisi' && new Date(s + 'T23:59:59') < new Date()) return 'Tanggal kompetisi sudah lewat.';
+  }
+  return '';
+}
+function cekField(f) {
+  const box = document.querySelector(`#pages .f[data-f="${f.id}"]`);
+  const m = pesanSalah(f);
+  if (box) { box.classList.toggle('bad', !!m); box.querySelector('.err').textContent = m; }
+  return !m;
+}
+function cekStep(i) {
+  const sp = STEPS[st.jenis][i];
+  let ok = true, first = null;
+  sp.sec.forEach(s => { if (!SECTIONS[s]) return; SECTIONS[s].f.filter(terlihat).forEach(f => { if (!cekField(f)) { ok = false; first = first || f.id; } }); });
+  if (!ok) {
+    $('#formAlert').innerHTML = '<div class="alert bad">Masih ada data yang belum lengkap atau belum benar. Periksa kolom bertanda merah.</div>';
+    const el = document.querySelector(`#pages .f[data-f="${first}"]`);
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); const i2 = el.querySelector('input,select,textarea'); if (i2) setTimeout(() => i2.focus({ preventScroll: true }), 300); }
+  }
+  return ok;
+}
+function semuaLengkap() {
+  // validasi seluruh langkah tanpa DOM (dipakai sebelum kirim)
+  for (const sp of STEPS[st.jenis]) for (const s of sp.sec) { if (!SECTIONS[s]) continue; for (const f of SECTIONS[s].f.filter(terlihat)) { if (pesanSalah(f)) return { f, sp }; } }
+  return null;
+}
+
+/* ================= RINGKASAN & KARTU ================= */
+function teks(f) {
+  const v = st.d[f.id];
+  if (f.type === 'seg') { const o = f.o.find(x => x[0] === v); return o ? o[1] : '-'; }
+  if (f.type === 'chk') return v ? 'Ya' : '-';
+  if (v == null || v === '') return '-';
+  if (f.type === 'num') return v + ' ' + f.unit;
+  if (f.type === 'date') return new Date(v + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  return v;
+}
+function renderReview() {
+  const r = hitung(Object.assign({ jenis: st.jenis }, st.d));
+  const steps = STEPS[st.jenis];
+  const sens = r.cekManual.length;
+  let h = '';
+  if (sens) h += `<div class="alert warn">Karena ada ${esc(r.cekManual.join(', '))}, konsultasi Anda akan dibaca langsung oleh Dr. Mury dan dijawab dengan saran yang aman. Angka kebutuhan energi tidak ditampilkan di sini.</div>`;
+  h += `<div class="panel"><h3>Hasil awal</h3><p class="sub">Estimasi dari data Anda. Jawaban rinci menyusul setelah konsultasi.</p><div class="stats">
+    <div class="stat"><b>${r.usia ?? '-'}</b><span>Usia (tahun)</span></div>
+    <div class="stat"><b>${r.imt ?? '-'}</b><span>IMT · ${esc(r.katImt || '-')}</span></div>
+    <div class="stat"><b>${r.bbMin ? r.bbMin + '–' + r.bbMax : '-'}</b><span>Rentang BB normal (kg)</span></div>
+    ${st.jenis === 'korporat'
+      ? `<div class="stat"><b>${r.pinggangRisiko == null ? '-' : r.pinggangRisiko ? 'Berisiko' : 'Aman'}</b><span>Lingkar pinggang (batas ${r.batasPinggang || '-'} cm)</span></div>`
+      : `<div class="stat"><b>${sens || !r.energi ? '-' : r.energi.toLocaleString('id-ID')}</b><span>Estimasi energi (kkal/hari)</span></div>`}
+  </div></div>`;
+  h += `<div class="panel"><h3>Periksa data Anda</h3><p class="sub">Ketuk "Ubah" untuk memperbaiki.</p>`;
+  steps.forEach((sp, i) => {
+    if (sp.sec[0] === 'review') return;
+    h += `<div class="revsec">${esc(sp.t)} <button type="button" data-ke="${i}">Ubah</button></div><dl class="rev">`;
+    sp.sec.forEach(s => SECTIONS[s].f.filter(terlihat).forEach(f => { if (f.type !== 'chk') h += `<div><dt>${esc(f.l)}</dt><dd>${esc(teks(f))}</dd></div>`; }));
+    h += `</dl>`;
+  });
+  h += `</div>`;
+  h += `<div class="panel"><h3>Kartu profil peserta</h3><p class="sub">Unduh dan bagikan di media sosial. Foto hanya diproses di perangkat Anda dan tidak dikirim.</p>
+    <div class="cardbox"><canvas id="kartu" width="1080" height="1350" aria-label="Kartu profil peserta"></canvas>
+    <div>
+      <div class="f"><label class="l" for="foto">Foto profil <span class="opt">(bila ada)</span></label><input type="file" id="foto" accept="image/*"></div>
+      <label class="check" style="margin-top:12px"><input type="checkbox" id="sembunyi" ${st.sembunyi ? 'checked' : ''}><span>Sembunyikan angka tubuh (BB, IMT) di kartu</span></label>
+      <div class="btnrow"><button class="btn" type="button" id="unduh">Unduh kartu (PNG)</button><button class="btn ghost hidden" type="button" id="bagikan">Bagikan</button></div>
+      <div class="help" style="margin-top:8px">Ukuran 1080×1350 piksel (rasio 4:5), pas untuk Instagram, WhatsApp Status, dan LinkedIn.</div>
+    </div></div></div>`;
+  $('#pages').innerHTML = h;
+  document.querySelectorAll('[data-ke]').forEach(b => b.onclick = () => { st.step = +b.dataset.ke; renderStep(); });
+  $('#foto').onchange = e => muatFoto(e.target.files[0]);
+  $('#sembunyi').onchange = e => { st.sembunyi = e.target.checked; simpanLokal(); gambarKartu(); };
+  $('#unduh').onclick = unduhKartu;
+  if (navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })) { $('#bagikan').classList.remove('hidden'); $('#bagikan').onclick = bagikanKartu; }
+  gambarKartu();
+}
+
+function muatFoto(file) {
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const s = Math.min(img.width, img.height), c = document.createElement('canvas');
+    c.width = c.height = 600;
+    c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 600, 600);
+    st.foto = c.toDataURL('image/jpeg', .9);
+    URL.revokeObjectURL(img.src);
+    gambarKartu();
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function wrapText(ctx, t, x, y, maxW, lh, maxLines) {
+  const words = String(t).split(/\s+/); let line = '', n = 0;
+  for (let i = 0; i < words.length; i++) {
+    const test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxW && line) {
+      if (++n === maxLines) { while (ctx.measureText(line + '…').width > maxW) line = line.slice(0, -1); ctx.fillText(line + '…', x, y); return y + lh; }
+      ctx.fillText(line, x, y); y += lh; line = words[i];
+    } else line = test;
+  }
+  if (line) { ctx.fillText(line, x, y); y += lh; }
+  return y;
+}
+function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+function gambarKartu() {
+  const cv = $('#kartu'); if (!cv) return;
+  const ctx = cv.getContext('2d'), W = 1080, H = 1350, d = st.d;
+  const atlet = st.jenis === 'atlet';
+  const c1 = atlet ? '#003a63' : '#07402f', c2 = atlet ? '#0070b8' : '#0f7b5f', soft = atlet ? '#e6f2fb' : '#e3f4ee';
+  const r = hitung(Object.assign({ jenis: st.jenis }, d));
+  const F = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+  // latar
+  const g = ctx.createLinearGradient(0, 0, W, 620); g.addColorStop(0, c1); g.addColorStop(1, c2);
+  ctx.fillStyle = '#f4f7fa'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 600);
+  ctx.globalAlpha = .08; ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(W - 80, 120, 260, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(120, 600, 180, 0, 7); ctx.fill();
+  ctx.globalAlpha = 1;
+  // label atas
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; rrect(ctx, 72, 72, atlet ? 380 : 430, 64, 32); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.textBaseline = 'middle';
+  ctx.fillText(atlet ? 'KONSULTASI ATLET' : 'WELLNESS KORPORAT', 104, 105);
+  ctx.textAlign = 'right'; ctx.font = `600 28px ${F}`; ctx.fillText('murykuswari.com', W - 72, 105); ctx.textAlign = 'left';
+  // foto
+  const cx = W / 2, cy = 360, rad = 165;
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, rad + 10, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+  const tulisNama = () => {
+    ctx.fillStyle = '#0b1e33'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.font = `800 64px ${F}`;
+    let nama = d.nama || 'Nama Peserta'; while (ctx.measureText(nama).width > W - 140) nama = nama.slice(0, -1);
+    ctx.fillText(nama, cx, 700);
+    ctx.fillStyle = c2; ctx.font = `600 34px ${F}`;
+    const sub = atlet
+      ? [d.cabor === 'Lainnya' ? d.caborLain : d.cabor, d.posisi].filter(Boolean).join(' · ')
+      : [d.jabatan, d.perusahaan].filter(Boolean).join(' · ');
+    let s2 = sub || '-'; while (ctx.measureText(s2).width > W - 140) s2 = s2.slice(0, -1);
+    ctx.fillText(s2, cx, 755);
+    ctx.fillStyle = '#5b6f86'; ctx.font = `500 30px ${F}`;
+    const s3 = atlet ? [d.level, d.klub].filter(Boolean).join(' · ') : [d.sektor, d.kota].filter(Boolean).join(' · ');
+    let t3 = s3 || ''; while (ctx.measureText(t3).width > W - 140) t3 = t3.slice(0, -1);
+    ctx.fillText(t3, cx, 802);
+    ctx.textAlign = 'left';
+    // kotak statistik
+    const tiles = [];
+    tiles.push(['Usia', r.usia != null ? r.usia + ' th' : '-']);
+    if (!st.sembunyi) { tiles.push(['IMT', r.imt != null ? String(r.imt).replace('.', ',') : '-']); tiles.push(['Berat', d.bb ? String(d.bb).replace('.', ',') + ' kg' : '-']); }
+    tiles.push(['Tinggi', d.tb ? Math.round(d.tb) + ' cm' : '-']);
+    if (atlet) tiles.push(['Latihan', d.sesi ? d.sesi + '×/mg' : '-']); else tiles.push(['Aktivitas', d.aktivitas !== undefined && d.aktivitas !== '' ? d.aktivitas + ' mnt/mg' : '-']);
+    const show = tiles.slice(0, 4), n = show.length, gap = 24, tw = (W - 144 - gap * (n - 1)) / n;
+    show.forEach((t, i) => {
+      const x = 72 + i * (tw + gap), y = 850;
+      ctx.fillStyle = '#fff'; rrect(ctx, x, y, tw, 150, 26); ctx.fill();
+      ctx.strokeStyle = '#d6e0ea'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = c2; ctx.textAlign = 'center'; ctx.font = `800 ${tw < 210 ? 40 : 46}px ${F}`;
+      ctx.fillText(t[1], x + tw / 2, y + 78);
+      ctx.fillStyle = '#5b6f86'; ctx.font = `600 26px ${F}`; ctx.fillText(t[0], x + tw / 2, y + 120);
+    });
+    ctx.textAlign = 'left';
+    // tujuan
+    ctx.fillStyle = soft; rrect(ctx, 72, 1030, W - 144, 170, 26); ctx.fill();
+    ctx.fillStyle = c1; ctx.font = `700 26px ${F}`; ctx.fillText('TUJUAN SAYA', 108, 1078);
+    ctx.fillStyle = '#0b1e33'; ctx.font = `700 40px ${F}`;
+    wrapText(ctx, d.tujuan || '-', 108, 1132, W - 216, 48, 2);
+    // kaki
+    ctx.fillStyle = '#5b6f86'; ctx.font = `500 24px ${F}`;
+    const tgl = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    ctx.fillText('Bersama Assoc. Prof. Dr. Mury Kuswari', 72, 1262);
+    ctx.fillText(tgl + (st.id ? '  ·  ID ' + st.id : ''), 72, 1300);
+    ctx.textAlign = 'right'; ctx.fillStyle = c2; ctx.font = `800 30px ${F}`; ctx.fillText('#SehatBerprestasi', W - 72, 1282); ctx.textAlign = 'left';
+  };
+  const lingkaranIsi = () => { ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.closePath(); ctx.clip(); };
+  if (st.foto) {
+    const im = new Image();
+    im.onload = () => { lingkaranIsi(); ctx.drawImage(im, cx - rad, cy - rad, rad * 2, rad * 2); ctx.restore(); };
+    im.src = st.foto;
+    if (im.complete) im.onload();
+  } else {
+    lingkaranIsi(); ctx.fillStyle = soft; ctx.fillRect(cx - rad, cy - rad, rad * 2, rad * 2); ctx.restore();
+    const ini = (d.nama || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
+    ctx.fillStyle = c2; ctx.font = `800 120px ${F}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ini, cx, cy + 6); ctx.textAlign = 'left';
+  }
+  tulisNama();
+}
+function namaFile() { return 'kartu-' + (st.jenis === 'atlet' ? 'atlet' : 'wellness') + '-' + String(st.d.nama || 'peserta').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.png'; }
+function unduhKartu() {
+  gambarKartu();
+  setTimeout(() => $('#kartu').toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = namaFile(); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }, 'image/png'), 60);
+}
+function bagikanKartu() {
+  $('#kartu').toBlob(b => {
+    const file = new File([b], namaFile(), { type: 'image/png' });
+    navigator.share({ files: [file], title: 'Kartu profil konsultasi gizi', text: 'Saya ikut konsultasi gizi bersama Dr. Mury Kuswari di murykuswari.com #SehatBerprestasi' }).catch(() => {});
+  }, 'image/png');
+}
+
+/* ================= KIRIM ================= */
+function paket() {
+  const d = Object.assign({}, st.d);
+  if (d.wa) d.wa = d.wa.replace(/\D/g, '').replace(/^0/, '62');
+  ['bb', 'tb', 'pinggang', 'lemak', 'sesi', 'durasi', 'jamKerja', 'jamDuduk', 'aktivitas', 'tidur'].forEach(k => { if (d[k] !== undefined && d[k] !== '') d[k] = Number(String(d[k]).replace(',', '.')); });
+  // buang kolom yang tidak terlihat (mis. tanggal kompetisi bila "belum ada")
+  STEPS[st.jenis].forEach(sp => sp.sec.forEach(s => SECTIONS[s] && SECTIONS[s].f.forEach(f => { if (!terlihat(f)) delete d[f.id]; })));
+  return d;
+}
+function teksEmail(id, r) {
+  const L = [];
+  L.push('Jenis konsultasi: ' + (st.jenis === 'atlet' ? 'ATLET' : 'WELLNESS KORPORAT'));
+  if (id) L.push('ID pendaftaran: ' + id);
+  STEPS[st.jenis].forEach(sp => { if (sp.sec[0] === 'review') return; L.push('', '== ' + sp.t.toUpperCase() + ' =='); sp.sec.forEach(s => SECTIONS[s].f.filter(terlihat).forEach(f => { if (f.type !== 'chk' && f.id !== 'pertanyaan') L.push(f.l + ': ' + teks(f)); })); });
+  L.push('', '== HASIL KALKULATOR ==', 'Usia: ' + (r.usia ?? '-') + ' tahun', 'IMT: ' + (r.imt ?? '-') + ' (' + (r.katImt || '-') + ')', 'Rentang BB normal: ' + (r.bbMin ? r.bbMin + '–' + r.bbMax + ' kg' : '-'));
+  if (r.energi && !r.cekManual.length) L.push('Estimasi energi: ' + r.energi + ' kkal/hari');
+  if (r.pinggangRisiko != null) L.push('Lingkar pinggang: ' + (r.pinggangRisiko ? 'di atas' : 'di bawah') + ' batas ' + r.batasPinggang + ' cm');
+  L.push('', '== PERTANYAAN ==', st.d.pertanyaan || '-');
+  return L.join('\n');
+}
+function subjek() { return 'Konsultasi Gizi Olahraga - ' + (st.jenis === 'atlet' ? 'Atlet' : 'Wellness Korporat') + ' - ' + (st.d.nama || ''); }
+
+async function kirim() {
+  const salah = semuaLengkap();
+  if (salah) { st.step = STEPS[st.jenis].indexOf(salah.sp); renderStep(); setTimeout(() => cekStep(st.step), 50); return; }
+  if ($('#website').value) return; // bot
+  const btn = $('#next'); btn.disabled = true; btn.textContent = 'Menyimpan…';
+  const r = hitung(Object.assign({ jenis: st.jenis }, st.d));
+  let id = '', simpanOk = false, pesan = '';
+  if (SCRIPT_URL) {
+    try {
+      const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ aksi: 'kons-daftar', jenis: st.jenis, data: paket(), hasil: r, website: '' }) });
+      const j = await res.json();
+      if (j.ok) { id = j.id; simpanOk = true; } else pesan = j.pesan || 'Gagal menyimpan.';
+    } catch (e) { pesan = 'Koneksi bermasalah. Data belum tersimpan di server.'; }
+    if (!simpanOk) { btn.disabled = false; btn.textContent = 'Coba simpan lagi'; $('#formAlert').innerHTML = `<div class="alert bad">${esc(pesan)} Periksa koneksi lalu coba lagi.</div>`; window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  } else {
+    id = 'L' + new Date().toISOString().replace(/\D/g, '').slice(2, 12);
+  }
+  st.id = id;
+  selesai(id, r, simpanOk);
+}
+
+function selesai(id, r, server) {
+  $('#form').classList.add('hidden'); $('#actions').classList.add('hidden');
+  const body = teksEmail(id, r);
+  const mail = 'mailto:' + EMAIL_KONSULTASI + '?subject=' + encodeURIComponent(subjek()) + '&body=' + encodeURIComponent(body);
+  const wa = 'https://wa.me/' + WA_KONSULTASI + '?text=' + encodeURIComponent(subjek() + '\n\n' + body);
+  $('#done').classList.remove('hidden');
+  $('#done').innerHTML = `
+    <div class="hero"><h1>Data Anda sudah lengkap ✓</h1><p>${server ? 'Data tersimpan dengan ID <b>' + esc(id) + '</b>.' : 'Data siap dikirim.'} Satu langkah lagi: kirim pertanyaan Anda.</p></div>
+    <div class="panel"><h3>Kirim pertanyaan konsultasi</h3><p class="sub">Pilih salah satu. Pesan sudah terisi otomatis; cukup tekan kirim di aplikasi email atau WhatsApp Anda.</p>
+      <div class="btnrow"><a class="btn" href="${mail}">Kirim via Email</a><a class="btn wa" href="${wa}" target="_blank" rel="noopener">Kirim via WhatsApp</a></div>
+      ${r.cekManual.length ? '<div class="alert warn" style="margin-top:14px">Konsultasi Anda akan ditinjau langsung oleh Dr. Mury karena ada kondisi kesehatan yang perlu diperhatikan.</div>' : ''}
+      <div class="help" style="margin-top:12px">Jawaban biasanya dikirim dalam 1–2 hari kerja. Untuk jawaban yang lebih rinci, Anda dapat mengukur komposisi tubuh di Lantai 8 Kampus Universitas Esa Unggul.</div>
+    </div>
+    <div class="panel"><h3>Kartu profil Anda</h3><p class="sub">Unduh dan bagikan di media sosial.</p>
+      <div class="cardbox"><canvas id="kartu" width="1080" height="1350"></canvas><div>
+        <label class="check"><input type="checkbox" id="sembunyi" ${st.sembunyi ? 'checked' : ''}><span>Sembunyikan angka tubuh (BB, IMT)</span></label>
+        <div class="btnrow"><button class="btn" type="button" id="unduh">Unduh kartu (PNG)</button><button class="btn ghost hidden" type="button" id="bagikan">Bagikan</button></div>
+        <div class="btnrow"><button class="btn ghost" type="button" id="baru">Isi pendaftaran baru</button></div>
+      </div></div>
+    </div>`;
+  $('#sembunyi').onchange = e => { st.sembunyi = e.target.checked; gambarKartu(); };
+  $('#unduh').onclick = unduhKartu;
+  if (navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })) { $('#bagikan').classList.remove('hidden'); $('#bagikan').onclick = bagikanKartu; }
+  $('#baru').onclick = () => { try { localStorage.removeItem(KEY); } catch (e) {} location.href = location.pathname; };
+  gambarKartu();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ================= NAVIGASI ================= */
+function mulai(jenis) {
+  if (st.jenis && st.jenis !== jenis) {
+    // pertahankan data diri, buang data khusus jenis lain
+    const keep = ['nama', 'panggilan', 'jk', 'tglLahir', 'email', 'wa', 'kota', 'bb', 'tb', 'pinggang', 'lemak'];
+    const d = {}; keep.forEach(k => { if (st.d[k] !== undefined) d[k] = st.d[k]; }); st.d = d;
+  }
+  st.jenis = jenis; st.step = 0;
+  document.body.classList.toggle('t-korporat', jenis === 'korporat');
+  history.replaceState(null, '', '?jenis=' + jenis);
+  $('#s0').classList.add('hidden'); $('#form').classList.remove('hidden'); $('#actions').classList.remove('hidden');
+  simpanLokal(); renderStep();
+}
+document.querySelectorAll('.choice').forEach(b => b.onclick = () => mulai(b.dataset.jenis));
+$('#back').onclick = () => {
+  if (st.step === 0) { $('#form').classList.add('hidden'); $('#actions').classList.add('hidden'); $('#s0').classList.remove('hidden'); history.replaceState(null, '', location.pathname); window.scrollTo(0, 0); return; }
+  st.step--; renderStep();
+};
+$('#next').onclick = () => {
+  const last = STEPS[st.jenis].length - 1;
+  if (st.step === last) return kirim();
+  if (!cekStep(st.step)) return;
+  st.step++; renderStep();
+};
+$('#form').addEventListener('submit', e => { e.preventDefault(); $('#next').click(); });
+
+const q = new URLSearchParams(location.search).get('jenis');
+if (q === 'atlet' || q === 'korporat') mulai(q);
+</script>
+</body>
+</html>
