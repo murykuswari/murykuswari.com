@@ -40,11 +40,12 @@ window.SITE = {
   // Pembayaran konsultasi lanjutan langsung ke e-wallet Dr. Mury (dikonfirmasi manual di dashboard).
   // Isi nomor HP terdaftar dan nama pemilik akun. Dompet dengan nomor kosong tidak ditampilkan.
   // qris: (opsional) path gambar QRIS, mis. "assets/img/qris.jpg" — klien bisa memindai dari aplikasi apa pun.
+  // Sementara hanya GoPay. Untuk mengaktifkan lagi, isi nomor DANA/OVO/LinkAja (mis. "0811-8432-050").
   dompet: [
     { nama: "GoPay", nomor: "0811-8432-050", atasNama: "" },
-    { nama: "DANA", nomor: "0811-8432-050", atasNama: "" },
-    { nama: "OVO", nomor: "0811-8432-050", atasNama: "" },
-    { nama: "LinkAja", nomor: "0811-8432-050", atasNama: "" }
+    { nama: "DANA", nomor: "", atasNama: "" },
+    { nama: "OVO", nomor: "", atasNama: "" },
+    { nama: "LinkAja", nomor: "", atasNama: "" }
   ],
   // (opsional) Rekening bank untuk transfer, mis. { bank: "BCA", nomor: "1234567890", atasNama: "Mury Kuswari" }.
   // Samakan dengan PEMBAYARAN.rekening di apps-script/Konsultasi.gs (dipakai di email instruksi pembayaran).
