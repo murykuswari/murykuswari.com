@@ -142,7 +142,8 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&a
 let token = '', demo = false, data = { atlet: [], korporat: [] }, jenis = 'atlet', saring = {};
 try { token = sessionStorage.getItem('mk-dash-token') || ''; } catch (e) {}
 // Pakai sesi dari dashboard.html bila sudah masuk di sana (kunci mk-program-sesi / mk-ingat).
-if (!token) { try { const a = JSON.parse(sessionStorage.getItem('mk-program-sesi') || 'null'); const b = JSON.parse(localStorage.getItem('mk-ingat') || 'null'); if (a && a.sampai > Date.now()) token = a.token; else if (b && b.sampai > Date.now()) token = b.token; } catch (e) {} }
+let ingatDash = null;
+if (!token) { try { const a = JSON.parse(sessionStorage.getItem('mk-program-sesi') || 'null'); const b = JSON.parse(localStorage.getItem('mk-ingat') || 'null'); if (a && a.sampai > Date.now()) token = a.token; else if (b && b.sampai > Date.now()) ingatDash = b.token; } catch (e) {} }
 
 async function api(body) {
   const r = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
@@ -175,6 +176,7 @@ async function muat(ubah) {
   if (demo) { tampil(); return; }
   try {
     const j = await api({ aksi: 'kons-daftar-admin', token, ubah });
+    if (!j.ok && j.pesan === 'Permintaan tidak dikenali.') { $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); return msg('Login berhasil, tetapi layanan server (Apps Script) belum diperbarui sehingga data pendaftaran belum bisa dibaca. Jalankan clasp push lalu clasp deploy (lihat docs/panduan-pendaftaran.md), kemudian muat ulang halaman ini.', 1); }
     if (!j.ok) { if (j.ulang) { token = ''; try { sessionStorage.removeItem('mk-dash-token'); } catch (e) {} $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); } return msg(j.pesan, 1); }
     data = { atlet: j.atlet || [], korporat: j.korporat || [] };
     $('#dibuat').textContent = 'Data diambil ' + j.dibuat + ' WIB.';
@@ -308,6 +310,12 @@ function buatDemo() {
 
 if (new URLSearchParams(location.search).has('demo')) { demo = true; data = buatDemo(); tampil(); }
 else if (token && SCRIPT_URL) muat();
+else if (ingatDash && SCRIPT_URL) {
+  // "Ingat perangkat" dari dashboard.html: tukar dengan sesi baru tanpa kode OTP.
+  api({ aksi: 'kons-lanjut', ingat: ingatDash }).then(j => {
+    if (j.ok && j.admin) { token = j.token; try { sessionStorage.setItem('mk-dash-token', token); } catch (e) {} muat(); }
+  }).catch(() => {});
+}
 </script>
 </body>
 </html>
