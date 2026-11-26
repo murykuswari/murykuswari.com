@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       $("d-who").textContent = st.email;
       $("d-upd").textContent = "· diperbarui " + (j.dibuat || "");
       isiFilter(); renderKpi(); renderCharts(); renderTanya(); renderBayar(); renderGrid();
+      window.dispatchEvent(new CustomEvent("mk-dash-muat", { detail: { token: st.token, email: st.email, peserta: st.peserta.length } })); // dashboard-jenis.js
       return true;
     } catch (er) { if (!diam) pesan("Layanan tidak bisa dihubungi."); return false; }
   }

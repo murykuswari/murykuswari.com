@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026u">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026v">
 </head>
 <body>
   <header id="site-header"></header>
@@ -18,8 +18,8 @@
     <div class="db-hero">
       <div class="wrap">
         <span class="eyebrow" style="color:#ffd166">Khusus pengelola</span>
-        <h1>Dashboard Konsultasi Gizi Olahraga</h1>
-        <p>Profil, perkembangan, dan program setiap atlet serta klien yang berkonsultasi, dalam satu layar.</p>
+        <h1>Dashboard Konsultasi</h1>
+        <p>Data Konsultasi Atlet dan Wellness Korporat dipisah dalam dua tampilan, masing-masing dengan angka, grafik, dan daftar pesertanya sendiri.</p>
       </div>
     </div>
 
@@ -47,12 +47,28 @@
           <div class="db-bar">
             <div><strong id="d-who"></strong> <span class="note" id="d-upd"></span></div>
             <div class="db-bar-act">
-              <a class="btn btn-ghost pg-sm" href="dashboard-pendaftaran.html">Pendaftaran atlet &amp; korporat</a>
               <button type="button" class="btn btn-ghost pg-sm" id="d-csv">Unduh CSV</button>
               <button type="button" class="btn btn-ghost pg-sm" id="d-refresh">Muat ulang</button>
               <button type="button" class="dl-link" id="d-keluar">Keluar</button>
             </div>
           </div>
+
+          <!-- Pilih jenis konsultasi: setiap tampilan punya data sendiri -->
+          <div class="dj-tabs" role="tablist" aria-label="Jenis konsultasi">
+            <button type="button" class="dj-tab dj-atlet" role="tab" aria-selected="true" aria-controls="dv-atlet" data-jenis="atlet">
+              <span class="dj-ikon" aria-hidden="true">🏅</span>
+              <span class="dj-teks"><b>Konsultasi Atlet</b><small>Program gizi, pendaftar atlet, permintaan &amp; pembayaran</small></span>
+              <span class="dj-n" id="dj-n-atlet">–</span>
+            </button>
+            <button type="button" class="dj-tab dj-korporat" role="tab" aria-selected="false" aria-controls="dv-korporat" data-jenis="korporat">
+              <span class="dj-ikon" aria-hidden="true">🏢</span>
+              <span class="dj-teks"><b>Wellness Korporat</b><small>Karyawan, perusahaan, dan risiko gaya hidup</small></span>
+              <span class="dj-n" id="dj-n-korporat">–</span>
+            </button>
+          </div>
+
+          <!-- ===== Tampilan: Konsultasi Atlet ===== -->
+          <div id="dv-atlet" class="dj-view" role="tabpanel">
           <div class="db-kpi" id="d-kpi"></div>
 
           <div class="db-charts">
@@ -63,6 +79,16 @@
             <div class="card db-ch"><h3>Kategori lemak tubuh</h3><div class="db-cv"><canvas id="ch-lemak"></canvas></div></div>
             <div class="card db-ch"><h3>Ketersediaan energi</h3><div class="db-cv"><canvas id="ch-ea"></canvas></div></div>
             <div class="card db-ch"><h3>Jenis kelamin</h3><div class="db-cv"><canvas id="ch-jk"></canvas></div></div>
+          </div>
+
+          <div class="card db-ch dj-daftar" style="margin-bottom:18px">
+            <div class="db-tanya-head"><h3>Pendaftar formulir atlet</h3><span class="note" id="ja-ringkas"></span></div>
+            <div class="dj-filter">
+              <input id="ja-cari" type="search" placeholder="Cari nama, cabor, klub, pelatih…" aria-label="Cari pendaftar atlet">
+              <select id="ja-status" aria-label="Status"><option value="">Semua status</option><option>Baru</option><option>Dijawab</option><option>Lanjut konsultasi</option><option>Selesai</option><option>Ditolak</option></select>
+              <button type="button" class="btn btn-ghost pg-sm" id="ja-csv">Unduh CSV</button>
+            </div>
+            <div class="dj-list" id="ja-list"></div>
           </div>
 
           <div class="card db-ch db-tanya-wrap" style="margin-bottom:18px">
@@ -84,8 +110,34 @@
             <select id="f-tujuan" aria-label="Tujuan"><option value="">Semua tujuan</option></select>
             <select id="f-urut" aria-label="Urutkan"><option value="baru">Konsultasi terbaru</option><option value="nama">Nama A–Z</option><option value="banyak">Konsultasi terbanyak</option><option value="risiko">Berisiko dulu</option></select>
           </div>
+          <h3 class="dj-judul">Peserta Program Gizi</h3>
           <p class="note" id="d-jumlah"></p>
           <div class="db-grid" id="d-grid"></div>
+          </div>
+
+          <!-- ===== Tampilan: Wellness Korporat ===== -->
+          <div id="dv-korporat" class="dj-view" role="tabpanel" hidden>
+            <div class="db-kpi" id="jk-kpi"></div>
+            <div class="db-charts">
+              <div class="card db-ch db-ch-wide"><h3>Pendaftar per bulan</h3><div class="db-cv"><canvas id="jk-bulan"></canvas></div></div>
+              <div class="card db-ch"><h3>Perusahaan / instansi</h3><div class="db-cv"><canvas id="jk-perusahaan"></canvas></div></div>
+              <div class="card db-ch db-ch-wide"><h3>Profil risiko gaya hidup (% karyawan)</h3><div class="db-cv"><canvas id="jk-risiko"></canvas></div></div>
+              <div class="card db-ch"><h3>Kategori IMT</h3><div class="db-cv"><canvas id="jk-imt"></canvas></div></div>
+              <div class="card db-ch"><h3>Tujuan program</h3><div class="db-cv"><canvas id="jk-tujuan"></canvas></div></div>
+              <div class="card db-ch"><h3>Pola kerja</h3><div class="db-cv"><canvas id="jk-pola"></canvas></div></div>
+              <div class="card db-ch"><h3>Tingkat stres kerja</h3><div class="db-cv"><canvas id="jk-stres"></canvas></div></div>
+            </div>
+            <div class="card db-ch dj-daftar">
+              <div class="db-tanya-head"><h3>Pendaftar Wellness Korporat</h3><span class="note" id="jk-ringkas"></span></div>
+              <div class="dj-filter">
+                <input id="jk-cari" type="search" placeholder="Cari nama, perusahaan, divisi, kode program…" aria-label="Cari pendaftar wellness">
+                <select id="jk-perus" aria-label="Perusahaan"><option value="">Semua perusahaan</option></select>
+                <select id="jk-status" aria-label="Status"><option value="">Semua status</option><option>Baru</option><option>Dijawab</option><option>Lanjut konsultasi</option><option>Selesai</option><option>Ditolak</option></select>
+                <button type="button" class="btn btn-ghost pg-sm" id="jk-csv">Unduh CSV</button>
+              </div>
+              <div class="dj-list" id="jk-list"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -101,6 +153,7 @@
   <script src="assets/vendor/chart.umd.4.4.1.js"></script>
   <script src="assets/js/program-engine.js?v=2"></script>
   <script src="assets/js/kartu-profil.js?v=1"></script>
-  <script src="assets/js/dashboard.js?v=6"></script>
+  <script src="assets/js/dashboard.js?v=7"></script>
+  <script src="assets/js/dashboard-jenis.js?v=1"></script>
 </body>
 </html>
