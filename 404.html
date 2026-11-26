@@ -8,6 +8,15 @@
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css?v=2026u">
+  <script>
+    // Alamat dashboard yang salah ketik atau tanpa .html (dasboard, dashbord, dashboard/, admin) diarahkan ke halaman yang benar.
+    (function () {
+      var p = location.pathname.toLowerCase().replace(/\.html?$/, "").replace(/^\/+|\/+$/g, "");
+      var dash = /^(das|dahs|dsh)/.test(p) || /^(admin|pengelola|masuk\/admin)$/.test(p);
+      var tujuan = dash && /pendaftar|daftar/.test(p) ? "/dashboard-pendaftaran.html" : dash ? "/dashboard.html" : "";
+      if (tujuan && tujuan !== location.pathname) location.replace(tujuan + location.search + location.hash);
+    })();
+  </script>
 </head>
 <body>
   <main class="wrap" style="min-height:80vh;display:grid;place-items:center;text-align:center">

@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!j.ok) { MK.toast(j.pesan || "Gagal mengirim kode"); return; }
       jedaSampai = Date.now() + (j.jeda || 60) * 1000;
       $("m-to").textContent = email;
+      if (j.demo) MK.toast("Akun demo: masukkan kode demo, tidak ada email yang dikirim");
       $("f-email").hidden = true; $("f-otp").hidden = false; $("m-otp").focus();
     } catch (e) {
       if (e.belumAktif) { modeLokal("Layanan konsultasi online sedang disiapkan."); return masukLokal(); }
@@ -104,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     st.token = j.token; st.email = j.email || st.email;
     try { sessionStorage.setItem(SESI_KEY, JSON.stringify({ token: j.token, email: st.email, sampai: Date.now() + (j.jam || 6) * 3600e3 })); } catch (er) { /* abaikan */ }
     if (j.ingat) { try { localStorage.setItem(INGAT_KEY, JSON.stringify({ token: j.ingat.token, sampai: j.ingat.sampai, email: st.email })); } catch (er) { /* abaikan */ } }
-    st.foto = j.foto || ""; st.admin = !!j.admin; st.bayar = j.pembayaran || []; st.tanya = j.permintaan || [];
+    st.foto = j.foto || ""; st.admin = !!j.admin; st.demo = !!j.demo; st.bayar = j.pembayaran || []; st.tanya = j.permintaan || [];
     setelahMasuk(j.profil, j.riwayat || [], j.klienPraktisi);
     cekKembaliDariBayar();
   }
@@ -116,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function setelahMasuk(profil, riwayat, klien) {
     st.profil = profil; st.riwayat = riwayat; st.klien = klien || []; st.riwayatSendiri = riwayat;
-    $("u-status").innerHTML = `Masuk sebagai <strong>${esc(st.email)}</strong>${st.lokal ? " (mode lokal)" : ""}.${st.admin ? ' <a href="dashboard.html">Buka dashboard pengelola →</a>' : ""}`;
+    $("u-status").innerHTML = `Masuk sebagai <strong>${esc(st.email)}</strong>${st.lokal ? " (mode lokal)" : ""}${st.demo ? " (akun demo: data contoh, tanpa email)" : ""}.${st.admin ? ' <a href="dashboard.html">Buka dashboard pengelola →</a>' : ""}`;
     $("u-keluar").hidden = false;
     renderRiwayat();
     if (profil) { isiProfil(profil); lanjutSetelahProfil(); }
@@ -719,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const STATUS_TANYA = { "menunggu-keputusan": ["Ditinjau Dr. Mury", "b-under"], gratis: ["Gratis · menunggu jawaban", "b-normal"], "menunggu-bayar": ["Perlu pembayaran", "b-over"], lunas: ["Lunas · menunggu jawaban", "b-normal"], dijawab: ["Dijawab", "b-normal"], ditolak: ["Tidak dilayani", "b-obese"] };
   async function muatPaket() {
     if (st.lokal || !ENDPOINT) return;
-    try { const j = await api({ aksi: "kons-paket" }); if (j.ok) { st.paket = j; renderLanjut(); } } catch (e) { /* opsional */ }
+    try { const j = await api({ aksi: "kons-paket", token: st.token }); if (j.ok) { st.paket = j; renderLanjut(); } } catch (e) { /* opsional */ }
   }
   function renderLanjut() {
     const box = $("u-lanjut");
