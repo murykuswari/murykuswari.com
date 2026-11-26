@@ -89,6 +89,16 @@ Diatur di `PAKET` pada `apps-script/Konsultasi.gs` dan muncul sebagai **pilihan 
 
 Sebelum langkah 3, admin tetap bisa memutuskan "berbayar"; klien diberi tahu bahwa instruksi pembayaran dikirim lewat email.
 
+## Akun demo untuk peninjau (verifikasi Midtrans)
+
+Peninjau bisa mencoba alur pembayaran tanpa akses email, memakai akun **demo@murykuswari.com**.
+
+- **Kode masuk** tetap 6 digit, disimpan di Script Property `DEMO_KODE` (tidak ada di repo). Jalankan `siapkanDemo` dari editor Apps Script: kode dibuat acak, lalu detail akun dan langkah pengecekan dikirim ke email pemilik, siap disalin ke formulir Midtrans.
+- Setiap kali masuk, akun demo dipastikan punya profil contoh dan satu permintaan **berbayar** (paket pertama di `PAKET`) yang siap dibayar, jadi peninjau tidak perlu menunggu keputusan admin.
+- **Sandbox:** isi Script Property `MIDTRANS_SANDBOX_KEY` dengan Server Key Sandbox. Pembayaran akun demo (Order ID berawalan `MKDEMO-`) selalu memakai Sandbox, sedangkan klien lain tetap memakai `MIDTRANS_SERVER_KEY`. Agar status demo ikut lunas otomatis, isi juga Notification URL di dashboard **Sandbox** Midtrans dengan `programEndpoint`.
+- Akun demo tidak mengirim email ke siapa pun, tidak bisa membuka dashboard, dan dibatasi 20 kali salah kode per jam.
+- Ganti kode: jalankan `gantiKodeDemo`. Matikan akun demo: jalankan `matikanDemo`.
+
 ## Data
 
 Tab **Permintaan**: ID, waktu, email, nama, ID klien praktisi, topik, pertanyaan, status (`menunggu-keputusan`, `gratis`, `menunggu-bayar`, `lunas`, `dijawab`, `ditolak`), jenis, paket, harga, catatan admin, order ID, jawaban, waktu dijawab.
